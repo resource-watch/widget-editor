@@ -23,14 +23,14 @@ export { default as CheckboxGroup } from 'components/form/CheckboxGroup';
 // export { default as Code } from 'components/form/Code';
 export { default as Field } from 'components/form/Field';
 export { default as File } from 'components/form/File';
-export { default as FileImage } from 'components/form/FileImage';
+// export { default as FileImage } from 'components/form/FileImage';
 export { default as FormElement } from 'components/form/FormElement';
 export { default as Input } from 'components/form/Input';
 export { default as Navigation } from 'components/form/Navigation';
 export { default as RadioGroup } from 'components/form/RadioGroup';
 export { default as SelectInput } from 'components/form/SelectInput';
 export { default as TextArea } from 'components/form/TextArea';
-export { default as ToggleSearch } from 'components/form/ToggleSearch';
+// export { default as ToggleSearch } from 'components/form/ToggleSearch';
 // export { default as Token } from 'components/form/Token';
 export { default as Validator } from 'components/form/Validator';
 // export { default as Wysiwyg } from 'components/form/Wysiwyg';
@@ -72,6 +72,8 @@ export { default as DatasetService } from 'services/DatasetService';
 export { default as RasterService } from 'services/RasterService';
 export { default as UserService } from 'services/UserService';
 export { default as WidgetService } from 'services/WidgetService';
+
+export { getConfig, setConfig } from 'helpers/ConfigHelper';
 
 // Redux
 export const reducers = { explore, modal, tooltip, widgetEditor };

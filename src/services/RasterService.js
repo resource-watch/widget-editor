@@ -1,5 +1,8 @@
 import 'isomorphic-fetch';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 export default class RasterService {
   /**
    * Creates an instance of RasterService.
@@ -25,7 +28,7 @@ export default class RasterService {
       query = `SELECT (st_metadata(st_union(the_raster_webmercator))).* from ${this.tableName}`;
     }
 
-    return fetch(`${process.env.RW_API_URL}/query/${this.dataset}?sql=${query}`)
+    return fetch(`${getConfig().url}/query/${this.dataset}?sql=${query}`)
       .then((response) => {
         if (!response.ok) throw new Error('Unable to fetch the band names');
         return response.json();

@@ -41,8 +41,8 @@ class AreaIntersectionFilter extends React.Component {
     };
 
     // Services
-    this.areasService = new AreasService({ apiURL: process.env.RW_API_URL });
-    this.userService = new UserService({ apiURL: process.env.RW_API_URL });
+    this.areasService = new AreasService();
+    this.userService = new UserService();
   }
 
   componentDidMount() {

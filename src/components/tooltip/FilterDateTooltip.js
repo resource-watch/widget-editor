@@ -25,9 +25,7 @@ class FilterDateTooltip extends React.Component {
     };
 
     // DatasetService
-    this.datasetService = new DatasetService(props.datasetID, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.datasetService = new DatasetService(props.datasetID);
   }
 
   componentDidMount() {

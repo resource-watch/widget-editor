@@ -10,8 +10,9 @@ import OneDScatterChart from 'helpers/1d_scatter';
 import OneDTickChart from 'helpers/1d_tick';
 import ScatterChart from 'helpers/scatter';
 
-// Utils
+// Helpers
 import getQueryByFilters from 'helpers/getQueryByFilters';
+import { getConfig } from 'helpers/ConfigHelper';
 
 // Services
 import RasterService from 'services/RasterService';
@@ -255,7 +256,7 @@ export async function getRasterDataURL(dataset, datasetType, tableName, band, pr
 
   const geostore = chartInfo.areaIntersection ? `&geostore=${chartInfo.areaIntersection}` : '';
 
-  return `${process.env.RW_API_URL}/query/${dataset}?sql=${query}${geostore}`;
+  return `${getConfig().url}/query/${dataset}?sql=${query}${geostore}`;
 }
 
 /**
@@ -342,7 +343,7 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
 
   const geostore = chartInfo.areaIntersection ? `&geostore=${chartInfo.areaIntersection}` : '';
 
-  return `${process.env.RW_API_URL}/query/${dataset}?sql=${query}${geostore}`;
+  return `${getConfig().url}/query/${dataset}?sql=${query}${geostore}`;
 }
 
 /**

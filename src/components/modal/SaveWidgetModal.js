@@ -18,7 +18,7 @@ import Spinner from 'components/ui/Spinner';
 // Services
 import WidgetService from 'services/WidgetService';
 
-// utils
+// Helpers
 import { getChartConfig, getChartInfo } from 'helpers/WidgetHelper';
 
 const FORM_ELEMENTS = {
@@ -54,9 +54,7 @@ class SaveWidgetModal extends React.Component {
       description: null // Description of the widget
     };
 
-    this.widgetService = new WidgetService(null, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.widgetService = new WidgetService(null);
   }
 
 

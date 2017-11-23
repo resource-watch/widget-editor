@@ -11,7 +11,7 @@ import Spinner from 'components/ui/Spinner';
 // Services
 import DatasetService from 'services/DatasetService';
 
-// Utils
+// Helpers
 import getQueryByFilters from 'helpers/getQueryByFilters';
 
 class TableView extends React.Component {
@@ -24,9 +24,7 @@ class TableView extends React.Component {
     };
 
     // DatasetService
-    this.datasetService = new DatasetService(props.dataset, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.datasetService = new DatasetService(props.dataset);
   }
 
   /**

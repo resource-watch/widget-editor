@@ -1,36 +1,28 @@
 import 'isomorphic-fetch';
 
-// Utils
+// Helpers
 import { getSimplifiedFieldType } from 'helpers/WidgetHelper';
+import { getConfig } from 'helpers/ConfigHelper';
 
 /**
  * Dataset service
  * @example:
     import DatasetService from '..path';
-    const ds = new DatasetService('42de3f98-ba1c-4572-a227-2e18d45239a5', {
-      apiURL: 'https://api.resourcewatch.org/v1'
-    });
+    const ds = new DatasetService('42de3f98-ba1c-4572-a227-2e18d45239a5');
     ds.getFilters().then((data) => {
       console.log(data)
     });
  */
 export default class DatasetService {
-  constructor(datasetId, options) {
-    if (!options) {
-      throw new Error('options params is required.');
-    }
-    if (!options.apiURL || options.apiURL === '') {
-      throw new Error('options.apiURL param is required.');
-    }
+  constructor(datasetId) {
     this.datasetId = datasetId;
-    this.opts = options;
   }
 
   /**
    * Get subscribable datasets
    */
   getSubscribableDatasets(includes = '') {
-    return fetch(`${this.opts.apiURL}/dataset?${[process.env.APPLICATIONS].join(',')}&includes=${includes}&subscribable=true&page[size]=999`)
+    return fetch(`${getConfig().url}/dataset?${[getConfig().applications].join(',')}&includes=${includes}&subscribable=true&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -42,8 +34,8 @@ export default class DatasetService {
    * Get dataset info
    * @returns {Promise}
    */
-  fetchData(includes = '', applications = [process.env.APPLICATIONS]) {
-    return fetch(`${this.opts.apiURL}/dataset/${this.datasetId}?application=${applications.join(',')}&includes=${includes}&page[size]=999`)
+  fetchData(includes = '', applications = [getConfig().applications]) {
+    return fetch(`${getConfig().url}/dataset/${this.datasetId}?application=${applications.join(',')}&includes=${includes}&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -56,7 +48,7 @@ export default class DatasetService {
    * @returns {Promise}
    */
   fetchFilteredData(query) {
-    return fetch(`${this.opts.apiURL}/query/${this.datasetId}?${query}`)
+    return fetch(`${getConfig().url}/query/${this.datasetId}?${query}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -73,7 +65,7 @@ export default class DatasetService {
    * @returns {Promise<any>}
    */
   fetchJiminy(query) {
-    return fetch(`${this.opts.apiURL}/jiminy`, {
+    return fetch(`${getConfig().url}/jiminy`, {
       method: 'POST',
       body: JSON.stringify({ sql: query }),
       headers: {
@@ -114,7 +106,7 @@ export default class DatasetService {
    * @returns {{ columnName: string, columnType: string }[]}
    */
   getFields() {
-    return fetch(`${this.opts.apiURL}/fields/${this.datasetId}`)
+    return fetch(`${getConfig().url}/fields/${this.datasetId}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -187,7 +179,7 @@ export default class DatasetService {
   }
 
   getLayers() {
-    return fetch(`${this.opts.apiURL}/dataset/${this.datasetId}/layer?app=rw`)
+    return fetch(`${getConfig().url}/dataset/${this.datasetId}/layer?app=rw`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -198,7 +190,7 @@ export default class DatasetService {
   getDownloadURI(tableName, datasetName) {
     // emulates trigger of download creating a link in memory and clicking on it
     const a = document.createElement('a');
-    a.href = `${this.opts.apiURL}/download/${this.datasetId}?sql=SELECT * FROM ${tableName}`;
+    a.href = `${getConfig().url}/download/${this.datasetId}?sql=SELECT * FROM ${tableName}`;
     a.style.display = 'none';
     a.download = datasetName;
     document.body.appendChild(a);
@@ -207,7 +199,7 @@ export default class DatasetService {
   }
 
   getSimilarDatasets() {
-    return fetch(`${this.opts.apiURL}/graph/query/similar-dataset/${this.datasetId}`)
+    return fetch(`${getConfig().url}/graph/query/similar-dataset/${this.datasetId}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -221,11 +213,11 @@ export default class DatasetService {
    * @param {string[]} datasetIDs - List of dataset IDs
    * @param {string} [includes=''] - List of entities to fetch
    * (string of values separated with commas)
-   * @param {string[]} [applications=[process.env.APPLICATIONS]] List of applications
+   * @param {string[]} [applications=[getConfig().applications]] List of applications
    * @returns {object[]}
    */
-  static getDatasets(datasetIDs, includes = '', applications = [process.env.APPLICATIONS]) {
-    return fetch(`${process.env.RW_API_URL}/dataset/?ids=${datasetIDs}&includes=${includes}&application=${applications.join(',')}&page[size]=999`)
+  static getDatasets(datasetIDs, includes = '', applications = [getConfig().applications]) {
+    return fetch(`${getConfig().url}/dataset/?ids=${datasetIDs}&includes=${includes}&application=${applications.join(',')}&page[size]=999`)
       .then((response) => {
         if (!response.ok) throw new Error(response.statusText);
         return response.json();
@@ -243,7 +235,7 @@ export default class DatasetService {
     const querySt = `&${topicsSt}${geographiesSt}${dataTypesSt}`;
 
 
-    return fetch(`${this.opts.apiURL}/graph/query/search-datasets?${querySt}`)
+    return fetch(`${getConfig().url}/graph/query/search-datasets?${querySt}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();

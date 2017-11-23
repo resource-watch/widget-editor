@@ -7,6 +7,9 @@ import classnames from 'classnames';
 // Components
 import Spinner from 'components/ui/Spinner';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 class UploadAreaIntersectionModal extends React.Component {
   /**
    * Return the name of the file
@@ -55,7 +58,7 @@ class UploadAreaIntersectionModal extends React.Component {
     const formData = new FormData();
     formData.append('file', file);
 
-    return fetch(`${process.env.RW_API_URL}/ogr/convert`, {
+    return fetch(`${getConfig().url}/ogr/convert`, {
       method: 'POST',
       body: formData,
       multipart: true
@@ -103,7 +106,7 @@ class UploadAreaIntersectionModal extends React.Component {
       }
     })
       // Second: we store it in the geostore
-      .then(geojson => fetch(`${process.env.RW_API_URL}/geostore`, {
+      .then(geojson => fetch(`${getConfig().url}/geostore`, {
         method: 'POST',
         headers: new Headers({
           'content-type': 'application/json'

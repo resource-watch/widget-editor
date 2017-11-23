@@ -5,8 +5,9 @@ import omit from 'lodash/omit';
 
 import Dropzone from 'react-dropzone';
 
-// Utils
+// Helpers
 import { post } from 'helpers/request';
+import { getConfig } from 'helpers/ConfigHelper';
 
 // Components
 import Spinner from 'components/ui/Spinner';
@@ -123,7 +124,7 @@ class File extends FormElement {
 
     post({
       type: 'POST',
-      url: `${process.env.RW_API_URL}/dataset/upload`,
+      url: `${getConfig().url}/dataset/upload`,
       headers: [{
         key: 'Authorization', value: this.props.properties.authorization
       }],

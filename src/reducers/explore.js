@@ -5,6 +5,9 @@ import 'isomorphic-fetch';
 // Services
 import UserService from 'services/UserService';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 import { BASEMAPS } from 'components/map/constants';
 
 /**
@@ -411,7 +414,7 @@ export function getFavoriteDatasets(token) {
     // Waiting for fetch from server -> Dispatch loading
     dispatch({ type: GET_FAVORITES_LOADING });
 
-    const userService = new UserService({ apiURL: process.env.RW_API_URL });
+    const userService = new UserService();
 
     return userService.getFavouriteDatasets(token)
       .then((response) => {
@@ -435,7 +438,7 @@ export function getDatasets({ pageNumber, pageSize }) {
     // Waiting for fetch from server -> Dispatch loading
     dispatch({ type: GET_DATASETS_LOADING });
 
-    return fetch(new Request(`${process.env.RW_API_URL}/dataset?${[process.env.APPLICATIONS].join(',')}&status=saved&published=true&includes=widget,layer,metadata,vocabulary&page[size]=${pageSize || 999}&page[number]=${pageNumber || 1}&sort=-updatedAt`))
+    return fetch(new Request(`${getConfig().url}/dataset?${[getConfig().applications].join(',')}&status=saved&published=true&includes=widget,layer,metadata,vocabulary&page[size]=${pageSize || 999}&page[number]=${pageNumber || 1}&sort=-updatedAt`))
       .then((response) => {
         if (response.ok) return response.json();
         throw new Error(response.statusText);

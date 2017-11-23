@@ -4,6 +4,9 @@
 
 import 'isomorphic-fetch';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 let L;
 if (typeof window !== 'undefined') {
   L = require('leaflet/dist/leaflet');
@@ -96,13 +99,13 @@ export default class LayerManager {
   }
 
   addNexGDDPLayer(layerData) {
-    const tileUrl = `${process.env.RW_API_URL}/layer/${layerData.id}/tile/nexgddp/{z}/{x}/{y}`;
+    const tileUrl = `${getConfig().url}/layer/${layerData.id}/tile/nexgddp/{z}/{x}/{y}`;
     const tileLayer = L.tileLayer(tileUrl).addTo(this.map);
     this.mapLayers[layerData.id] = tileLayer;
   }
 
   addGeeLayer(layerData) {
-    const tileUrl = `${process.env.RW_API_URL}/layer/${layerData.id}/tile/gee/{z}/{x}/{y}`;
+    const tileUrl = `${getConfig().url}/layer/${layerData.id}/tile/gee/{z}/{x}/{y}`;
     const tileLayer = L.tileLayer(tileUrl).addTo(this.map);
     this.mapLayers[layerData.id] = tileLayer;
   }

@@ -9,6 +9,9 @@ import AutosizeInput from 'react-input-autosize';
 
 import 'css/index.scss';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 // Redux
 import { connect } from 'react-redux';
 
@@ -672,13 +675,9 @@ class WidgetEditor extends React.Component {
    */
   initComponent(props) {
     // First, we init the services
-    this.datasetService = new DatasetService(props.dataset, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.datasetService = new DatasetService(props.dataset);
 
-    this.widgetService = new WidgetService(props.dataset, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.widgetService = new WidgetService(props.dataset);
 
     // Each time the editor is opened again, we reset the Redux's state
     // associated with it
@@ -829,7 +828,7 @@ class WidgetEditor extends React.Component {
 
     const sortOrder = orderBy ? orderBy.orderType : 'asc';
     const query = `${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
-    const queryURL = `${process.env.RW_API_URL}/query/${dataset}?sql=${query}${geostore}`;
+    const queryURL = `${getConfig().url}/query/${dataset}?sql=${query}${geostore}`;
 
     const options = {
       children: EmbedTableModal,

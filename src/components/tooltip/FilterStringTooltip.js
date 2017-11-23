@@ -24,9 +24,7 @@ class FilterStringTooltip extends React.Component {
     };
 
     // DatasetService
-    this.datasetService = new DatasetService(props.datasetID, {
-      apiURL: process.env.RW_API_URL
-    });
+    this.datasetService = new DatasetService(props.datasetID);
 
     this.handleSearch = debounce(this.handleSearch.bind(this), 10);
   }

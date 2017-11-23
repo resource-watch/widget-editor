@@ -1,16 +1,15 @@
 import 'isomorphic-fetch';
 
-export default class WidgetService {
-  constructor(widgetId, options) {
-    if (!options) throw new Error('options params is required.');
-    if (!options.apiURL || options.apiURL === '') throw new Error('options.apiURL param is required.');
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
 
+export default class WidgetService {
+  constructor(widgetId) {
     this.widgetId = widgetId;
-    this.opts = options;
   }
 
   fetchData(includes = '') {
-    return fetch(`${this.opts.apiURL}/widget/${this.widgetId}?includes=${includes}&page[size]=999`)
+    return fetch(`${getConfig().url}/widget/${this.widgetId}?includes=${includes}&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -20,13 +19,13 @@ export default class WidgetService {
 
   saveUserWidget(widget, datasetId, token) {
     const widgetObj = {
-      application: [process.env.APPLICATIONS],
+      application: [getConfig().applications],
       published: false,
       default: false,
       dataset: datasetId
     };
     const bodyObj = Object.assign({}, widget, widgetObj);
-    return fetch(`${this.opts.apiURL}/dataset/${datasetId}/widget`, {
+    return fetch(`${getConfig().url}/dataset/${datasetId}/widget`, {
       method: 'POST',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -41,7 +40,7 @@ export default class WidgetService {
   }
 
   updateUserWidget(widget, datasetId, token) {
-    return fetch(`${this.opts.apiURL}/dataset/${datasetId}/widget/${widget.id}`, {
+    return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widget.id}`, {
       method: 'PATCH',
       body: JSON.stringify(widget),
       headers: {
@@ -56,7 +55,7 @@ export default class WidgetService {
   }
 
   removeUserWidget(widgetId, token) {
-    return fetch(`${this.opts.apiURL}/widget/${widgetId}`, {
+    return fetch(`${getConfig().url}/widget/${widgetId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -72,7 +71,7 @@ export default class WidgetService {
   getUserWidgets(userId, sortByUpdatedAt = true, direction = 'asc', includes = '') {
     const directionPart = (direction === 'asc') ? '&sort=updatedAt' : '&sort=-updatedAt';
     const sortSt = sortByUpdatedAt ? directionPart : '';
-    return fetch(`${this.opts.apiURL}/widget/?userId=${userId}${sortSt}&includes=${includes}&env=production,preproduction&page[size]=999`)
+    return fetch(`${getConfig().url}/widget/?userId=${userId}${sortSt}&includes=${includes}&env=production,preproduction&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -81,7 +80,7 @@ export default class WidgetService {
   }
 
   getUserWidgetCollections(user) {
-    return fetch(`${this.opts.apiURL}/vocabulary/widget_collections?${[process.env.APPLICATIONS].join(',')}`)
+    return fetch(`${getConfig().url}/vocabulary/widget_collections?${[getConfig().applications].join(',')}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -104,7 +103,7 @@ export default class WidgetService {
     const bodyObj = {
       tags: widgetCollections.map(val => `${user.id}-${val}`)
     };
-    return fetch(`${this.opts.apiURL}/dataset/${widget.attributes.dataset}/widget/${widget.id}/vocabulary/widget_collections`, {
+    return fetch(`${getConfig().url}/dataset/${widget.attributes.dataset}/widget/${widget.id}/vocabulary/widget_collections`, {
       method,
       body: method === 'DELETE' ? '' : JSON.stringify(bodyObj),
       headers: {

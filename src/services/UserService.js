@@ -1,23 +1,16 @@
 import 'isomorphic-fetch';
 
-export default class UserService {
-  constructor(options) {
-    if (!options) {
-      throw new Error('options params is required.');
-    }
-    if (!options.apiURL || options.apiURL === '') {
-      throw new Error('options.apiURL param is required.');
-    }
-    this.opts = options;
-  }
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
 
+export default class UserService {
   /**
    * Gets the user that is currently logged
    * @returns {Promise}
    */
   getLoggedUser(token) {
     return new Promise((resolve) => {
-      fetch(`${this.opts.apiURL}/auth/check-logged`, {
+      fetch(`${getConfig().url}/auth/check-logged`, {
         headers: {
           Authorization: token
         }
@@ -46,7 +39,7 @@ export default class UserService {
   getFavourites(token, resourceType = null, include = true) {
     const resourceTypeSt = (resourceType !== null) ? `&resourceType=${resourceType}` : '';
     return new Promise((resolve) => {
-      fetch(`${this.opts.apiURL}/favourite?include=${include}${resourceTypeSt}`, {
+      fetch(`${getConfig().url}/favourite?include=${include}${resourceTypeSt}`, {
         headers: {
           Authorization: token
         }
@@ -63,7 +56,7 @@ export default class UserService {
    * @returns {Promise}
    */
   deleteFavourite(resourceId, token) {
-    return fetch(`${this.opts.apiURL}/favourite/${resourceId}`, {
+    return fetch(`${getConfig().url}/favourite/${resourceId}`, {
       method: 'DELETE',
       headers: {
         Authorization: token
@@ -94,7 +87,7 @@ export default class UserService {
       resourceType,
       resourceId
     };
-    return fetch(`${this.opts.apiURL}/favourite`, {
+    return fetch(`${getConfig().url}/favourite`, {
       method: 'POST',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -114,7 +107,7 @@ export default class UserService {
   createSubscriptionToArea(areaId, datasets, datasetsQuery, user, name = '') {
     const bodyObj = {
       name,
-      application: process.env.APPLICATIONS,
+      application: getConfig().applications,
       language: 'en',
       datasets,
       datasetsQuery,
@@ -126,7 +119,7 @@ export default class UserService {
         area: areaId
       }
     };
-    return fetch(`${this.opts.apiURL}/subscriptions`, {
+    return fetch(`${getConfig().url}/subscriptions`, {
       method: 'POST',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -142,12 +135,12 @@ export default class UserService {
    */
   updateSubscriptionToArea(subscriptionId, datasets, datasetsQuery, user) {
     const bodyObj = {
-      application: process.env.APPLICATIONS,
+      application: getConfig().applications,
       language: 'en',
       datasets,
       datasetsQuery
     };
-    return fetch(`${this.opts.apiURL}/subscriptions/${subscriptionId}`, {
+    return fetch(`${getConfig().url}/subscriptions/${subscriptionId}`, {
       method: 'PATCH',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -163,7 +156,7 @@ export default class UserService {
    */
   getSubscriptions(token) {
     return new Promise((resolve) => {
-      fetch(`${this.opts.apiURL}/subscriptions?${[process.env.APPLICATIONS].join(',')}`, {
+      fetch(`${getConfig().url}/subscriptions?${[getConfig().applications].join(',')}`, {
         headers: {
           Authorization: token
         }
@@ -180,7 +173,7 @@ export default class UserService {
    * @returns {Promise}
    */
   deleteSubscription(subscriptionId, token) {
-    return fetch(`${this.opts.apiURL}/subscriptions/${subscriptionId}`, {
+    return fetch(`${getConfig().url}/subscriptions/${subscriptionId}`, {
       method: 'DELETE',
       headers: {
         Authorization: token
@@ -194,7 +187,7 @@ export default class UserService {
    */
   getUserAreas(token) {
     return new Promise((resolve, reject) => {
-      fetch(`${this.opts.apiURL}/area?${[process.env.APPLICATIONS].join(',')}`, {
+      fetch(`${getConfig().url}/area?${[getConfig().applications].join(',')}`, {
         headers: {
           Authorization: token
         }
@@ -214,11 +207,11 @@ export default class UserService {
   createNewArea(name, geostore, token) {
     const bodyObj = {
       name,
-      application: process.env.APPLICATIONS,
+      application: getConfig().applications,
       geostore
     };
 
-    return fetch(`${this.opts.apiURL}/area`, {
+    return fetch(`${getConfig().url}/area`, {
       method: 'POST',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -235,10 +228,10 @@ export default class UserService {
   updateArea(id, name, token) {
     const bodyObj = {
       name,
-      application: process.env.APPLICATIONS
+      application: getConfig().applications
     };
 
-    return fetch(`${this.opts.apiURL}/area/${id}`, {
+    return fetch(`${getConfig().url}/area/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(bodyObj),
       headers: {
@@ -256,7 +249,7 @@ export default class UserService {
    * @returns {Promise}
    */
   deleteArea(areaId, token) {
-    return fetch(`${this.opts.apiURL}/area/${areaId}`, {
+    return fetch(`${getConfig().url}/area/${areaId}`, {
       method: 'DELETE',
       headers: {
         Authorization: token
@@ -269,7 +262,7 @@ export default class UserService {
    * Get area
    */
   getArea(id, token) {
-    return fetch(`${this.opts.apiURL}/area/${id}`, {
+    return fetch(`${getConfig().url}/area/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
