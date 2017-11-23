@@ -6,7 +6,6 @@ import omit from 'lodash/omit';
 import Dropzone from 'react-dropzone';
 
 // Helpers
-import { post } from 'helpers/request';
 import { getConfig } from 'helpers/ConfigHelper';
 
 // Components
@@ -115,48 +114,48 @@ class File extends FormElement {
     return 'Select file to import data';
   }
 
-  uploadFile(file) {
-    const formData = new FormData();
-    formData.append('dataset', file);
-    formData.append('provider', this.props.properties.provider);
+  // uploadFile(file) {
+  //   const formData = new FormData();
+  //   formData.append('dataset', file);
+  //   formData.append('provider', this.props.properties.provider);
 
-    this.setState({ loading: true, errors: [] });
+  //   this.setState({ loading: true, errors: [] });
 
-    post({
-      type: 'POST',
-      url: `${getConfig().url}/dataset/upload`,
-      headers: [{
-        key: 'Authorization', value: this.props.properties.authorization
-      }],
-      body: formData,
-      multipart: true,
-      onSuccess: ({ connectorUrl, fields }) => {
-        this.setState({
-          value: connectorUrl,
-          validations: ['required'],
-          loading: false
-        }, () => {
-          // Publish the new value to the form
-          if (this.props.onChange) {
-            this.props.onChange({
-              // filters non-empty fields
-              fields: fields.filter(field => (field || '').length),
-              value: connectorUrl
-            });
-          }
-          // Trigger validation
-          this.triggerValidate();
-        });
-      },
-      onError: (err) => {
-        this.setState({
-          accepted: [],
-          loading: false
-        });
-        if (this.props.onValid) this.props.onValid(false, err);
-      }
-    });
-  }
+  //   post({
+  //     type: 'POST',
+  //     url: `${getConfig().url}/dataset/upload`,
+  //     headers: [{
+  //       key: 'Authorization', value: this.props.properties.authorization
+  //     }],
+  //     body: formData,
+  //     multipart: true,
+  //     onSuccess: ({ connectorUrl, fields }) => {
+  //       this.setState({
+  //         value: connectorUrl,
+  //         validations: ['required'],
+  //         loading: false
+  //       }, () => {
+  //         // Publish the new value to the form
+  //         if (this.props.onChange) {
+  //           this.props.onChange({
+  //             // filters non-empty fields
+  //             fields: fields.filter(field => (field || '').length),
+  //             value: connectorUrl
+  //           });
+  //         }
+  //         // Trigger validation
+  //         this.triggerValidate();
+  //       });
+  //     },
+  //     onError: (err) => {
+  //       this.setState({
+  //         accepted: [],
+  //         loading: false
+  //       });
+  //       if (this.props.onValid) this.props.onValid(false, err);
+  //     }
+  //   });
+  // }
 
   render() {
     const { properties } = this.props;
