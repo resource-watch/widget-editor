@@ -48,7 +48,7 @@ export function setTooltipChildren(children) {
 
 export function toggleTooltip(opened, opts = {}) {
   return (dispatch, getState) => {
-    const { tooltip } = getState();
+    const { widgetEditorTooltip } = getState();
 
     // This code makes sure that if a tooltip is already opened
     // and we try to open another with a different "children", then
@@ -56,7 +56,7 @@ export function toggleTooltip(opened, opts = {}) {
     // rendering the component
     // What we want to avoid is that a different "children" is rendered
     // with the props that belong to a previous one
-    if (opts.children && tooltip.opened && tooltip.children !== opts.children) {
+    if (opts.children && widgetEditorTooltip.opened && widgetEditorTooltip.children !== opts.children) {
       dispatch({ type: TOOLTIP_TOGGLE, payload: false });
     }
 

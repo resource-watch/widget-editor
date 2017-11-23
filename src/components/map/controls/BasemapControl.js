@@ -122,13 +122,14 @@ BasemapControl.propTypes = {
   setLabels: PropTypes.func
 }
 
-export default (connect(
-  state => ({
-    basemap: state.explore.basemap,
-    basemapControl: state.explore.basemapControl
-  }),
-  {
-    setBasemap,
-    setLabels
-  }
-)(BasemapControl));
+const mapStateToProps = ({ widgetEditorExplore }) => ({
+  basemap: widgetEditorExplore.basemap,
+  basemapControl: widgetEditorExplore.basemapControl
+});
+
+const mapDispatchToProps = dispatch => ({
+  setBasemap,
+  setLabels
+});
+
+export default (connect(mapStateToProps, mapDispatchToProps)(BasemapControl));

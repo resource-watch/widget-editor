@@ -1,6 +1,6 @@
-import { default as explore } from 'reducers/explore';
-import { default as modal } from 'reducers/modal';
-import { default as tooltip } from 'reducers/tooltip';
+import { default as widgetEditorExplore } from 'reducers/explore';
+import { default as widgetEditorModal } from 'reducers/modal';
+import { default as widgetEditorTooltip } from 'reducers/tooltip';
 import { default as widgetEditor } from 'reducers/widgetEditor';
 import * as exploreActions from 'reducers/explore';
 import * as modalActions from 'reducers/modal';
@@ -76,5 +76,5 @@ export { default as WidgetService } from 'services/WidgetService';
 export { getConfig, setConfig } from 'helpers/ConfigHelper';
 
 // Redux
-export const reducers = { explore, modal, tooltip, widgetEditor };
+export const reducers = { widgetEditorExplore, widgetEditorModal, widgetEditorTooltip, widgetEditor };
 export { exploreActions, modalActions, tooltipActions, widgetEditorActions };

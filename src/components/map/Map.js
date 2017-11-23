@@ -303,10 +303,10 @@ Map.propTypes = {
   setMapParams: PropTypes.func
 };
 
-const mapStateToProps = state => ({
-  basemap: state.explore.basemap,
-  labels: state.explore.labels,
-  sidebar: state.explore.sidebar
+const mapStateToProps = ({ widgetEditorExplore }) => ({
+  basemap: widgetEditorExplore.basemap,
+  labels: widgetEditorExplore.labels,
+  sidebar: widgetEditorExplore.sidebar
 });
 
 export default connect(mapStateToProps, null)(Map);

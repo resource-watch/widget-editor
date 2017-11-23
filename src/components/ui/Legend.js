@@ -584,9 +584,10 @@ Legend.defaultProps = {
   expanded: true
 };
 
-const mapStateToProps = state => ({
-  tooltipOpened: state.tooltip.opened
+const mapStateToProps = ({ widgetEditorTooltip }) => ({
+  tooltipOpened: widgetEditorTooltip.opened
 });
+
 const mapDispatchToProps = dispatch => ({
   toggleModal: (open, options) => dispatch(toggleModal(open, options)),
   toggleTooltip: (open, options) => dispatch(toggleTooltip(open, options)),

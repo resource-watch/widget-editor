@@ -154,8 +154,8 @@ Tooltip.propTypes = {
   setTooltipPosition: PropTypes.func
 };
 
-const mapStateToProps = ({ tooltipEditor }) => ({
-  tooltip: tooltipEditor
+const mapStateToProps = ({ widgetEditorTooltip }) => ({
+  tooltip: widgetEditorTooltip
 });
 
 const mapDispatchToProps = dispatch => ({

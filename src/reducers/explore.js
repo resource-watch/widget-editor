@@ -357,11 +357,11 @@ export default function (state = initialState, action) {
 // go away from the current page
 export function setUrlParams() {
   return (dispatch, getState) => {
-    const { explore } = getState();
-    const layerGroups = explore.layers;
-    const { zoom, latLng } = explore;
-    const { page } = explore.datasets;
-    const { search, topics, dataType, geographies } = explore.filters;
+    const { widgetEditorExplore } = getState();
+    const layerGroups = widgetEditorExplore.layers;
+    const { zoom, latLng } = widgetEditorExplore;
+    const { page } = widgetEditorExplore.datasets;
+    const { search, topics, dataType, geographies } = widgetEditorExplore.filters;
 
     const query = { page };
 

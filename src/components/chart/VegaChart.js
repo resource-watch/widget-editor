@@ -426,8 +426,8 @@ VegaChart.defaultProps = {
   showLegend: true
 };
 
-const mapStateToProps = ({ tooltip }) => ({
-  tooltip
+const mapStateToProps = ({ widgetEditorTooltip }) => ({
+  tooltip: widgetEditorTooltip
 });
 
 const mapDispatchToProps = dispatch => ({
