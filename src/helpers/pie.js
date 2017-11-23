@@ -1,5 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
-import { scale } from 'd3';
+import { schemeCategory20 } from 'd3-scale';
 
 /* eslint-disable */
 const defaultChart = {
@@ -197,7 +197,7 @@ export default function ({ columns, data, url, embedData }) {
 
   // We add a default legend to the chart
   // In the default template above, category20 is used
-  const colorRange = scale.category20().range();
+  const colorRange = schemeCategory20;
   const values = data.slice(0, 20)
     .map((d, i) => ({ label: i === 19 ? 'Others' : d.x, value: colorRange[i % 20], type: columns.x.type }));
 

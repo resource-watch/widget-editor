@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { format, time } from 'd3';
+import { format } from 'd3-time-format';
+import { timeFormat } from 'd3-format';
 
 class VegaChartTooltip extends React.Component {
   getParsedX() {
@@ -15,11 +16,11 @@ class VegaChartTooltip extends React.Component {
       const date = new Date(x.value);
       // NOTE: it's important to have a default format for
       // the manually-created widgets, otherwise if x.format
-      // is not defined, time.format will return a date
+      // is not defined, timeFormat will return a date
       // object and the app will crash in dev environment
       // and the tooltip won't show in prod
       const f = x.format || '%d %b %Y';
-      return time.format(f)(date);
+      return timeFormat.format(f)(date);
     }
 
     return x.value;
@@ -38,11 +39,11 @@ class VegaChartTooltip extends React.Component {
       const date = new Date(y.value);
       // NOTE: it's important to have a default format for
       // the manually-created widgets, otherwise if y.format
-      // is not defined, time.format will return a date
+      // is not defined, timeFormat will return a date
       // object and the app will crash in dev environment
       // and the tooltip won't show in prod
       const f = y.format || '%d %b %Y';
-      return time.format(f)(date);
+      return timeFormat.format(f)(date);
     }
 
     return y.value;

@@ -8,7 +8,7 @@ let L;
 if (typeof window !== 'undefined') {
   L = require('leaflet/dist/leaflet');
   // adding support for esri
-  const esri = require('esri-leaflet');
+  const esri = require('esri-leaflet/dist/esri-leaflet');
   L.esri = esri;
 }
 

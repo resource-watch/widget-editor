@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DragSource } from 'react-dnd';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 import classNames from 'classnames';
 
 // Store

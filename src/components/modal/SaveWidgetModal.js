@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // import { Router } from 'routes';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 import { toastr } from 'react-redux-toastr';
 
 // Redux

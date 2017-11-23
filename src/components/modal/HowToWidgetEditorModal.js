@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 import Step1Img from 'images/howto-step1.png';
 import Step2Img from 'images/howto-step2.png';
 

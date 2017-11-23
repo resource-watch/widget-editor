@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 import { toastr } from 'react-redux-toastr';
 import isEmpty from 'lodash/isEmpty';
 import truncate from 'lodash/truncate';
-import d3 from 'd3';
+import { format } from 'd3-time-format';
 
 // Redux
 import { connect } from 'react-redux';
@@ -206,7 +206,7 @@ class RasterChartEditor extends React.Component {
                 <tbody>
                   <tr>
                     { Object.keys(bandStatsInfo).map((name) => {
-                      const number = d3.format('.4s')(bandStatsInfo[name]);
+                      const number = format('.4s')(bandStatsInfo[name]);
                       return (
                         <td key={name}>{number}</td>
                       );

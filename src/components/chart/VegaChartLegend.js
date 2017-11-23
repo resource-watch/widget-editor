@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { time } from 'd3';
 import uniqBy from 'lodash/uniqBy';
 
 // Components

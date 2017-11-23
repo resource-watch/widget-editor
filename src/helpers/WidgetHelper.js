@@ -1,5 +1,5 @@
 import 'isomorphic-fetch';
-import { format } from 'd3';
+import { format } from 'd3-time-format';
 import { toastr } from 'react-redux-toastr';
 
 // Components

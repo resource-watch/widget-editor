@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 import { DragDropContext } from 'react-dnd';
 
 import ArrowImg from 'images/arrow.svg';

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import classNames from 'classnames';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 
 // Redux
 import { connect } from 'react-redux';

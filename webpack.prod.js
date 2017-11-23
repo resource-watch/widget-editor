@@ -22,7 +22,8 @@ module.exports = merge(common, {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     new UglifyJSPlugin(),
-    new ExtractTextPlugin('styles.css')
+    new ExtractTextPlugin('styles.css'),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
   ],
 
   externals: ['react', 'prop-types', 'react-redux']

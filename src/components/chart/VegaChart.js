@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { bisector } from 'd3';
+import { bisector } from 'd3-array';
 import vega from 'vega';
 import isEmpty from 'lodash/isEmpty';
 import debounce from 'lodash/debounce';

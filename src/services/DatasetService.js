@@ -1,5 +1,4 @@
 import 'isomorphic-fetch';
-import Promise from 'bluebird';
 
 // Utils
 import { getSimplifiedFieldType } from 'helpers/WidgetHelper';

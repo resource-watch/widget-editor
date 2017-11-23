@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 
 // Components
 import RadioGroup from 'components/form/RadioGroup';

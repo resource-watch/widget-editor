@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 
@@ -22,8 +23,10 @@ module.exports = merge(common, {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('development')
     }),
-    new ExtractTextPlugin('styles.css')
-  ],
+    new ExtractTextPlugin('styles.css'),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    process.env.ANALYZE ? new BundleAnalyzerPlugin() : null
+  ].filter(p => !!p),
 
   externals: ['react', 'prop-types', 'react-redux']
 });

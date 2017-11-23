@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Autobind } from 'es-decorators';
+import Autobind from 'autobind-decorator';
 
 // Components
 import Icon from 'components/ui/Icon';
