@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Autobind from 'autobind-decorator';
 import { DragDropContext } from 'react-dnd';
+import { connect } from 'react-redux';
 
 import ArrowImg from 'images/arrow.svg';
 
 // Redux
-import { connect } from 'react-redux';
-
 import { toggleModal, setModalOptions } from 'reducers/modal';
 import { setChartType } from 'reducers/widgetEditor';
 
@@ -22,6 +21,9 @@ import Select from 'components/form/SelectInput';
 import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
 import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
+
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
 
 // NOTE: if you change this array, also update
 // the condition of the variable showRequiredTooltip
@@ -77,7 +79,6 @@ class NEXGDDPEditor extends React.Component {
       jiminy,
       widgetEditor,
       tableViewMode,
-      user,
       mode,
       showSaveButton,
       hasGeoInfo,
@@ -94,7 +95,7 @@ class NEXGDDPEditor extends React.Component {
       areaIntersection
     } = widgetEditor;
     const showSaveButtonFlag =
-      chartType && category && value && user && user.token && showSaveButton;
+      chartType && category && value && getConfig().userToken && showSaveButton;
     const showUpdateButton = showSaveButtonFlag;
 
     // TODO: Should we do this here?????
@@ -227,7 +228,6 @@ NEXGDDPEditor.propTypes = {
   showOrderByContainer: PropTypes.bool.isRequired,
   // Store
   widgetEditor: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
   setModalOptions: PropTypes.func.isRequired,
@@ -236,7 +236,7 @@ NEXGDDPEditor.propTypes = {
   onEmbedTable: PropTypes.func
 };
 
-const mapStateToProps = ({ widgetEditor, user }) => ({ widgetEditor, user });
+const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
   setChartType: (type) => {
     dispatch(setChartType(type));

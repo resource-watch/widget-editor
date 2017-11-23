@@ -11,7 +11,7 @@ document.body.appendChild(root)
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const enhancer = composeEnhancers(applyMiddleware(ReduxThunk));
-let store = createStore(combineReducers(Object.assign({}, reducers, { user: () => ({}) })), enhancer); // TODO: remove user
+let store = createStore(combineReducers(reducers), enhancer);
 
 // We set the config of the library
 setConfig({

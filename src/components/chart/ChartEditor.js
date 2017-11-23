@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Autobind from 'autobind-decorator';
 import { DragDropContext } from 'react-dnd';
+import { connect } from 'react-redux';
 
 import ArrowImg from 'images/arrow.svg';
 
 // Redux
-import { connect } from 'react-redux';
-
 import { toggleModal, setModalOptions } from 'reducers/modal';
 import { setChartType } from 'reducers/widgetEditor';
 
@@ -22,6 +21,9 @@ import Select from 'components/form/SelectInput';
 import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
 import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
+
+// Helpers
+import { getCOnfig } from 'helpers/ConfigHelper';
 
 @DragDropContext(HTML5Backend)
 class ChartEditor extends React.Component {
@@ -73,7 +75,6 @@ class ChartEditor extends React.Component {
       jiminy,
       widgetEditor,
       tableViewMode,
-      user,
       mode,
       showSaveButton,
       hasGeoInfo,
@@ -84,7 +85,7 @@ class ChartEditor extends React.Component {
     } = this.props;
     const { chartType, fields, category, value } = widgetEditor;
     const showSaveButtonFlag =
-      chartType && category && value && user && user.token && showSaveButton;
+      chartType && category && value && getConfig().userToken && showSaveButton;
     const showUpdateButton = showSaveButtonFlag;
     const chartOptions = (
       jiminy
@@ -208,7 +209,6 @@ ChartEditor.propTypes = {
   showOrderByContainer: PropTypes.bool.isRequired,
   // Store
   widgetEditor: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
   setModalOptions: PropTypes.func.isRequired,
@@ -217,7 +217,7 @@ ChartEditor.propTypes = {
   onEmbedTable: PropTypes.func
 };
 
-const mapStateToProps = ({ widgetEditor, user }) => ({ widgetEditor, user });
+const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
   setChartType: (type) => {
     dispatch(setChartType(type));

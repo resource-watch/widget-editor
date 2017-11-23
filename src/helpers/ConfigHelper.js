@@ -15,5 +15,10 @@ export function setConfig(params) {
     throw new Error('The configuration of widget-editor must provide the env, applications and url attributes.'); // TODO: library name
   }
 
-  config = { url: params.url, env: params.env, applications: params.applications };
+  config = {
+    url: params.url,
+    env: params.env,
+    applications: params.applications,
+    userToken: params.userToken || null
+  };
 };

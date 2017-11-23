@@ -17,6 +17,9 @@ import { setAreaIntersection } from 'reducers/widgetEditor';
 import AreasService from 'services/AreasService';
 import UserService from 'services/UserService';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+
 const AREAS = [
   {
     label: 'Custom area',
@@ -50,7 +53,7 @@ class AreaIntersectionFilter extends React.Component {
 
     this.fetchAreas()
       .catch(() => { error = true; })
-      .then(() => (this.props.user.id ? this.fetchUserAreas() : null))
+      .then(() => (getConfig().userToken ? this.fetchUserAreas() : null))
       .catch(() => { error = true; })
       .then(() => this.setState({ loading: false }))
       .then(() => {
@@ -118,7 +121,7 @@ class AreaIntersectionFilter extends React.Component {
    * Fetch the areas of the logged user
    */
   fetchUserAreas() {
-    return this.userService.getUserAreas(this.props.user.token)
+    return this.userService.getUserAreas(getConfig().userToken)
       .then((response) => {
         const userAreas = response.map(val => ({
           label: val.attributes.name,
@@ -173,12 +176,11 @@ AreaIntersectionFilter.propTypes = {
   required: PropTypes.bool,
   // Store
   widgetEditor: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
   toggleModal: PropTypes.func.isRequired,
   setAreaIntersection: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ widgetEditor, user }) => ({ widgetEditor, user });
+const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 
 const mapDispatchToProps = dispatch => ({
   toggleModal: (open, opts) => { dispatch(toggleModal(open, opts)); },

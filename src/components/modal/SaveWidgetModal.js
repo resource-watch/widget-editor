@@ -20,6 +20,7 @@ import WidgetService from 'services/WidgetService';
 
 // Helpers
 import { getChartConfig, getChartInfo } from 'helpers/WidgetHelper';
+import { getConfig } from 'helpers/ConfigHelper';
 
 const FORM_ELEMENTS = {
   elements: {
@@ -154,7 +155,7 @@ class SaveWidgetModal extends React.Component {
       widgetConfig
     );
 
-    WidgetService.saveUserWidget(widgetObj, this.props.dataset, this.props.user.token)
+    WidgetService.saveUserWidget(widgetObj, this.props.dataset, getConfig().userToken)
       .then((response) => {
         if (response.errors) throw new Error(response.errors[0].detail);
       })
@@ -298,14 +299,12 @@ SaveWidgetModal.propTypes = {
   datasetType: PropTypes.string,
   datasetProvider: PropTypes.string,
   // Store
-  user: PropTypes.object.isRequired,
   widgetEditor: PropTypes.object.isRequired,
   toggleModal: PropTypes.func.isRequired,
   setTitle: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-  user: state.user,
   widgetEditor: state.widgetEditor
 });
 

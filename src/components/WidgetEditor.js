@@ -406,7 +406,7 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, dataset, mode, selectedVisualizationType, user } = this.props;
+    const { widgetEditor, dataset, mode, selectedVisualizationType } = this.props;
     const { chartType, layer, zoom, latLng } = widgetEditor;
 
     // Whether we are still waiting for some info
@@ -415,7 +415,7 @@ class WidgetEditor extends React.Component {
 
     const chartTitle = (
       <div className="chart-title">
-        {user.id &&
+        {getConfig().userToken &&
           <AutosizeInput
             name="widget-title"
             value={widgetEditor.title || ''}
@@ -423,7 +423,7 @@ class WidgetEditor extends React.Component {
             onChange={this.handleTitleChange}
           />
         }
-        {!user.id &&
+        {!getConfig().userToken &&
           <span>{widgetEditor.title}</span>
         }
       </div>
@@ -1034,9 +1034,8 @@ class WidgetEditor extends React.Component {
   }
 }
 
-const mapStateToProps = ({ widgetEditor, user }) => ({
+const mapStateToProps = ({ widgetEditor }) => ({
   widgetEditor,
-  user,
   selectedVisualizationType: widgetEditor.visualizationType,
   band: widgetEditor.band
 });
@@ -1074,7 +1073,6 @@ WidgetEditor.propTypes = {
   onError: PropTypes.func,
   // Store
   band: PropTypes.object,
-  user: PropTypes.object.isRequired,
   widgetEditor: PropTypes.object.isRequired,
   modal: PropTypes.object,
   resetWidgetEditor: PropTypes.func.isRequired,
