@@ -17,7 +17,7 @@ export default class WidgetService {
       .then(jsonData => jsonData.data);
   }
 
-  saveUserWidget(widget, datasetId, token) {
+  static saveUserWidget(widget, datasetId, token) {
     const widgetObj = {
       application: [getConfig().applications],
       published: false,
@@ -39,7 +39,7 @@ export default class WidgetService {
       });
   }
 
-  updateUserWidget(widget, datasetId, token) {
+  static updateUserWidget(widget, datasetId, token) {
     return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widget.id}`, {
       method: 'PATCH',
       body: JSON.stringify(widget),
@@ -54,7 +54,7 @@ export default class WidgetService {
       });
   }
 
-  removeUserWidget(widgetId, token) {
+  static removeUserWidget(widgetId, token) {
     return fetch(`${getConfig().url}/widget/${widgetId}`, {
       method: 'DELETE',
       headers: {
@@ -68,7 +68,7 @@ export default class WidgetService {
       });
   }
 
-  getUserWidgets(userId, sortByUpdatedAt = true, direction = 'asc', includes = '') {
+  static getUserWidgets(userId, sortByUpdatedAt = true, direction = 'asc', includes = '') {
     const directionPart = (direction === 'asc') ? '&sort=updatedAt' : '&sort=-updatedAt';
     const sortSt = sortByUpdatedAt ? directionPart : '';
     return fetch(`${getConfig().url}/widget/?userId=${userId}${sortSt}&includes=${includes}&env=production,preproduction&page[size]=999`)
@@ -79,7 +79,7 @@ export default class WidgetService {
       .then(jsonData => jsonData.data);
   }
 
-  getUserWidgetCollections(user) {
+  static getUserWidgetCollections(user) {
     return fetch(`${getConfig().url}/vocabulary/widget_collections?${[getConfig().applications].join(',')}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
@@ -99,7 +99,7 @@ export default class WidgetService {
       });
   }
 
-  updateWidgetCollections(user, widget, widgetCollections, method = 'PATCH') {
+  static updateWidgetCollections(user, widget, widgetCollections, method = 'PATCH') {
     const bodyObj = {
       tags: widgetCollections.map(val => `${user.id}-${val}`)
     };

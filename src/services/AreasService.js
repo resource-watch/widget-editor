@@ -30,10 +30,58 @@ export default class AreasService {
   }
 
   /**
-   * Get Geostore
+   * Get a geostore area
    */
-  getGeostore(id) {
+  getArea(id) {
     return fetch(`${getConfig().url}/geostore/${id}`)
       .then(response => response.json());
+  }
+
+  /**
+   * Create a geostore area
+   * @param {object} geojson Geojson
+   * @returns {Promise<string>}
+   */
+  createArea(geojson) {
+    fetch(`${getConfig().url}/geostore`, {
+      method: 'POST',
+      headers: new Headers({
+        'content-type': 'application/json'
+      }),
+      body: JSON.stringify({ geojson })
+    }).then((response) => {
+      if (!response.ok) throw new Error('The file couldn\'t be processed correctly. Try again in a few minutes.');
+      return response.json();
+    }).then(({ data }) => data.id);
+  }
+
+  /**
+   * Convert a file with one of these formats to a geojson one:
+   * .csv, .kml, .kmz, .wkt, .shp
+   * @param {File} file File to convert
+   * @returns {Promise<Object>} geojson object
+   */
+  convertToJSON(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return fetch(`${getConfig().url}/ogr/convert`, {
+      method: 'POST',
+      body: formData,
+      multipart: true
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error('The file couldn\'t be processed correctly. Make sure the format is supported. If it is, try again in a few minutes.');
+        return response.json();
+      })
+      .then(({ data }) => {
+        const features = data.attributes.features;
+
+        if (!features || !features.length || !Array.isArray(features)) {
+          throw new Error('The geometry seems to be empty. Please make sure the file isn\'t empty.');
+        }
+
+        return data.attributes;
+      });
   }
 }

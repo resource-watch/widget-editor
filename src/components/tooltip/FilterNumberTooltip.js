@@ -49,12 +49,7 @@ class FilterNumberTooltip extends React.Component {
   getFilter() {
     const { selected } = this.props;
 
-    this.datasetService.getFilter({
-      columnType: this.props.type,
-      tableName: this.props.tableName,
-      columnName: this.props.name,
-      geostore: this.props.widgetEditor.areaIntersection
-    })
+    this.props.getFilter()
       .then((result) => {
         this.setState({
           // We round the values to have a nicer UI
@@ -160,6 +155,10 @@ FilterNumberTooltip.propTypes = {
   type: PropTypes.string.isRequired,
   selected: PropTypes.array,
   loading: PropTypes.bool,
+  /**
+   * Get the filter value or min/max values
+   */
+  getFilter: PropTypes.func.isRequired,
   onResize: PropTypes.func, // Passed from the tooltip component
   onChange: PropTypes.func,
   onToggleLoading: PropTypes.func,

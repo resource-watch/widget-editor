@@ -46,12 +46,7 @@ class FilterStringTooltip extends React.Component {
    * consequently
    */
   getFilter() {
-    this.datasetService.getFilter({
-      columnType: this.props.type,
-      tableName: this.props.tableName,
-      columnName: this.props.name,
-      geostore: this.props.widgetEditor.areaIntersection
-    })
+    this.props.getFilter()
       .then((result) => {
         const values = result.properties.map(val => ({ name: val, label: val, value: val }));
 
@@ -146,6 +141,10 @@ FilterStringTooltip.propTypes = {
   type: PropTypes.string.isRequired,
   selected: PropTypes.array.isRequired,
   loading: PropTypes.bool,
+  /**
+   * Get the filter value or min/max values
+   */
+  getFilter: PropTypes.func.isRequired,
   onResize: PropTypes.func, // Passed from the tooltip component
   onChange: PropTypes.func,
   onToggleLoading: PropTypes.func,

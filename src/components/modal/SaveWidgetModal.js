@@ -53,8 +53,6 @@ class SaveWidgetModal extends React.Component {
       error: false,
       description: null // Description of the widget
     };
-
-    this.widgetService = new WidgetService(null);
   }
 
 
@@ -156,7 +154,7 @@ class SaveWidgetModal extends React.Component {
       widgetConfig
     );
 
-    this.widgetService.saveUserWidget(widgetObj, this.props.dataset, this.props.user.token)
+    WidgetService.saveUserWidget(widgetObj, this.props.dataset, this.props.user.token)
       .then((response) => {
         if (response.errors) throw new Error(response.errors[0].detail);
       })

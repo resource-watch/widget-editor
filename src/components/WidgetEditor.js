@@ -335,7 +335,7 @@ class WidgetEditor extends React.Component {
       .map(elem => elem.columnName);
 
     const querySt = `SELECT ${fieldsSt} FROM ${this.props.dataset} LIMIT 300`;
-    return this.datasetService.fetchJiminy(querySt)
+    return DatasetService.getJiminySuggestions(querySt)
       .then(jiminy => new Promise(resolve => this.setState({ jiminy, jiminyError: typeof jiminy === 'undefined' }, resolve)))
       .catch(() => new Promise(resolve => this.setState({ jiminyError: true }, resolve)))
       .then(() => new Promise(resolve => this.setState({ jiminyLoaded: true }, resolve)));

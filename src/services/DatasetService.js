@@ -19,20 +19,7 @@ export default class DatasetService {
   }
 
   /**
-   * Get subscribable datasets
-   */
-  getSubscribableDatasets(includes = '') {
-    return fetch(`${getConfig().url}/dataset?${[getConfig().applications].join(',')}&includes=${includes}&subscribable=true&page[size]=999`)
-      .then((response) => {
-        if (response.status >= 400) throw new Error(response.statusText);
-        return response.json();
-      })
-      .then(jsonData => jsonData.data);
-  }
-
-  /**
    * Get dataset info
-   * @returns {Promise}
    */
   fetchData(includes = '', applications = [getConfig().applications]) {
     return fetch(`${getConfig().url}/dataset/${this.datasetId}?application=${applications.join(',')}&includes=${includes}&page[size]=999`)
@@ -45,7 +32,6 @@ export default class DatasetService {
 
   /**
    * Get filtered data
-   * @returns {Promise}
    */
   fetchFilteredData(query) {
     return fetch(`${getConfig().url}/query/${this.datasetId}?${query}`)
@@ -54,51 +40,6 @@ export default class DatasetService {
         return response.json();
       })
       .then(jsonData => jsonData.data);
-  }
-
-  /**
-   * Get Jiminy chart suggestions
-   * NOTE: the API might be really slow to give a result (or even fail
-   * to do so) so a timeout is necessary
-   * @param {string} query - SQL query to pass to Jiminy
-   * @param {number} [timeout=10000] Timeout before rejecting the provise
-   * @returns {Promise<any>}
-   */
-  fetchJiminy(query) {
-    return fetch(`${getConfig().url}/jiminy`, {
-      method: 'POST',
-      body: JSON.stringify({ sql: query }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then((response) => {
-        if (response.status >= 400) throw new Error(response.statusText);
-        return response.json();
-      })
-      .then(jsonData => jsonData.data);
-  }
-
-
-  /**
-   *  Get max and min or values depending on field type
-   *  @returns {Promise}
-   */
-  getFilter(fieldData) {
-    return new Promise((resolve) => {
-      const newFieldData = fieldData;
-      if (fieldData.type === 'number' || fieldData.type === 'date') {
-        this.getMinAndMax(fieldData.columnName, fieldData.tableName, fieldData.geostore).then((data) => {
-          newFieldData.properties = data;
-          resolve(newFieldData);
-        });
-      } else {
-        this.getValues(fieldData.columnName, fieldData.tableName).then((data) => {
-          newFieldData.properties = data;
-          resolve(newFieldData);
-        });
-      }
-    });
   }
 
   /**
@@ -132,52 +73,6 @@ export default class DatasetService {
       });
   }
 
-  getMinAndMax(columnName, tableName, geostore) {
-    if (!this.tableName && !tableName) {
-      throw Error('tableName was not specified.');
-    }
-    const table = tableName || this.tableName;
-    const query = `SELECT min(${columnName}) AS min, max(${columnName}) AS max FROM ${table}`;
-    const qGeostore = (geostore) ? `&geostore=${geostore}` : '';
-
-    return new Promise((resolve) => {
-      // TODO: remove cache param
-      fetch(`https://api.resourcewatch.org/v1/query/${this.datasetId}?sql=${query}${qGeostore}`)
-        .then((response) => {
-          if (!response.ok) throw new Error(response.statusText);
-          return response.json();
-        })
-        .then((jsonData) => {
-          if (jsonData.data) {
-            resolve(jsonData.data[0]);
-          } else {
-            resolve({});
-          }
-        });
-    });
-  }
-
-  getValues(columnName, tableName, uniqs = true) {
-    if (!this.tableName && !tableName) {
-      throw Error('tableName was not specified.');
-    }
-    const table = tableName || this.tableName;
-    const uniqQueryPart = uniqs ? `GROUP BY ${columnName}` : '';
-    const query = `SELECT ${columnName} FROM ${table} ${uniqQueryPart} ORDER BY ${columnName}`;
-    return new Promise((resolve) => {
-      // TODO: remove cache param
-      fetch(`https://api.resourcewatch.org/v1/query/${this.datasetId}?sql=${query}`)
-        .then((response) => {
-          if (response.status >= 400) throw new Error(response.statusText);
-          return response.json();
-        })
-        .then((jsonData) => {
-          const parsedData = (jsonData.data || []).map(data => data[columnName]);
-          resolve(parsedData);
-        });
-    });
-  }
-
   getLayers() {
     return fetch(`${getConfig().url}/dataset/${this.datasetId}/layer?app=rw`)
       .then((response) => {
@@ -185,17 +80,6 @@ export default class DatasetService {
         return response.json();
       })
       .then(jsonData => jsonData.data);
-  }
-
-  getDownloadURI(tableName, datasetName) {
-    // emulates trigger of download creating a link in memory and clicking on it
-    const a = document.createElement('a');
-    a.href = `${getConfig().url}/download/${this.datasetId}?sql=SELECT * FROM ${tableName}`;
-    a.style.display = 'none';
-    a.download = datasetName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
   }
 
   getSimilarDatasets() {
@@ -208,34 +92,57 @@ export default class DatasetService {
   }
 
   /**
-   * Fetch several datasets at once
+   * Return the min an max value of a numeric column
    * @static
-   * @param {string[]} datasetIDs - List of dataset IDs
-   * @param {string} [includes=''] - List of entities to fetch
-   * (string of values separated with commas)
-   * @param {string[]} [applications=[getConfig().applications]] List of applications
-   * @returns {object[]}
+   * @param {string} datasetId Dataset ID
+   * @param {string} columnName Name of the field/column
+   * @param {string} tableName Name of the table
+   * @param {string} [geostore] ID of the geostore, if any
+   * @returns {{ min: number, max: number }}
    */
-  static getDatasets(datasetIDs, includes = '', applications = [getConfig().applications]) {
-    return fetch(`${getConfig().url}/dataset/?ids=${datasetIDs}&includes=${includes}&application=${applications.join(',')}&page[size]=999`)
-      .then((response) => {
-        if (!response.ok) throw new Error(response.statusText);
-        return response.json();
-      })
-      .then(jsonData => jsonData.data);
+  static getColumnMinAndMax(datasetId, columnName, tableName, geostore) {
+    const query = `SELECT min(${columnName}) AS min, max(${columnName}) AS max FROM ${tableName}`;
+    const qGeostore = geostore ? `&geostore=${geostore}` : '';
+
+    return this.fetchFilteredData(`sql=${query}${qGeostore}`)
+      .then(data => data ? data[0] : {});
   }
 
-  searchDatasetsByConcepts(topics, geographies, dataTypes) {
-    let counter = 0;
-    const topicsSt = (topics || []).map((val, index) => `concepts[${counter}][${index}]=${val}`).join('&');
-    counter++;
-    const geographiesSt = (geographies || []).map((val, index) => `concepts[${counter}][${index}]=${val}`).join('&');
-    counter++;
-    const dataTypesSt = (dataTypes || []).map((val, index) => `concepts[${counter}][${index}]=${val}`).join('&');
-    const querySt = `&${topicsSt}${geographiesSt}${dataTypesSt}`;
+  /**
+   * Get the values of a columns
+   * @static
+   * @param {string} datasetId Dataset ID
+   * @param {string} columnName Name of the field/column
+   * @param {string} tableName Name of the table
+   * @param {boolean} [uniq=true] Get unique value
+   * @param {string} [geostore] ID of the geostore, if any
+   */
+  static getColumnValues(datasetId, columnName, tableName, uniq = true, geostore) {
+    const uniqQueryPart = uniq ? `GROUP BY ${columnName}` : '';
+    const query = `SELECT ${columnName} FROM ${tableName} ${uniqQueryPart} ORDER BY ${columnName}`;
+    const qGeostore = geostore ? `&geostore=${geostore}` : '';
 
+    return this.fetchFilteredData(`sql=${query}${qGeostore}`)
+      .then(data => (data || []).map(d => d[columnName]));
+  }
 
-    return fetch(`${getConfig().url}/graph/query/search-datasets?${querySt}`)
+  /**
+   * Get Jiminy chart suggestions
+   * NOTE: the API might be really slow to give a result (or even fail
+   * to do so)
+   * @static
+   * @param {string} query - SQL query to pass to Jiminy
+   * @param {number} [timeout=10000] Timeout before rejecting the provise
+   * @returns {Promise<any>}
+   */
+  static getJiminySuggestions(query) {
+    return fetch(`${getConfig().url}/jiminy`, {
+      method: 'POST',
+      body: JSON.stringify({ sql: query }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();

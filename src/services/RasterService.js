@@ -1,5 +1,8 @@
 import 'isomorphic-fetch';
 
+// Services
+import DatasetService from 'services/DatasetService';
+
 // Helpers
 import { getConfig } from 'helpers/ConfigHelper';
 
@@ -14,6 +17,7 @@ export default class RasterService {
     this.dataset = dataset;
     this.tableName = tableName;
     this.provider = provider;
+    this.datasetService = new DatasetService(this.dataset);
   }
 
   /**
@@ -28,12 +32,10 @@ export default class RasterService {
       query = `SELECT (st_metadata(st_union(the_raster_webmercator))).* from ${this.tableName}`;
     }
 
+    return this.datasetService.fetchFilteredData(query)
+
     return fetch(`${getConfig().url}/query/${this.dataset}?sql=${query}`)
-      .then((response) => {
-        if (!response.ok) throw new Error('Unable to fetch the band names');
-        return response.json();
-      })
-      .then(({ data }) => {
+      .then((data) => {
         if (this.provider === 'gee') {
           return data[0].bands.map(b => b.id);
         } else if (this.provider === 'cartodb') {
@@ -69,20 +71,16 @@ export default class RasterService {
       }
 
       // We now fetch the actual data
-      return fetch(`https://api.resourcewatch.org/v1/query/${this.dataset}?sql=${query}`)
-        .then((res) => {
-          if (!res.ok) reject();
-          return res.json();
-        })
+      this.datasetService.fetchFilteredData(query)
         .then((data) => {
           if (this.provider === 'gee') {
             // We cache the data because the information of all the
             // bands comes at once
-            this.geeBandStatInfo = data.data[0];
+            this.geeBandStatInfo = data[0];
 
             resolve(this.geeBandStatInfo[bandName]);
           } else if (this.provider === 'cartodb') {
-            resolve(data.data[0]);
+            resolve(data[0]);
           }
         })
         .catch(reject);

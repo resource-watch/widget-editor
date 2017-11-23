@@ -11,7 +11,6 @@ import DatasetService from 'services/DatasetService';
 // Components
 import Spinner from 'components/ui/Spinner';
 import Checkbox from 'components/form/Checkbox';
-
 import FilterStringTooltip from 'components/tooltip/FilterStringTooltip';
 import FilterNumberTooltip from 'components/tooltip/FilterNumberTooltip';
 import FilterDateTooltip from 'components/tooltip/FilterDateTooltip';
@@ -78,6 +77,30 @@ class FilterTooltip extends React.Component {
     });
   }
 
+  /**
+   * Get the min and max values for numeric and temporal columns or the
+   * list of distinct values
+   * @returns {Promise<any>}
+   */
+  getFilter() {
+    if (this.props.type === 'number' || this.props.type === 'date') {
+      return DatasetService.getColumnMinAndMax(
+        this.props.datasetId,
+        this.props.name,
+        this.props.tableName,
+        this.props.widgetEditor.areaIntersection
+      );
+    }
+
+    return DatasetService.getColumnValues(
+      this.props.datasetId,
+      this.props.name,
+      this.props.tableName,
+      true,
+      this.props.widgetEditor.areaIntersection
+    );
+  }
+
   render() {
     const { type } = this.props;
     const { loading, notNullSelected } = this.state;
@@ -107,6 +130,7 @@ class FilterTooltip extends React.Component {
         {type === 'string' &&
           <FilterStringTooltip
             {...this.props}
+            getFilter={() => this.getFilter()}
             loading={this.state.loading}
             selected={this.state.selected}
             onChange={this.onChange}
@@ -118,6 +142,7 @@ class FilterTooltip extends React.Component {
         {type === 'number' &&
           <FilterNumberTooltip
             {...this.props}
+            getFilter={() => this.getFilter()}
             loading={this.state.loading}
             selected={this.state.selected}
             onChange={this.onChange}
@@ -129,6 +154,7 @@ class FilterTooltip extends React.Component {
         {type === 'date' &&
           <FilterDateTooltip
             {...this.props}
+            getFilter={() => this.getFilter()}
             loading={this.state.loading}
             selected={this.state.selected}
             onChange={this.onChange}

@@ -433,35 +433,35 @@ export function getFavoriteDatasets(token) {
   };
 }
 
-export function getDatasets({ pageNumber, pageSize }) {
-  return (dispatch) => {
-    // Waiting for fetch from server -> Dispatch loading
-    dispatch({ type: GET_DATASETS_LOADING });
+// export function getDatasets({ pageNumber, pageSize }) {
+//   return (dispatch) => {
+//     // Waiting for fetch from server -> Dispatch loading
+//     dispatch({ type: GET_DATASETS_LOADING });
 
-    return fetch(new Request(`${getConfig().url}/dataset?${[getConfig().applications].join(',')}&status=saved&published=true&includes=widget,layer,metadata,vocabulary&page[size]=${pageSize || 999}&page[number]=${pageNumber || 1}&sort=-updatedAt`))
-      .then((response) => {
-        if (response.ok) return response.json();
-        throw new Error(response.statusText);
-      })
-      .then((response) => {
-        // TODO: We should check which app do we want here
-        // Filtering datasets that have widget or layer
-        // and only belong to RW app
-        const datasets = response.data;
-        dispatch({
-          type: GET_DATASETS_SUCCESS,
-          payload: datasets
-        });
-      })
-      .catch((err) => {
-        // Fetch from server ko -> Dispatch error
-        dispatch({
-          type: GET_DATASETS_ERROR,
-          payload: err.message
-        });
-      });
-  };
-}
+//     return fetch(new Request(`${getConfig().url}/dataset?${[getConfig().applications].join(',')}&status=saved&published=true&includes=widget,layer,metadata,vocabulary&page[size]=${pageSize || 999}&page[number]=${pageNumber || 1}&sort=-updatedAt`))
+//       .then((response) => {
+//         if (response.ok) return response.json();
+//         throw new Error(response.statusText);
+//       })
+//       .then((response) => {
+//         // TODO: We should check which app do we want here
+//         // Filtering datasets that have widget or layer
+//         // and only belong to RW app
+//         const datasets = response.data;
+//         dispatch({
+//           type: GET_DATASETS_SUCCESS,
+//           payload: datasets
+//         });
+//       })
+//       .catch((err) => {
+//         // Fetch from server ko -> Dispatch error
+//         dispatch({
+//           type: GET_DATASETS_ERROR,
+//           payload: err.message
+//         });
+//       });
+//   };
+// }
 
 export function setDatasetsPage(page) {
   return (dispatch) => {

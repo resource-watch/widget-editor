@@ -7,6 +7,9 @@ import classnames from 'classnames';
 // Components
 import Spinner from 'components/ui/Spinner';
 
+// Services
+import AreasService from 'services/AreasService';
+
 // Helpers
 import { getConfig } from 'helpers/ConfigHelper';
 
@@ -48,37 +51,6 @@ class UploadAreaIntersectionModal extends React.Component {
   }
 
   /**
-   * Convert a file with one of these formats to a geojson one:
-   * .csv, .kml, .kmz, .wkt, .shp
-   * @static
-   * @param {File} file File to convert
-   * @returns {Promise<Object>} geojson object
-   */
-  static convertToJSON(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    return fetch(`${getConfig().url}/ogr/convert`, {
-      method: 'POST',
-      body: formData,
-      multipart: true
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error('The file couldn\'t be processed correctly. Make sure the format is supported. If it is, try again in a few minutes.');
-        return response.json();
-      })
-      .then(({ data }) => {
-        const features = data.attributes.features;
-
-        if (!features || !features.length || !Array.isArray(features)) {
-          throw new Error('The geometry seems to be empty. Please make sure the file isn\'t empty.');
-        }
-
-        return data.attributes;
-      });
-  }
-
-  /**
    * Convert the file to the geojson format if necessary
    * and store it in the geostore
    * NOTE: the method doesn't catch the errors but sends
@@ -88,6 +60,7 @@ class UploadAreaIntersectionModal extends React.Component {
    * @returns {Promise<string>} hash Hash of the store file
    */
   static processFile(file) {
+    const areaService = new AreasService();
     // First step: we convert the file to a geojson format
     return new Promise((resolve, reject) => {
       const fileType = UploadAreaIntersectionModal.getFileType(file);
@@ -100,25 +73,13 @@ class UploadAreaIntersectionModal extends React.Component {
           .catch(reject);
       } else { // Otherwise, we convert it
         // If there's an error, it will be caught at a higher level
-        UploadAreaIntersectionModal.convertToJSON(file)
+        areaService.convertToJSON(file)
           .then(resolve)
           .catch(reject);
       }
     })
-      // Second: we store it in the geostore
-      .then(geojson => fetch(`${getConfig().url}/geostore`, {
-        method: 'POST',
-        headers: new Headers({
-          'content-type': 'application/json'
-        }),
-        body: JSON.stringify({ geojson })
-      }))
-      .then((response) => {
-        if (!response.ok) throw new Error('The file couldn\'t be processed correctly. Try again in a few minutes.');
-        return response.json();
-      })
-      // Finally: we return the id of the geojson
-      .then(({ data }) => data.id);
+      // Second: we store it in the geostore and return its id
+      .then(geojson => areaService.createArea(geojson));
   }
 
   constructor(props) {
