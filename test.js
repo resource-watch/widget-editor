@@ -17,7 +17,8 @@ let store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'prep'
+  applications: 'prep',
+  authUrl: 'https://api.resourcewatch.org/auth'
 });
 
 const App = props => (

@@ -1,7 +1,14 @@
 let config = null;
 
 /**
- * @typedef {{ url: string, env: string, applications: string, userToken?: string, userEmail?: string}} WidgetEditorConfig
+ * Configuration of the widget editor
+ * @typedef {object} WidgetEditorConfig
+ * @property {string} url - Base URL of the API
+ * @property {string} env - Environment of the API (comma-separated string)
+ * @property {string} applications - Applications of the API (comma-separated string)
+ * @property {string} authUrl - URL to authenticate the user
+ * @property {string} [userToken] - Token of the logged user
+ * @property {string} [userEmail] - Email of the logged user
  */
 
 /**
@@ -23,8 +30,8 @@ export function getConfig() {
 export function setConfig(params) {
   if (config) return;
 
-  if (!params || !params.url || !params.env || !params.applications) {
-    throw new Error('The configuration of widget-editor must provide the env, applications and url attributes.'); // TODO: library name
+  if (!params || !params.url || !params.env || !params.applications || !params.authUrl) {
+    throw new Error('The configuration of widget-editor must provide the env, applications and url and authUrl attributes.'); // TODO: library name
   }
 
   if (params && ((params.userToken && !params.userEmail) || !params.userToken && params.userEmail)) {
@@ -35,6 +42,7 @@ export function setConfig(params) {
     url: params.url,
     env: params.env,
     applications: params.applications,
+    authUrl: params.authUrl,
     userToken: params.userToken || null,
     userEmail: params.userEmail || null
   };

@@ -14,7 +14,7 @@ export default class UserService {
    */
   getLoggedUser() {
     return new Promise((resolve) => {
-      fetch(`${getConfig().url}/auth/check-logged`, {
+      fetch(`${getConfig().authUrl}/check-logged`, {
         headers: {
           Authorization: this.token
         }
