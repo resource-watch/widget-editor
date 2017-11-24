@@ -1,9 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+// Redux
+import { toggleModal, setModalOptions } from 'reducers/modal';
+
+// Components
 import Icon from 'components/ui/Icon';
 import Spinner from 'components/ui/Spinner';
 
-export default class Modal extends React.Component {
+class Modal extends React.Component {
   componentDidMount() {
     this.el.addEventListener('transitionend', () => {
       if (!this.props.open) {
@@ -61,3 +67,16 @@ Modal.defaultProps = {
   open: false,
   options: {}
 };
+
+const mapStateToProps = ({ widgetEditorModal }) => ({
+  open: widgetEditorModal.open,
+  options: widgetEditorModal.options,
+  loading: widgetEditorModal.loading
+});
+
+const mapDispatchToProps = dispatch => ({
+  toggleModal: (...params) => dispatch(toggleModal(...params)),
+  setModalOptions: (...params) => dispatch(setModalOptions(...params)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Modal);

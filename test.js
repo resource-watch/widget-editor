@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
-import WidgetEditor, { reducers, setConfig, Tooltip } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal } from 'dist/bundle';
 import 'dist/styles.css';
 
 const root = document.createElement('div');
@@ -24,6 +24,7 @@ const App = props => (
   <div>
     <h1>Test WidgetEditor</h1>
     <Tooltip />
+    <Modal />
     <WidgetEditor
       mode="dataset"
       showSaveButton={false}
