@@ -74,7 +74,7 @@ class ChartEditor extends React.Component {
       datasetId,
       datasetProvider,
       tableName,
-      jiminy,
+      chartOptions,
       widgetEditor,
       tableViewMode,
       mode,
@@ -87,12 +87,6 @@ class ChartEditor extends React.Component {
     const userLogged = !!getConfig().userToken;
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
-
-    const chartOptions = (
-      jiminy
-      && jiminy.general
-      && jiminy.general.map(val => ({ label: val, value: val }))
-    ) || [];
 
     return (
       <div className="c-chart-editor">
@@ -200,7 +194,13 @@ ChartEditor.propTypes = {
   mode: PropTypes.oneOf(['save', 'update']).isRequired,
   tableName: PropTypes.string.isRequired,
   hasGeoInfo: PropTypes.bool.isRequired,
-  jiminy: PropTypes.object,
+  /**
+   * All the available chart options for this dataset
+   */
+  chartOptions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string
+  })).isRequired,
   tableViewMode: PropTypes.bool.isRequired,
   showSaveButton: PropTypes.bool.isRequired,
   showEmbedTable: PropTypes.bool,

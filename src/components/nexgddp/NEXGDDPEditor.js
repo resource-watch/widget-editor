@@ -24,10 +24,6 @@ import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 import { getConfig } from 'helpers/ConfigHelper';
 import { canRenderChart } from 'helpers/WidgetHelper';
 
-// NOTE: if you change this array, also update
-// the condition of the variable showRequiredTooltip
-const CHARTS = ['line', 'bar'];
-
 @DragDropContext(HTML5Backend)
 class NEXGDDPEditor extends React.Component {
   @Autobind
@@ -75,7 +71,7 @@ class NEXGDDPEditor extends React.Component {
     const {
       datasetId,
       tableName,
-      jiminy,
+      chartOptions,
       widgetEditor,
       tableViewMode,
       mode,
@@ -88,15 +84,6 @@ class NEXGDDPEditor extends React.Component {
     const userLogged = !!getConfig().userToken;
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
-
-    // TODO: Should we do this here?????
-    // or should we define it as a prop...
-    const chartOptions = (
-      jiminy
-      && jiminy.general
-      && jiminy.general.map(val => ({ label: val, value: val }))
-        .filter(c => CHARTS.includes(c.value))
-    ) || [];
 
     return (
       <div className="c-chart-editor">
@@ -207,7 +194,13 @@ NEXGDDPEditor.propTypes = {
   mode: PropTypes.oneOf(['save', 'update']).isRequired,
   tableName: PropTypes.string.isRequired,
   hasGeoInfo: PropTypes.bool.isRequired,
-  jiminy: PropTypes.object,
+  /**
+   * All the available chart options for this dataset
+   */
+  chartOptions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string
+  })).isRequired,
   tableViewMode: PropTypes.bool.isRequired,
   showSaveButton: PropTypes.bool.isRequired,
   showEmbedTable: PropTypes.bool,

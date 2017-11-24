@@ -861,6 +861,7 @@ class WidgetEditor extends React.Component {
   render() {
     const {
       tableName,
+      jiminy,
       jiminyError,
       jiminyLoaded,
       fieldsError,
@@ -873,8 +874,6 @@ class WidgetEditor extends React.Component {
       visualizationOptions,
       hasGeoInfo
     } = this.state;
-
-    let { jiminy } = this.state;
 
     const {
       datasetId,
@@ -896,10 +895,13 @@ class WidgetEditor extends React.Component {
       && fieldsError
       && (layersError || (layers && layers.length === 0));
 
-    // In case Jiminy failed to give back a result, we let the user the possibility
-    // to render any chart
-    if (jiminyError) {
-      jiminy = ALL_CHART_TYPES;
+    // TODO: could be saved in the state instead of computing it
+    // each time
+    let chartOptions = ALL_CHART_TYPES;
+    if (!jiminyError && jiminyLoaded) {
+      chartOptions = jiminy.general
+        ? jiminy.general.map(val => ({ label: val, value: val }))
+        : chartOptions;
     }
 
     return (
@@ -940,7 +942,7 @@ class WidgetEditor extends React.Component {
                         datasetId={datasetId}
                         datasetType={datasetType}
                         datasetProvider={datasetProvider}
-                        jiminy={jiminy}
+                        chartOptions={chartOptions}
                         tableName={tableName}
                         tableViewMode={selectedVisualizationType === 'table'}
                         mode={editorMode}
@@ -960,7 +962,7 @@ class WidgetEditor extends React.Component {
                         datasetId={datasetId}
                         datasetType={datasetType}
                         datasetProvider={datasetProvider}
-                        jiminy={jiminy}
+                        chartOptions={chartOptions}
                         tableName={tableName}
                         tableViewMode={selectedVisualizationType === 'table'}
                         mode={editorMode}
