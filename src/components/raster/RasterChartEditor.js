@@ -20,6 +20,10 @@ import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 // Services
 import RasterService from 'services/RasterService';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+import { canRenderChart } from 'helpers/WidgetHelper';
+
 class RasterChartEditor extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +37,7 @@ class RasterChartEditor extends React.Component {
       bandStatsInfoLoading: false
     };
 
-    this.rasterService = new RasterService(props.dataset, props.tableName, props.provider);
+    this.rasterService = new RasterService(props.datasetId, props.tableName, props.provider);
   }
 
   componentDidMount() {
@@ -41,10 +45,10 @@ class RasterChartEditor extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.dataset !== this.props.dataset
+    if (nextProps.datasetId !== this.props.datasetId
       || nextProps.tableName !== this.props.tableName) {
       this.rasterService = new RasterService(
-        nextProps.dataset,
+        nextProps.datasetId,
         nextProps.tableName,
         nextProps.provider
       );
@@ -75,11 +79,11 @@ class RasterChartEditor extends React.Component {
    */
   @Autobind
   onClickSaveWidget() {
-    const { dataset, provider, tableName } = this.props;
+    const { datasetId, provider, tableName } = this.props;
     const options = {
       children: SaveWidgetModal,
       childrenProps: {
-        dataset,
+        dataset: datasetId,
         datasetType: 'raster',
         datasetProvider: provider,
         tableName
@@ -157,7 +161,11 @@ class RasterChartEditor extends React.Component {
 
   render() {
     const { loading, bands, error, bandStatsInfo, bandStatsInfoLoading } = this.state;
-    const { band, mode, showSaveButton, hasGeoInfo, showNotLoggedInText } = this.props;
+    const { band, mode, showSaveButton, hasGeoInfo } = this.props;
+
+    const userLogged = !!getConfig().userToken;
+    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canShowSaveButton = showSaveButton && canSave;
 
     let description = band && band.description;
     const longDescription = description && description.length > 250;
@@ -219,7 +227,7 @@ class RasterChartEditor extends React.Component {
         </div>
         <div className="buttons">
           <span /> {/* Help align the button to the right */}
-          {showSaveButton && mode === 'save' && band &&
+          { canShowSaveButton && userLogged && mode === 'save' &&
             <button
               className="c-button -primary"
               onClick={this.onClickSaveWidget}
@@ -227,7 +235,7 @@ class RasterChartEditor extends React.Component {
               Save widget
             </button>
           }
-          {showSaveButton && mode === 'update' && band &&
+          { canShowSaveButton && userLogged && mode === 'update' &&
             <button
               className="c-button -primary"
               onClick={this.onClickUpdateWidget}
@@ -235,7 +243,7 @@ class RasterChartEditor extends React.Component {
               Save widget
             </button>
           }
-          {!showSaveButton && showNotLoggedInText &&
+          { canShowSaveButton && !userLogged &&
             <span className="not-logged-in-text">
               Please log in to save changes
             </span>
@@ -247,13 +255,15 @@ class RasterChartEditor extends React.Component {
 }
 
 RasterChartEditor.propTypes = {
-  dataset: PropTypes.string.isRequired,
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
   tableName: PropTypes.string.isRequired,
   hasGeoInfo: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),
   showSaveButton: PropTypes.bool,
-  showNotLoggedInText: PropTypes.bool,
   onUpdateWidget: PropTypes.func,
 
   // REDUX

@@ -141,7 +141,7 @@ class WidgetEditor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // If the dataset changes...
-    if (nextProps.dataset !== this.props.dataset) {
+    if (nextProps.datasetId !== this.props.datasetId) {
       this.setState(this.initComponent(nextProps), () => {
         this.loadData();
       });
@@ -334,7 +334,7 @@ class WidgetEditor extends React.Component {
     const fieldsSt = this.props.widgetEditor.fields
       .map(elem => elem.columnName);
 
-    const querySt = `SELECT ${fieldsSt} FROM ${this.props.dataset} LIMIT 300`;
+    const querySt = `SELECT ${fieldsSt} FROM ${this.props.datasetId} LIMIT 300`;
     return DatasetService.getJiminySuggestions(querySt)
       .then(jiminy => new Promise(resolve => this.setState({ jiminy, jiminyError: typeof jiminy === 'undefined' }, resolve)))
       .catch(() => new Promise(resolve => this.setState({ jiminyError: true }, resolve)))
@@ -393,6 +393,16 @@ class WidgetEditor extends React.Component {
   }
 
   /**
+   * Return whether the editor is loading
+   * @returns {boolean}
+   */
+  isLoading() {
+    return !this.state.layersLoaded
+      || !this.state.fieldsLoaded
+      || (!this.state.fieldsError && !this.state.jiminyLoaded);
+  }
+
+  /**
    * Return the visualization itself
    * @returns {HTMLElement}
    */
@@ -406,12 +416,8 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, dataset, mode, selectedVisualizationType } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
     const { chartType, layer, zoom, latLng } = widgetEditor;
-
-    // Whether we are still waiting for some info
-    const loading = (mode === 'dataset' && !layersLoaded) ||
-      (!fieldsError && !jiminyLoaded);
 
     const chartTitle = (
       <div className="chart-title">
@@ -436,7 +442,7 @@ class WidgetEditor extends React.Component {
         if (!tableName) {
           visualization = (
             <div className="visualization -chart">
-              <Spinner className="-light" isLoading={loading} />
+              <Spinner className="-light" isLoading={this.isLoading()} />
               {chartTitle}
             </div>
           );
@@ -588,7 +594,7 @@ class WidgetEditor extends React.Component {
             <div className="visualization">
               {chartTitle}
               <TableView
-                dataset={dataset}
+                datasetId={datasetId}
                 tableName={tableName}
               />
             </div>
@@ -675,9 +681,8 @@ class WidgetEditor extends React.Component {
    */
   initComponent(props) {
     // First, we init the services
-    this.datasetService = new DatasetService(props.dataset);
-
-    this.widgetService = new WidgetService(props.dataset);
+    this.datasetService = new DatasetService(props.datasetId);
+    this.widgetService = new WidgetService(props.datasetId);
 
     // Each time the editor is opened again, we reset the Redux's state
     // associated with it
@@ -727,7 +732,6 @@ class WidgetEditor extends React.Component {
           // If either of the promises reject, it's not a real issue
           // because the state will be updated consequently and we
           // can take further actions in the UI
-          if (this.props.onError) this.props.onError();
         })
         // Whether or not the dataset has fields, we fetch the dataset info
         // to get for example the type of dataset
@@ -758,14 +762,14 @@ class WidgetEditor extends React.Component {
    */
   fetchChartConfig() {
     const { tableName, datasetType, datasetProvider } = this.state;
-    const { widgetEditor, dataset, band } = this.props;
+    const { widgetEditor, datasetId, band } = this.props;
 
     this.setState({ chartConfigLoading: true, chartConfigError: null });
 
-    const chartInfo = getChartInfo(dataset, datasetType, datasetProvider, widgetEditor);
+    const chartInfo = getChartInfo(datasetId, datasetType, datasetProvider, widgetEditor);
 
     getChartConfig(
-      dataset,
+      datasetId,
       datasetType,
       tableName,
       band,
@@ -773,14 +777,8 @@ class WidgetEditor extends React.Component {
       chartInfo,
       true
     )
-      .then((chartConfig) => {
-        this.setState({ chartConfig });
-        if (this.props.onChange) this.props.onChange(chartConfig);
-      })
-      .catch(({ message }) => {
-        this.setState({ chartConfig: null, chartConfigError: message });
-        if (this.props.onChange) this.props.onChange(null);
-      })
+      .then((chartConfig) => this.setState({ chartConfig }))
+      .catch(({ message }) => this.setState({ chartConfig: null, chartConfigError: message }))
       .then(() => this.setState({ chartConfigLoading: false }));
   }
 
@@ -795,7 +793,7 @@ class WidgetEditor extends React.Component {
   @Autobind
   handleEmbedTable() {
     const { tableName } = this.state;
-    const { dataset, widgetEditor } = this.props;
+    const { datasetId, widgetEditor } = this.props;
     const { filters, fields, value, aggregateFunction, category, orderBy,
       limit, areaIntersection } = widgetEditor;
     const aggregateFunctionExists = aggregateFunction && aggregateFunction !== 'none';
@@ -828,7 +826,7 @@ class WidgetEditor extends React.Component {
 
     const sortOrder = orderBy ? orderBy.orderType : 'asc';
     const query = `${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
-    const queryURL = `${getConfig().url}/query/${dataset}?sql=${query}${geostore}`;
+    const queryURL = `${getConfig().url}/query/${datasetId}?sql=${query}${geostore}`;
 
     const options = {
       children: EmbedTableModal,
@@ -879,22 +877,14 @@ class WidgetEditor extends React.Component {
     let { jiminy } = this.state;
 
     const {
-      dataset,
-      mode,
+      datasetId,
+      widgetId,
       showSaveButton,
       showNotLoggedInText,
-      selectedVisualizationType,
-      showOrderByContainer,
-      showLimitContainer
+      selectedVisualizationType
     } = this.props;
 
-
-    // Whether we're still waiting for some data
-    const loading = (mode === 'dataset' && !layersLoaded)
-      || !fieldsLoaded
-      || (!fieldsError && !jiminyLoaded);
-
-    const chartEditorMode = (mode === 'dataset') ? 'save' : 'update';
+    const editorMode = !widgetId ? 'save' : 'update';
 
     const visualization = this.getVisualization();
 
@@ -918,7 +908,7 @@ class WidgetEditor extends React.Component {
           <div className="l-container -expanded">
             <div className="row expanded">
               <div className="customize-visualization">
-                { loading && <Spinner className="-light" isLoading={loading} /> }
+                { this.isLoading() && <Spinner className="-light" isLoading /> }
                 <h2
                   className="title"
                 >
@@ -947,18 +937,15 @@ class WidgetEditor extends React.Component {
                     && !fieldsError && tableName && datasetProvider !== 'nexgddp'
                     && (
                       <ChartEditor
-                        dataset={dataset}
+                        datasetId={datasetId}
                         datasetType={datasetType}
                         datasetProvider={datasetProvider}
                         jiminy={jiminy}
                         tableName={tableName}
                         tableViewMode={selectedVisualizationType === 'table'}
-                        mode={chartEditorMode}
+                        mode={editorMode}
                         onUpdateWidget={this.handleUpdateWidget}
                         showSaveButton={showSaveButton}
-                        showLimitContainer={showLimitContainer}
-                        showOrderByContainer={showOrderByContainer}
-                        showNotLoggedInText={showNotLoggedInText}
                         hasGeoInfo={hasGeoInfo}
                         onEmbedTable={this.handleEmbedTable}
                       />
@@ -970,18 +957,15 @@ class WidgetEditor extends React.Component {
                     && !fieldsError && tableName && datasetProvider === 'nexgddp'
                     && (
                       <NEXGDDPEditor
-                        dataset={dataset}
+                        datasetId={datasetId}
                         datasetType={datasetType}
                         datasetProvider={datasetProvider}
                         jiminy={jiminy}
                         tableName={tableName}
                         tableViewMode={selectedVisualizationType === 'table'}
-                        mode={chartEditorMode}
+                        mode={editorMode}
                         onUpdateWidget={this.handleUpdateWidget}
                         showSaveButton={showSaveButton}
-                        showNotLoggedInText={showNotLoggedInText}
-                        showLimitContainer={false}
-                        showOrderByContainer={false}
                         hasGeoInfo={hasGeoInfo}
                         onEmbedTable={this.handleEmbedTable}
                       />
@@ -994,16 +978,15 @@ class WidgetEditor extends React.Component {
                     && datasetProvider
                     && (
                       <MapEditor
-                        dataset={this.props.dataset}
+                        datasetId={datasetId}
                         tableName={tableName}
                         provider={datasetProvider}
                         datasetType={datasetType}
                         layerGroups={this.state.layerGroups}
                         layers={layers}
-                        mode={chartEditorMode}
+                        mode={editorMode}
                         onUpdateWidget={this.handleUpdateWidget}
                         showSaveButton={showSaveButton}
-                        showNotLoggedInText={showNotLoggedInText}
                       />
                     )
                 }
@@ -1013,13 +996,12 @@ class WidgetEditor extends React.Component {
                     && datasetProvider
                     && (
                       <RasterChartEditor
-                        dataset={this.props.dataset}
+                        datasetId={datasetId}
                         tableName={tableName}
                         provider={datasetProvider}
-                        mode={chartEditorMode}
+                        mode={editorMode}
                         hasGeoInfo={hasGeoInfo}
                         showSaveButton={showSaveButton}
-                        showNotLoggedInText={showNotLoggedInText}
                         onUpdateWidget={this.handleUpdateWidget}
                       />
                     )
@@ -1053,24 +1035,27 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-WidgetEditor.defaultProps = {
-  showNotLoggedInText: false
-};
-
 WidgetEditor.propTypes = {
-  mode: PropTypes.oneOf(['dataset', 'widget']),
-  showNotLoggedInText: PropTypes.bool,
-  showSaveButton: PropTypes.bool.isRequired, // Show save button in chart editor or not
-  showLimitContainer: PropTypes.bool.isRequired, // Show the limit container or not
-  showOrderByContainer: PropTypes.bool.isRequired, // Show the limit container or not
-  dataset: PropTypes.string, // Dataset ID
+  /**
+   * Whether to show the "save"/"update" button in the editor
+   */
+  showSaveButton: PropTypes.bool,
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
+  /**
+   * Widget ID (if the editor is used to edit an existing  widget)
+   */
+  widgetId: PropTypes.string,
+  /**
+   * List of visualizations that are available to the widget editor
+   */
   availableVisualizations: PropTypes.arrayOf(
     PropTypes.oneOf(VISUALIZATION_TYPES.map(viz => viz.value))
   ),
   // Callbacks
   onUpdateWidget: PropTypes.func,
-  onChange: PropTypes.func,
-  onError: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
@@ -1086,9 +1071,8 @@ WidgetEditor.propTypes = {
 };
 
 WidgetEditor.defaultProps = {
-  availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value),
-  showLimitContainer: true,
-  showOrderByContainer: true
+  showSaveButton: true,
+  availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WidgetEditor);

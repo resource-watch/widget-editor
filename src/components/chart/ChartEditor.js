@@ -23,7 +23,8 @@ import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
 import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Helpers
-import { getCOnfig } from 'helpers/ConfigHelper';
+import { getConfig } from 'helpers/ConfigHelper';
+import { canRenderChart } from 'helpers/WidgetHelper';
 
 @DragDropContext(HTML5Backend)
 class ChartEditor extends React.Component {
@@ -34,11 +35,11 @@ class ChartEditor extends React.Component {
 
   @Autobind
   handleSaveWidget() {
-    const { dataset, datasetType, datasetProvider, tableName } = this.props;
+    const { datasetId, datasetType, datasetProvider, tableName } = this.props;
     const options = {
       children: SaveWidgetModal,
       childrenProps: {
-        dataset,
+        dataset: datasetId,
         datasetType,
         datasetProvider,
         tableName
@@ -70,7 +71,8 @@ class ChartEditor extends React.Component {
 
   render() {
     const {
-      dataset,
+      datasetId,
+      datasetProvider,
       tableName,
       jiminy,
       widgetEditor,
@@ -78,15 +80,14 @@ class ChartEditor extends React.Component {
       mode,
       showSaveButton,
       hasGeoInfo,
-      showEmbedTable,
-      showLimitContainer,
-      showOrderByContainer,
-      showNotLoggedInText
+      showEmbedTable
     } = this.props;
-    const { chartType, fields, category, value } = widgetEditor;
-    const showSaveButtonFlag =
-      chartType && category && value && getConfig().userToken && showSaveButton;
-    const showUpdateButton = showSaveButtonFlag;
+    const { chartType, fields } = widgetEditor;
+
+    const userLogged = !!getConfig().userToken;
+    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canShowSaveButton = showSaveButton && canSave;
+
     const chartOptions = (
       jiminy
       && jiminy.general
@@ -121,7 +122,7 @@ class ChartEditor extends React.Component {
         <div className="actions-div">
           {fields &&
             <FieldsContainer
-              dataset={dataset}
+              dataset={datasetId}
               tableName={tableName}
               fields={fields}
             />
@@ -132,12 +133,8 @@ class ChartEditor extends React.Component {
           <div className="customization-container">
             <DimensionsContainer />
             <FilterContainer />
-            {showOrderByContainer &&
-              <SortContainer />
-            }
-            {showLimitContainer &&
-              <LimitContainer />
-            }
+            <SortContainer />
+            <LimitContainer />
           </div>
         </div>
         <div className="save-widget-container">
@@ -148,32 +145,32 @@ class ChartEditor extends React.Component {
           >
             Need help?
           </button>
-          {showSaveButtonFlag && mode === 'save' &&
-          <a
-            role="button"
-            className="c-button -primary"
-            tabIndex={-2}
-            onClick={this.handleSaveWidget}
-          >
-            Save widget
-          </a>
+          { canShowSaveButton && userLogged && mode === 'save' &&
+            <a
+              role="button"
+              className="c-button -primary"
+              tabIndex={-2}
+              onClick={this.handleSaveWidget}
+            >
+              Save widget
+            </a>
           }
-          {showUpdateButton && mode === 'update' &&
-          <a
-            role="button"
-            className="c-button -primary"
-            tabIndex={0}
-            onClick={this.handleUpdateWidget}
-          >
-            Save widget
-          </a>
+          { canShowSaveButton && userLogged && mode === 'update' &&
+            <a
+              role="button"
+              className="c-button -primary"
+              tabIndex={0}
+              onClick={this.handleUpdateWidget}
+            >
+              Save widget
+            </a>
           }
-          {!showSaveButton && showNotLoggedInText &&
+          { canShowSaveButton && !userLogged &&
             <span className="not-logged-in-text">
               Please log in to save changes
             </span>
           }
-          {tableViewMode && showEmbedTable &&
+          { tableViewMode && showEmbedTable &&
             <a
               role="button"
               className="c-button -primary"
@@ -194,19 +191,19 @@ ChartEditor.defaultProps = {
 };
 
 ChartEditor.propTypes = {
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
+  datasetType: PropTypes.string,
+  datasetProvider: PropTypes.string,
   mode: PropTypes.oneOf(['save', 'update']).isRequired,
   tableName: PropTypes.string.isRequired,
   hasGeoInfo: PropTypes.bool.isRequired,
   jiminy: PropTypes.object,
-  dataset: PropTypes.string.isRequired, // Dataset ID
-  datasetType: PropTypes.string,
-  datasetProvider: PropTypes.string,
-  showNotLoggedInText: PropTypes.bool,
   tableViewMode: PropTypes.bool.isRequired,
   showSaveButton: PropTypes.bool.isRequired,
   showEmbedTable: PropTypes.bool,
-  showLimitContainer: PropTypes.bool.isRequired,
-  showOrderByContainer: PropTypes.bool.isRequired,
   // Store
   widgetEditor: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,

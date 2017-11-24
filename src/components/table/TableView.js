@@ -24,7 +24,7 @@ class TableView extends React.Component {
     };
 
     // DatasetService
-    this.datasetService = new DatasetService(props.dataset);
+    this.datasetService = new DatasetService(props.datasetId);
   }
 
   /**
@@ -139,7 +139,10 @@ class TableView extends React.Component {
 }
 
 TableView.propTypes = {
-  dataset: PropTypes.string.isRequired,
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
   tableName: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
   // Store
   widgetEditor: PropTypes.object.isRequired // eslint-disable-line react/no-unused-prop-types

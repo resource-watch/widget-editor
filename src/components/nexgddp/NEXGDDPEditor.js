@@ -15,8 +15,6 @@ import { setChartType } from 'reducers/widgetEditor';
 import FilterContainer from 'components/ui/FilterContainer';
 import DimensionsContainer from 'components/ui/DimensionsContainer';
 import FieldsContainer from 'components/ui/FieldsContainer';
-import SortContainer from 'components/ui/SortContainer';
-import LimitContainer from 'components/ui/LimitContainer';
 import Select from 'components/form/SelectInput';
 import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
@@ -24,6 +22,7 @@ import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Helpers
 import { getConfig } from 'helpers/ConfigHelper';
+import { canRenderChart } from 'helpers/WidgetHelper';
 
 // NOTE: if you change this array, also update
 // the condition of the variable showRequiredTooltip
@@ -38,11 +37,11 @@ class NEXGDDPEditor extends React.Component {
 
   @Autobind
   handleSaveWidget() {
-    const { dataset, datasetType, datasetProvider, tableName } = this.props;
+    const { datasetId, datasetType, datasetProvider, tableName } = this.props;
     const options = {
       children: SaveWidgetModal,
       childrenProps: {
-        dataset,
+        dataset: datasetId,
         datasetType,
         datasetProvider,
         tableName
@@ -74,7 +73,7 @@ class NEXGDDPEditor extends React.Component {
 
   render() {
     const {
-      dataset,
+      datasetId,
       tableName,
       jiminy,
       widgetEditor,
@@ -82,21 +81,13 @@ class NEXGDDPEditor extends React.Component {
       mode,
       showSaveButton,
       hasGeoInfo,
-      showEmbedTable,
-      showLimitContainer,
-      showOrderByContainer,
-      showNotLoggedInText
+      showEmbedTable
     } = this.props;
-    const {
-      chartType,
-      fields,
-      category,
-      value,
-      areaIntersection
-    } = widgetEditor;
-    const showSaveButtonFlag =
-      chartType && category && value && getConfig().userToken && showSaveButton;
-    const showUpdateButton = showSaveButtonFlag;
+    const { chartType, fields, areaIntersection } = widgetEditor;
+
+    const userLogged = !!getConfig().userToken;
+    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canShowSaveButton = showSaveButton && canSave;
 
     // TODO: Should we do this here?????
     // or should we define it as a prop...
@@ -139,7 +130,7 @@ class NEXGDDPEditor extends React.Component {
           <div className="actions-div">
             {fields &&
               <FieldsContainer
-                dataset={dataset}
+                dataset={datasetId}
                 tableName={tableName}
                 fields={fields}
               />
@@ -150,12 +141,6 @@ class NEXGDDPEditor extends React.Component {
             <div className="customization-container">
               <DimensionsContainer />
               <FilterContainer />
-              {showOrderByContainer &&
-                <SortContainer />
-              }
-              {showLimitContainer &&
-                <LimitContainer />
-              }
             </div>
           </div>
         ) }
@@ -167,32 +152,32 @@ class NEXGDDPEditor extends React.Component {
           >
             Need help?
           </button>
-          {showSaveButtonFlag && mode === 'save' &&
-          <a
-            role="button"
-            className="c-button -primary"
-            tabIndex={-2}
-            onClick={this.handleSaveWidget}
-          >
-            Save widget
-          </a>
+          { canShowSaveButton && userLogged && mode === 'save' &&
+            <a
+              role="button"
+              className="c-button -primary"
+              tabIndex={-2}
+              onClick={this.handleSaveWidget}
+            >
+              Save widget
+            </a>
           }
-          {!showSaveButton && showNotLoggedInText &&
+          { canShowSaveButton && userLogged && mode === 'update' &&
+            <a
+              role="button"
+              className="c-button -primary"
+              tabIndex={0}
+              onClick={this.handleUpdateWidget}
+            >
+              Save widget
+            </a>
+          }
+          { canShowSaveButton && !userLogged &&
             <span className="not-logged-in-text">
               Please log in to save changes
             </span>
           }
-          {showUpdateButton && mode === 'update' &&
-          <a
-            role="button"
-            className="c-button -primary"
-            tabIndex={0}
-            onClick={this.handleUpdateWidget}
-          >
-            Save widget
-          </a>
-          }
-          {tableViewMode && showEmbedTable && areaIntersection &&
+          { tableViewMode && showEmbedTable && areaIntersection &&
             <a
               role="button"
               className="c-button -primary"
@@ -213,19 +198,19 @@ NEXGDDPEditor.defaultProps = {
 };
 
 NEXGDDPEditor.propTypes = {
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
+  datasetType: PropTypes.string,
+  datasetProvider: PropTypes.string,
   mode: PropTypes.oneOf(['save', 'update']).isRequired,
   tableName: PropTypes.string.isRequired,
   hasGeoInfo: PropTypes.bool.isRequired,
   jiminy: PropTypes.object,
-  dataset: PropTypes.string.isRequired, // Dataset ID
-  datasetType: PropTypes.string,
-  datasetProvider: PropTypes.string,
   tableViewMode: PropTypes.bool.isRequired,
-  showNotLoggedInText: PropTypes.bool,
   showSaveButton: PropTypes.bool.isRequired,
   showEmbedTable: PropTypes.bool,
-  showLimitContainer: PropTypes.bool.isRequired,
-  showOrderByContainer: PropTypes.bool.isRequired,
   // Store
   widgetEditor: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,

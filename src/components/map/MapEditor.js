@@ -13,6 +13,10 @@ import Select from 'components/form/SelectInput';
 // import EmbedLayerModal from 'components/modal/EmbedLayerModal';
 import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+import { canRenderChart } from 'helpers/WidgetHelper';
+
 class MapEditor extends React.Component {
   /**
    * Event handler executed when the user clicks the
@@ -23,7 +27,7 @@ class MapEditor extends React.Component {
     const options = {
       children: SaveWidgetModal,
       childrenProps: {
-        dataset: this.props.dataset,
+        dataset: this.props.datasetId,
         datasetType: this.props.datasetType,
         datasetProvider: this.props.provider,
         tableName: this.props.tableName
@@ -48,8 +52,12 @@ class MapEditor extends React.Component {
   }
 
   render() {
-    const { widgetEditor, layers, mode, showSaveButton, showNotLoggedInText } = this.props;
+    const { widgetEditor, layers, mode, showSaveButton } = this.props;
     const { layer } = widgetEditor;
+
+    const userLogged = !!getConfig().userToken;
+    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canShowSaveButton = showSaveButton && canSave;
 
     return (
       <div className="c-map-editor">
@@ -73,7 +81,7 @@ class MapEditor extends React.Component {
           />
         </div>
         <div className="actions-container">
-          {showSaveButton && mode === 'save' && layer &&
+          { canShowSaveButton && userLogged && mode === 'save' &&
             <button
               className="c-button -primary"
               onClick={this.onClickSaveWidget}
@@ -81,7 +89,7 @@ class MapEditor extends React.Component {
               Save widget
             </button>
           }
-          {showSaveButton && mode === 'update' && layer &&
+          { canShowSaveButton && userLogged && mode === 'update' &&
             <button
               className="c-button -primary"
               onClick={this.onClickUpdateWidget}
@@ -89,7 +97,7 @@ class MapEditor extends React.Component {
               Save widget
             </button>
           }
-          {!showSaveButton && showNotLoggedInText &&
+          { canShowSaveButton && !userLogged &&
             <span className="not-logged-in-text">
               Please log in to save changes
             </span>
@@ -101,14 +109,16 @@ class MapEditor extends React.Component {
 }
 
 MapEditor.propTypes = {
-  layers: PropTypes.array.isRequired, // Dataset ID
-  dataset: PropTypes.string.isRequired,
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
+  datasetType: PropTypes.string,
+  layers: PropTypes.array.isRequired,
   tableName: PropTypes.string.isRequired,
   provider: PropTypes.string.isRequired,
-  datasetType: PropTypes.string,
   mode: PropTypes.oneOf(['save', 'update']),
   showSaveButton: PropTypes.bool,
-  showNotLoggedInText: PropTypes.bool,
   onUpdateWidget: PropTypes.func,
 
   // Store

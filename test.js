@@ -27,11 +27,8 @@ const App = props => (
     <Tooltip />
     <Modal />
     <WidgetEditor
-      mode="dataset"
+      datasetId="0b9f0100-ce5b-430f-ad8f-3363efa05481"
       showSaveButton={false}
-      showLimitContainer={true}
-      showOrderByContainer={true}
-      dataset="0b9f0100-ce5b-430f-ad8f-3363efa05481"
     />
   </div>
 );
