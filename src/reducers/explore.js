@@ -409,14 +409,14 @@ export function setUrlParams() {
   };
 }
 
-export function getFavoriteDatasets(token) {
+export function getFavoriteDatasets() {
   return (dispatch) => {
     // Waiting for fetch from server -> Dispatch loading
     dispatch({ type: GET_FAVORITES_LOADING });
 
-    const userService = new UserService();
+    const userService = new UserService(getConfig().userToken);
 
-    return userService.getFavouriteDatasets(token)
+    return userService.getFavouriteDatasets()
       .then((response) => {
         dispatch({
           type: GET_FAVORITES_SUCCESS,

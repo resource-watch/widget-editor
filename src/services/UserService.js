@@ -4,15 +4,19 @@ import 'isomorphic-fetch';
 import { getConfig } from 'helpers/ConfigHelper';
 
 export default class UserService {
+  constructor(token, email) {
+    this.token = token;
+    this.email = email;
+  }
+
   /**
    * Gets the user that is currently logged
-   * @returns {Promise}
    */
-  getLoggedUser(token) {
+  getLoggedUser() {
     return new Promise((resolve) => {
       fetch(`${getConfig().url}/auth/check-logged`, {
         headers: {
-          Authorization: token
+          Authorization: this.token
         }
       })
         .then(response => response.json())
@@ -23,25 +27,21 @@ export default class UserService {
   /**
    * Gets the contents that have been starred/favourited by the user that is
    * currently logged
-   * @param {token} User token
-   * @returns {Promise}
    */
-  getFavouriteWidgets(token) {
-    return this.getFavourites(token, 'widget', true);
+  getFavouriteWidgets() {
+    return this.getFavourites(this.token, 'widget', true);
   }
 
   /**
    * Gets the contents that have been starred/favourited by the user that is
    * currently logged
-    * @param {token} User token
-   * @returns {Promise}
    */
-  getFavourites(token, resourceType = null, include = true) {
+  getFavourites(resourceType = null, include = true) {
     const resourceTypeSt = (resourceType !== null) ? `&resourceType=${resourceType}` : '';
     return new Promise((resolve) => {
       fetch(`${getConfig().url}/favourite?include=${include}${resourceTypeSt}`, {
         headers: {
-          Authorization: token
+          Authorization: this.token
         }
       })
         .then(response => response.json())
@@ -51,38 +51,29 @@ export default class UserService {
 
   /**
    * Deletes a favourite
-   * @param {resourceId} ID of the resource that will be unfavourited
-   * @param {token} User token
-   * @returns {Promise}
+   * @param {string} resourceId ID of the resource that will be unfavourited
    */
-  deleteFavourite(resourceId, token) {
+  deleteFavourite(resourceId) {
     return fetch(`${getConfig().url}/favourite/${resourceId}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: token
-      }
-    })
-      .then(response => response.json());
+      headers: { Authorization: this.token }
+    }).then(response => response.json());
   }
 
   /**
    * Creates a new favourite for a widget
-   * @param {widgetId} Widget ID
-   * @param {token} User token
-   * @returns {Promise}
+   * @param {string} widgetId Widget ID
    */
-  createFavouriteWidget(widgetId, token) {
-    return this.createFavourite('widget', widgetId, token);
+  createFavouriteWidget(widgetId) {
+    return this.createFavourite('widget', widgetId, this.token);
   }
 
   /**
    * Creates a new favourite for a resource
-   * @param {resourceType} Type of the resource (dataset|layer|widget)
-   * @param {resourceId} Resource ID
-   * @param {token} User token
-   * @returns {Promise}
+   * @param {'dataset'|'layer'|'widget'} resourceType Type of the resource
+   * @param {string} resourceId Resource ID
    */
-  createFavourite(resourceType, resourceId, token) {
+  createFavourite(resourceType, resourceId) {
     const bodyObj = {
       resourceType,
       resourceId
@@ -92,7 +83,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -100,11 +91,8 @@ export default class UserService {
 
   /**
    * Creates a subscription for a pair of dataset and country
-   * @param {datasetID} ID of the dataset
-   * @param {object} Either { type; 'iso', id:'ESP' } or { type: 'geostore', id: 'sakldfa7ads0ka'}
-   * @returns {Promise}
    */
-  createSubscriptionToArea(areaId, datasets, datasetsQuery, user, name = '') {
+  createSubscriptionToArea(areaId, datasets, datasetsQuery, name = '') {
     const bodyObj = {
       name,
       application: getConfig().applications,
@@ -113,7 +101,7 @@ export default class UserService {
       datasetsQuery,
       resource: {
         type: 'EMAIL',
-        content: user.email
+        content: this.email
       },
       params: {
         area: areaId
@@ -124,7 +112,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: user.token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -133,7 +121,7 @@ export default class UserService {
   /**
    *  Update Subscription
    */
-  updateSubscriptionToArea(subscriptionId, datasets, datasetsQuery, user) {
+  updateSubscriptionToArea(subscriptionId, datasets, datasetsQuery) {
     const bodyObj = {
       application: getConfig().applications,
       language: 'en',
@@ -145,7 +133,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: user.token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -154,11 +142,11 @@ export default class UserService {
   /**
    *  Get Subscriptions
    */
-  getSubscriptions(token) {
+  getSubscriptions() {
     return new Promise((resolve) => {
       fetch(`${getConfig().url}/subscriptions?${[getConfig().applications].join(',')}`, {
         headers: {
-          Authorization: token
+          Authorization: this.token
         }
       })
         .then(response => response.json())
@@ -168,15 +156,14 @@ export default class UserService {
 
   /**
    * Deletes a subscription
-   * @param {subscriptionId} ID of the subscription that will be deleted
-   * @param {token} User token
+   * @param {string} subscriptionId ID of the subscription that will be deleted
    * @returns {Promise}
    */
-  deleteSubscription(subscriptionId, token) {
+  deleteSubscription(subscriptionId) {
     return fetch(`${getConfig().url}/subscriptions/${subscriptionId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -185,11 +172,11 @@ export default class UserService {
   /**
    * Get user areas
    */
-  getUserAreas(token) {
+  getUserAreas() {
     return new Promise((resolve, reject) => {
       fetch(`${getConfig().url}/area?${[getConfig().applications].join(',')}`, {
         headers: {
-          Authorization: token
+          Authorization: this.token
         }
       })
         .then((response) => {
@@ -204,7 +191,7 @@ export default class UserService {
   /**
    * Create new area
    */
-  createNewArea(name, geostore, token) {
+  createNewArea(name, geostore) {
     const bodyObj = {
       name,
       application: getConfig().applications,
@@ -216,7 +203,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -225,7 +212,7 @@ export default class UserService {
   /**
   * Update area
   */
-  updateArea(id, name, token) {
+  updateArea(id, name) {
     const bodyObj = {
       name,
       application: getConfig().applications
@@ -236,7 +223,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -244,15 +231,14 @@ export default class UserService {
 
   /**
    * Deletes an area
-   * @param {areaId} ID of the area that will be deleted
-   * @param {token} User token
+   * @param {string} areaId ID of the area that will be deleted
    * @returns {Promise}
    */
-  deleteArea(areaId, token) {
+  deleteArea(areaId) {
     return fetch(`${getConfig().url}/area/${areaId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());
@@ -261,12 +247,12 @@ export default class UserService {
   /**
    * Get area
    */
-  getArea(id, token) {
+  getArea(id) {
     return fetch(`${getConfig().url}/area/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: this.token
       }
     })
       .then(response => response.json());

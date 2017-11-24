@@ -45,7 +45,7 @@ class AreaIntersectionFilter extends React.Component {
 
     // Services
     this.areasService = new AreasService();
-    this.userService = new UserService();
+    this.userService = new UserService(getConfig().userToken, getConfig().userEmail);
   }
 
   componentDidMount() {
@@ -121,7 +121,7 @@ class AreaIntersectionFilter extends React.Component {
    * Fetch the areas of the logged user
    */
   fetchUserAreas() {
-    return this.userService.getUserAreas(getConfig().userToken)
+    return this.userService.getUserAreas()
       .then((response) => {
         const userAreas = response.map(val => ({
           label: val.attributes.name,
