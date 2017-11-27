@@ -9,9 +9,6 @@ import AutosizeInput from 'react-input-autosize';
 
 import 'css/index.scss';
 
-// Helpers
-import { getConfig } from 'helpers/ConfigHelper';
-
 // Redux
 import { connect } from 'react-redux';
 
@@ -55,8 +52,10 @@ import {
   getChartInfo,
   getChartConfig,
   canRenderChart,
-  getChartType
+  getChartType,
+  getWidgetConfig
 } from 'helpers/WidgetHelper';
+import { getConfig } from 'helpers/ConfigHelper';
 
 import ChartTheme from 'helpers/theme';
 import LayerManager from 'helpers/LayerManager';
@@ -137,6 +136,10 @@ class WidgetEditor extends React.Component {
   componentDidMount() {
     // We load the initial data
     this.loadData(true);
+
+    if (this.props.provideWidgetConfig) {
+      this.props.provideWidgetConfig(this.getWidgetConfig.bind(this));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -208,6 +211,10 @@ class WidgetEditor extends React.Component {
 
   componentWillUnmount() {
     this.props.toggleTooltip(false);
+
+    if (this.props.provideWidgetConfig) {
+      this.props.provideWidgetConfig(null);
+    }
   }
 
   /**
@@ -782,6 +789,23 @@ class WidgetEditor extends React.Component {
       .then(() => this.setState({ chartConfigLoading: false }));
   }
 
+  /**
+   * Return the widget config of the widget
+   * NOTE: If no widget is rendered, rejects
+   * NOTE: this method is public
+   * @returns {Promise<object>}
+   */
+  getWidgetConfig() {
+    const { tableName, datasetType, datasetProvider, datasetInfoLoaded } = this.state;
+    const { widgetEditor, datasetId, band } = this.props;
+
+    if (!datasetInfoLoaded || !canRenderChart(widgetEditor, datasetProvider)) {
+      return new Promise((_, reject) => reject());
+    }
+
+    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+  }
+
   @Autobind
   handleEmbedTable() {
     const { tableName } = this.state;
@@ -1063,6 +1087,11 @@ WidgetEditor.propTypes = {
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
+  /**
+   * Callback executed at mounting time to provide a function
+   * to get the widget config
+   */
+  provideWidgetConfig: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,

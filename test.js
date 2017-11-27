@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
 import 'dist/styles.css';
 
 const root = document.createElement('div');
@@ -29,6 +29,7 @@ class App extends React.Component {
       widgetId: undefined
     };
   }
+
   componentWillMount() {
     // We inject basic styles so the test page
     // renders correctly
@@ -51,6 +52,24 @@ class App extends React.Component {
     const node = document.createElement('style');
     node.innerHTML = styles;
     document.body.appendChild(node);
+  }
+
+  async onSave() {
+    if (this.getWidgetConfig) {
+      try {
+        const widgetConfig = await this.getWidgetConfig();
+        this.props.toggleModal(true, {
+          children: SaveWidgetModal,
+          childrenProps: {
+            datasetId: this.state.datasetId,
+            widgetConfig,
+            onClickCheckWidgets: () => alert('Check my widgets')
+          }
+        });
+      } catch(err) {
+        console.error('Unable to get the widget config', err);
+      }
+    }
   }
 
   render() {
@@ -87,15 +106,18 @@ class App extends React.Component {
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
           saveButtonMode="always"
-          onSave={() => alert('Save/update button clicked')}
+          onSave={() => this.onSave()}
+          provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ modal }) => ({});
-const mapDispatchToProps = dispatch => ({});
+const mapStateToProps = () => ({});
+const mapDispatchToProps = dispatch => ({
+  toggleModal: (...params) => dispatch(modalActions.toggleModal(...params))
+});
 
 const Container = connect(mapStateToProps, mapDispatchToProps)(App);
 

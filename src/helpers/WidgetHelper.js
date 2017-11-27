@@ -546,6 +546,92 @@ export async function getChartConfig(
 }
 
 /**
+ * Retuen the widget config of the widget
+ * @param {string} dataset - Dataset ID
+ * @param {string} datasetType - Type of dataset
+ * @param {string} datasetProvider - Name of the provider
+ * @param {string} tableName - Name of the table
+ * @param {object} widgetEditor - Store object
+ * @returns {Promise<object>}
+ */
+export async function getWidgetConfig(dataset, datasetType, datasetProvider, tableName, widgetEditor) {
+  return new Promise(async (resolve, reject) => {
+    const {
+      limit,
+      value,
+      category,
+      color,
+      size,
+      orderBy,
+      aggregateFunction,
+      chartType,
+      filters,
+      areaIntersection,
+      visualizationType,
+      band,
+      layer,
+      title,
+      zoom,
+      latLng
+    } = widgetEditor;
+
+    let chartConfig = {};
+
+    // If the visualization if a map, we don't have any chartConfig
+    if (visualizationType !== 'map') {
+      const chartInfo = getChartInfo(dataset, datasetType, datasetProvider, widgetEditor);
+
+      try {
+        chartConfig = await getChartConfig(
+          dataset,
+          datasetType,
+          tableName,
+          band,
+          datasetProvider,
+          chartInfo
+        );
+      } catch (err) {
+        console.error(err);
+        reject('Unable to generate the chart config.');
+        return;
+      }
+    }
+
+    resolve(Object.assign(
+      {},
+      // If the widget is a map, we want to add some extra info
+      // in widgetConfig so the widget is compatible with other
+      // apps that use the same API
+      // The type and layer_id are not necessary for the editor
+      // because it is already saved in widgetConfig.paramsConfig
+      (
+        visualizationType === 'map'
+          ? { type: 'map', layer_id: layer && layer.id, zoom, ...latLng }
+          : {}
+      ),
+      {
+        paramsConfig: {
+          visualizationType,
+          limit,
+          value,
+          category,
+          color,
+          size,
+          orderBy,
+          aggregateFunction,
+          chartType,
+          filters,
+          areaIntersection,
+          band: band && { name: band.name },
+          layer: layer && layer.id
+        }
+      },
+      chartConfig
+    ));
+  });
+}
+
+/**
  * Fetch the data of a raster dataset and return the parsed data
  * @export
  * @param {string} url - URL of the data

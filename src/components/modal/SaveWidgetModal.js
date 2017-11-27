@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-// import { Router } from 'routes';
 import Autobind from 'autobind-decorator';
-import { toastr } from 'react-redux-toastr';
 
 // Redux
 import { connect } from 'react-redux';
@@ -14,12 +12,13 @@ import Field from 'components/form/Field';
 import Input from 'components/form/Input';
 import Button from 'components/ui/Button';
 import Spinner from 'components/ui/Spinner';
+import Icon from 'components/ui/Icon';
 
 // Services
 import WidgetService from 'services/WidgetService';
 
 // Helpers
-import { getChartConfig, getChartInfo } from 'helpers/WidgetHelper';
+import { getChartConfig, getChartInfo, getWidgetConfig } from 'helpers/WidgetHelper';
 import { getConfig } from 'helpers/ConfigHelper';
 
 const FORM_ELEMENTS = {
@@ -66,96 +65,18 @@ class SaveWidgetModal extends React.Component {
     });
 
     const { description } = this.state;
-    const { widgetEditor, tableName, dataset, datasetType, datasetProvider } = this.props;
-    const {
-      limit,
-      value,
-      category,
-      color,
-      size,
-      orderBy,
-      aggregateFunction,
-      chartType,
-      filters,
-      areaIntersection,
-      visualizationType,
-      band,
-      layer,
-      title,
-      zoom,
-      latLng
-    } = widgetEditor;
-
-    let chartConfig = {};
-
-    // If the visualization if a map, we don't have any chartConfig
-    if (visualizationType !== 'map') {
-      const chartInfo = getChartInfo(dataset, datasetType, datasetProvider, widgetEditor);
-
-      try {
-        chartConfig = await getChartConfig(
-          dataset,
-          datasetType,
-          tableName,
-          band,
-          datasetProvider,
-          chartInfo
-        );
-      } catch (err) {
-        this.setState({
-          saved: false,
-          error: true,
-          errorMessage: 'Unable to generate the configuration of the chart'
-        });
-
-        return;
-      }
-    }
-
-    const widgetConfig = {
-      widgetConfig: Object.assign(
-        {},
-        // If the widget is a map, we want to add some extra info
-        // in widgetConfig so the widget is compatible with other
-        // apps that use the same API
-        // The type and layer_id are not necessary for the editor
-        // because it is already saved in widgetConfig.paramsConfig
-        (
-          visualizationType === 'map'
-            ? { type: 'map', layer_id: layer && layer.id, zoom, ...latLng }
-            : {}
-        ),
-        {
-          paramsConfig: {
-            visualizationType,
-            limit,
-            value,
-            category,
-            color,
-            size,
-            orderBy,
-            aggregateFunction,
-            chartType,
-            filters,
-            areaIntersection,
-            band: band && { name: band.name },
-            layer: layer && layer.id
-          }
-        },
-        chartConfig
-      )
-    };
+    const { widgetEditor, datasetId, widgetConfig } = this.props;
 
     const widgetObj = Object.assign(
       {},
       {
-        name: title || null,
+        name: widgetEditor.title || null,
         description
       },
-      widgetConfig
+      { widgetConfig }
     );
 
-    WidgetService.saveUserWidget(widgetObj, this.props.dataset, getConfig().userToken)
+    WidgetService.saveUserWidget(widgetObj, datasetId, getConfig().userToken)
       .then((response) => {
         if (response.errors) throw new Error(response.errors[0].detail);
       })
@@ -166,19 +87,8 @@ class SaveWidgetModal extends React.Component {
           error: true,
           errorMessage: err.message
         });
-        toastr.error('Error', err); // eslint-disable-line no-console
       })
       .then(() => this.setState({ loading: false }));
-  }
-
-  /**
-   * Event handler executed when the user clicks the
-   * cancel button of the modal
-   *
-   */
-  @Autobind
-  handleCancel() {
-    this.props.toggleModal(false);
   }
 
   /**
@@ -186,9 +96,9 @@ class SaveWidgetModal extends React.Component {
    * "Check my widgets" button
    */
   @Autobind
-  handleGoToMyPREP() {
+  onClickCheckWidgets() {
     this.props.toggleModal(false);
-    // Router.pushRoute('myprep', { tab: 'widgets', subtab: 'my_widgets' });
+    this.props.onClickCheckWidgets();
   }
 
   render() {
@@ -213,7 +123,7 @@ class SaveWidgetModal extends React.Component {
           {errorMessage}
         </div>
         }
-        {!saved &&
+        {!saved && (
           <form className="form-container" onSubmit={this.onSubmit}>
             <fieldset className="c-field-container">
               <Field
@@ -257,47 +167,58 @@ class SaveWidgetModal extends React.Component {
               </Button>
               <Button
                 properties={{
+                  type: 'button',
                   disabled: submitting,
                   className: '-primary'
                 }}
-                onClick={this.handleCancel}
+                onClick={() => this.props.toggleModal(false)}
               >
                 Cancel
               </Button>
             </div>
           </form>
-        }
-        {saved &&
-        <div>
-          <div className="icon-container">
-            <img alt="Widget Saved" src="/static/images/components/modal/widget-saved.svg" />
+        )}
+        {saved && (
+          <div>
+            <Icon name="widget-saved" />
+            <div className="buttons-widget-saved">
+              <Button
+                properties={{ className: '-primary' }}
+                onClick={() => this.props.toggleModal(false)}
+              >
+                OK
+              </Button>
+              { this.props.onClickCheckWidgets &&
+                <Button
+                  properties={{ className: '-secondary' }}
+                  onClick={this.onClickCheckWidgets}
+                >
+                  Check my widgets
+                </Button>
+              }
+            </div>
           </div>
-          <div className="buttons-widget-saved">
-            <Button
-              properties={{ className: '-primary' }}
-              onClick={this.handleCancel}
-            >
-              OK
-            </Button>
-            <Button
-              properties={{ className: '-secondary' }}
-              onClick={this.handleGoToMyPREP}
-            >
-              Check my widgets
-            </Button>
-          </div>
-        </div>
-        }
+        )}
       </div>
     );
   }
 }
 
 SaveWidgetModal.propTypes = {
-  dataset: PropTypes.string.isRequired,
-  tableName: PropTypes.string.isRequired,
-  datasetType: PropTypes.string,
-  datasetProvider: PropTypes.string,
+  /**
+   * Dataset ID
+   */
+  datasetId: PropTypes.string.isRequired,
+  /**
+   * Widget config
+   */
+  widgetConfig: PropTypes.object.isRequired,
+  /**
+   * Callback executed when the user clicks the
+   * button to check their widgets
+   */
+  onClickCheckWidgets: PropTypes.func,
+
   // Store
   widgetEditor: PropTypes.object.isRequired,
   toggleModal: PropTypes.func.isRequired,

@@ -191,6 +191,10 @@ export default class Icons extends React.Component {
             <title>Arrow</title>
             <path d="M17 13v8l22-10.5L17 0v8H0v5h17z" fill="#D2D3D6" fillRule="evenodd" />
           </symbol>
+          <symbol id="editor-widget-saved" viewBox="0 0 163 117">
+            <title>widget-saved</title>
+            <path d="M140.058 16l-2 2H5a3 3 0 0 0-3 3v91a3 3 0 0 0 3 3h139a3 3 0 0 0 3-3V23.2l2-2V112a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5V21a5 5 0 0 1 5-5h135.058zM34.793 49.707l1.414-1.414 36.486 36.486a3 3 0 0 0 4.243 0L161.5 0l1.5 1.5-84.65 84.693a5 5 0 0 1-7.071 0L34.793 49.707z" fillRule="nonzero" fill="#65B60D"/>
+          </symbol>
         </defs>
       </svg>
     );
