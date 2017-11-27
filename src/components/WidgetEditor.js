@@ -782,14 +782,6 @@ class WidgetEditor extends React.Component {
       .then(() => this.setState({ chartConfigLoading: false }));
   }
 
-  /**
-   * Update the user's widget
-   */
-  @Autobind
-  handleUpdateWidget() {
-    this.props.onUpdateWidget();
-  }
-
   @Autobind
   handleEmbedTable() {
     const { tableName } = this.state;
@@ -858,6 +850,14 @@ class WidgetEditor extends React.Component {
     this.props.setVisualizationType(selectedVisualizationType);
   }
 
+  /**
+   * Handler for when the save/update button of the editors
+   * is clicked
+   */
+  onClickSave() {
+    if (this.props.onSave) this.props.onSave();
+  }
+
   render() {
     const {
       tableName,
@@ -878,12 +878,14 @@ class WidgetEditor extends React.Component {
     const {
       datasetId,
       widgetId,
-      showSaveButton,
+      saveButtonMode,
       showNotLoggedInText,
       selectedVisualizationType
     } = this.props;
 
     const editorMode = !widgetId ? 'save' : 'update';
+    const showSaveButton = saveButtonMode === 'always'
+      || (saveButtonMode === 'auto' && !!getConfig().userToken);
 
     const visualization = this.getVisualization();
 
@@ -947,8 +949,8 @@ class WidgetEditor extends React.Component {
                   tableName={tableName}
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
-                  onUpdateWidget={this.handleUpdateWidget}
                   showSaveButton={showSaveButton}
+                  onSave={() => this.onClickSave()}
                   hasGeoInfo={hasGeoInfo}
                   onEmbedTable={this.handleEmbedTable}
                 />
@@ -967,8 +969,8 @@ class WidgetEditor extends React.Component {
                   tableName={tableName}
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
-                  onUpdateWidget={this.handleUpdateWidget}
                   showSaveButton={showSaveButton}
+                  onSave={() => this.onClickSave()}
                   hasGeoInfo={hasGeoInfo}
                   onEmbedTable={this.handleEmbedTable}
                 />
@@ -988,8 +990,8 @@ class WidgetEditor extends React.Component {
                   layerGroups={this.state.layerGroups}
                   layers={layers}
                   mode={editorMode}
-                  onUpdateWidget={this.handleUpdateWidget}
                   showSaveButton={showSaveButton}
+                  onSave={() => this.onClickSave()}
                 />
               )
           }
@@ -1005,7 +1007,7 @@ class WidgetEditor extends React.Component {
                   mode={editorMode}
                   hasGeoInfo={hasGeoInfo}
                   showSaveButton={showSaveButton}
-                  onUpdateWidget={this.handleUpdateWidget}
+                  onSave={() => this.onClickSave()}
                 />
               )
           }
@@ -1037,10 +1039,6 @@ const mapDispatchToProps = dispatch => ({
 
 WidgetEditor.propTypes = {
   /**
-   * Whether to show the "save"/"update" button in the editor
-   */
-  showSaveButton: PropTypes.bool,
-  /**
    * Dataset ID
    */
   datasetId: PropTypes.string.isRequired,
@@ -1054,8 +1052,17 @@ WidgetEditor.propTypes = {
   availableVisualizations: PropTypes.arrayOf(
     PropTypes.oneOf(VISUALIZATION_TYPES.map(viz => viz.value))
   ),
-  // Callbacks
-  onUpdateWidget: PropTypes.func,
+  /**
+   * When to show the save/update button in the editor:
+   *  * "auto": only if a user token is set in ConfigHelper
+   *  * "always": always shown
+   *  * "never": never shown
+   */
+  saveButtonMode: PropTypes.oneOf(['auto', 'always', 'never']),
+  /**
+   * Callback executed when the user clicks the save/update button
+   */
+  onSave: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
@@ -1071,7 +1078,7 @@ WidgetEditor.propTypes = {
 };
 
 WidgetEditor.defaultProps = {
-  showSaveButton: true,
+  saveButtonMode: 'auto',
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 

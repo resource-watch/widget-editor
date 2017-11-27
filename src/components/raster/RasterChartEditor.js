@@ -14,14 +14,12 @@ import { toggleModal } from 'reducers/modal';
 // Components
 import Select from 'components/form/SelectInput';
 import Spinner from 'components/ui/Spinner';
-import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Services
 import RasterService from 'services/RasterService';
 
 // Helpers
-import { getConfig } from 'helpers/ConfigHelper';
 import { canRenderChart } from 'helpers/WidgetHelper';
 
 class RasterChartEditor extends React.Component {
@@ -71,35 +69,6 @@ class RasterChartEditor extends React.Component {
       .then(bandStatsInfo => this.setState({ bandStatsInfo }))
       .catch(() => toastr.error('Error', 'Unable to fetch the statistical information of the band'))
       .then(() => this.setState({ bandStatsInfoLoading: false }));
-  }
-
-  /**
-   * Event handler executed when the user clicks the
-   * Save button
-   */
-  @Autobind
-  onClickSaveWidget() {
-    const { datasetId, provider, tableName } = this.props;
-    const options = {
-      children: SaveWidgetModal,
-      childrenProps: {
-        dataset: datasetId,
-        datasetType: 'raster',
-        datasetProvider: provider,
-        tableName
-      }
-    };
-
-    this.props.toggleModal(true, options);
-  }
-
-  /**
-   * Event handler executed when the user clicks the
-   * Save button while editing an existing widget
-   */
-  @Autobind
-  onClickUpdateWidget() {
-    this.props.onUpdateWidget();
   }
 
   /**
@@ -163,7 +132,6 @@ class RasterChartEditor extends React.Component {
     const { loading, bands, error, bandStatsInfo, bandStatsInfoLoading } = this.state;
     const { band, mode, showSaveButton, hasGeoInfo } = this.props;
 
-    const userLogged = !!getConfig().userToken;
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
 
@@ -227,26 +195,14 @@ class RasterChartEditor extends React.Component {
         </div>
         <div className="buttons">
           <span /> {/* Help align the button to the right */}
-          { canShowSaveButton && userLogged && mode === 'save' &&
+          {
+            canShowSaveButton &&
             <button
               className="c-button -primary"
-              onClick={this.onClickSaveWidget}
+              onClick={this.props.onSave}
             >
-              Save widget
+              {mode === 'save' ? 'Save widget' : 'Update widget'}
             </button>
-          }
-          { canShowSaveButton && userLogged && mode === 'update' &&
-            <button
-              className="c-button -primary"
-              onClick={this.onClickUpdateWidget}
-            >
-              Save widget
-            </button>
-          }
-          { canShowSaveButton && !userLogged &&
-            <span className="not-logged-in-text">
-              Please log in to save changes
-            </span>
           }
         </div>
       </div>
@@ -263,18 +219,22 @@ RasterChartEditor.propTypes = {
   hasGeoInfo: PropTypes.bool.isRequired,
   provider: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),
-  showSaveButton: PropTypes.bool,
-  onUpdateWidget: PropTypes.func,
+  /**
+   * Whether the save/update button should be shown
+   * when a widget is rendered
+   */
+  showSaveButton: PropTypes.bool.isRequired,
+  /**
+   * Callback executed when the save/update button
+   * is clicked
+   */
+  onSave: PropTypes.func,
 
   // REDUX
   band: PropTypes.object,
   bandsInfo: PropTypes.object,
   toggleModal: PropTypes.func.isRequired,
   setBand: PropTypes.func.isRequired
-};
-
-RasterChartEditor.defaultProps = {
-  onUpdateWidget: () => {}
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({

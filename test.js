@@ -86,7 +86,8 @@ class App extends React.Component {
         <WidgetEditor
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
-          showSaveButton={false}
+          saveButtonMode="always"
+          onSave={() => alert('Save/update button clicked')}
         />
       </div>
     );

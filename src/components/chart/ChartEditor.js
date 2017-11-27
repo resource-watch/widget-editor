@@ -17,12 +17,10 @@ import FieldsContainer from 'components/ui/FieldsContainer';
 import SortContainer from 'components/ui/SortContainer';
 import LimitContainer from 'components/ui/LimitContainer';
 import Select from 'components/form/SelectInput';
-import SaveWidgetModal from 'components/modal/SaveWidgetModal';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
 import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Helpers
-import { getConfig } from 'helpers/ConfigHelper';
 import { canRenderChart } from 'helpers/WidgetHelper';
 
 @DragDropContext(HTML5Backend)
@@ -30,27 +28,6 @@ class ChartEditor extends React.Component {
   @Autobind
   handleChartTypeChange(val) {
     this.props.setChartType(val);
-  }
-
-  @Autobind
-  handleSaveWidget() {
-    const { datasetId, datasetType, datasetProvider, tableName } = this.props;
-    const options = {
-      children: SaveWidgetModal,
-      childrenProps: {
-        dataset: datasetId,
-        datasetType,
-        datasetProvider,
-        tableName
-      }
-    };
-    this.props.toggleModal(true);
-    this.props.setModalOptions(options);
-  }
-
-  @Autobind
-  handleUpdateWidget() {
-    this.props.onUpdateWidget();
   }
 
   @Autobind
@@ -83,7 +60,6 @@ class ChartEditor extends React.Component {
     } = this.props;
     const { chartType, fields } = widgetEditor;
 
-    const userLogged = !!getConfig().userToken;
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
 
@@ -136,30 +112,14 @@ class ChartEditor extends React.Component {
           >
             Need help?
           </button>
-          { canShowSaveButton && userLogged && mode === 'save' &&
-            <a
-              role="button"
+          {
+            canShowSaveButton &&
+            <button
               className="c-button -primary"
-              tabIndex={-2}
-              onClick={this.handleSaveWidget}
+              onClick={this.props.onSave}
             >
-              Save widget
-            </a>
-          }
-          { canShowSaveButton && userLogged && mode === 'update' &&
-            <a
-              role="button"
-              className="c-button -primary"
-              tabIndex={0}
-              onClick={this.handleUpdateWidget}
-            >
-              Save widget
-            </a>
-          }
-          { canShowSaveButton && !userLogged &&
-            <span className="not-logged-in-text">
-              Please log in to save changes
-            </span>
+              {mode === 'save' ? 'Save widget' : 'Update widget'}
+            </button>
           }
           { tableViewMode && showEmbedTable &&
             <a
@@ -199,7 +159,16 @@ ChartEditor.propTypes = {
     value: PropTypes.string
   })).isRequired,
   tableViewMode: PropTypes.bool.isRequired,
+  /**
+   * Whether the save/update button should be shown
+   * when a widget is rendered
+   */
   showSaveButton: PropTypes.bool.isRequired,
+  /**
+   * Callback executed when the save/update button
+   * is clicked
+   */
+  onSave: PropTypes.func,
   showEmbedTable: PropTypes.bool,
   // Store
   widgetEditor: PropTypes.object.isRequired,
@@ -207,7 +176,6 @@ ChartEditor.propTypes = {
   toggleModal: PropTypes.func.isRequired,
   setModalOptions: PropTypes.func.isRequired,
   // Callback
-  onUpdateWidget: PropTypes.func,
   onEmbedTable: PropTypes.func
 };
 
