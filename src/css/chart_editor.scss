@@ -46,24 +46,24 @@
     margin-top: $margin-between-fields;
   }
 
-  .arrow-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: $margin-size-extra-small;
-    margin-right: $margin-size-extra-small;
-  }
-
   .actions-div {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     margin-top: $margin-between-fields;
     margin-bottom: $margin-between-fields;
+
+    > .c-icon {
+      width: 39px;
+      height: 21px;
+      margin: 0 $margin-size-extra-small;
+    }
 
     .customization-container {
       flex-grow: 1;
       border: 1px solid $border-color-1;
       padding: $margin-size-extra-small;
+      align-self: stretch;
     }
   }
 

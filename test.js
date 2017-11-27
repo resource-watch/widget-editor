@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux'
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons } from 'dist/bundle';
 import 'dist/styles.css';
 
 const root = document.createElement('div');
@@ -21,17 +21,46 @@ setConfig({
   authUrl: 'https://api.resourcewatch.org/auth'
 });
 
-const App = props => (
-  <div>
-    <h1>Test WidgetEditor</h1>
-    <Tooltip />
-    <Modal />
-    <WidgetEditor
-      datasetId="0b9f0100-ce5b-430f-ad8f-3363efa05481"
-      showSaveButton={false}
-    />
-  </div>
-);
+class App extends React.Component {
+  componentWillMount() {
+    // We inject basic styles so the test page
+    // renders correctly
+    this.injectStyles()
+  }
+
+  injectStyles() {
+    const styles = `
+      *,
+      *:before,
+      *:after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: sans-serif;
+      }
+    `;
+
+    const node = document.createElement('style');
+    node.innerHTML = styles;
+    document.body.appendChild(node);
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Test WidgetEditor</h1>
+        <Icons />
+        <Tooltip />
+        <Modal />
+        <WidgetEditor
+          datasetId="0b9f0100-ce5b-430f-ad8f-3363efa05481"
+          showSaveButton={false}
+        />
+      </div>
+    );
+  }
+}
 
 const mapStateToProps = ({ modal }) => ({});
 const mapDispatchToProps = dispatch => ({});

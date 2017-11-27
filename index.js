@@ -12,6 +12,7 @@ import * as widgetHelper from 'helpers/WidgetHelper';
 export { default } from 'components/WidgetEditor';
 export { default as Modal } from 'components/ui/Modal';
 export { default as Tooltip } from 'components/ui/Tooltip';
+export { default as Icons } from 'components/ui/Icons';
 
 export { default as ChartEditor } from 'components/chart/ChartEditor';
 export { default as VegaChart } from 'components/chart/VegaChart';

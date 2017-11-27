@@ -5,13 +5,12 @@ import Autobind from 'autobind-decorator';
 import { DragDropContext } from 'react-dnd';
 import { connect } from 'react-redux';
 
-import ArrowImg from 'images/arrow.svg';
-
 // Redux
 import { toggleModal, setModalOptions } from 'reducers/modal';
 import { setChartType } from 'reducers/widgetEditor';
 
 // Components
+import Icon from 'components/ui/Icon';
 import FilterContainer from 'components/ui/FilterContainer';
 import DimensionsContainer from 'components/ui/DimensionsContainer';
 import FieldsContainer from 'components/ui/FieldsContainer';
@@ -121,9 +120,7 @@ class ChartEditor extends React.Component {
               fields={fields}
             />
           }
-          <div className="arrow-container">
-            <img alt="" src={ArrowImg} />
-          </div>
+          <Icon name="icon-column-arrow" />
           <div className="customization-container">
             <DimensionsContainer />
             <FilterContainer />

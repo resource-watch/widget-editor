@@ -895,6 +895,10 @@ class WidgetEditor extends React.Component {
       && fieldsError
       && (layersError || (layers && layers.length === 0));
 
+    if (componentShouldNotShow) {
+      return <div className="c-widget-editor" />;
+    }
+
     // TODO: could be saved in the state instead of computing it
     // each time
     let chartOptions = ALL_CHART_TYPES;
@@ -906,113 +910,107 @@ class WidgetEditor extends React.Component {
 
     return (
       <div className="c-widget-editor">
-        {!componentShouldNotShow &&
-          <div className="l-container -expanded">
-            <div className="row expanded">
-              <div className="customize-visualization">
-                { this.isLoading() && <Spinner className="-light" isLoading /> }
-                <h2
-                  className="title"
-                >
-                  Customize Visualization
-                </h2>
-                <div className="visualization-type">
-                  <div className="c-field">
-                    <label htmlFor="visualization-type-select">
-                      Visualization type
-                    </label>
-                    <Select
-                      id="visualization-type-select"
-                      properties={{
-                        className: 'visualization-type-selector',
-                        name: 'visualization-type',
-                        value: selectedVisualizationType
-                      }}
-                      options={visualizationOptions}
-                      onChange={value => this.handleVisualizationTypeChange(value, false)}
-                    />
-                  </div>
-                </div>
-                {
-                  (selectedVisualizationType === 'chart' ||
-                  selectedVisualizationType === 'table')
-                    && !fieldsError && tableName && datasetProvider !== 'nexgddp'
-                    && (
-                      <ChartEditor
-                        datasetId={datasetId}
-                        datasetType={datasetType}
-                        datasetProvider={datasetProvider}
-                        chartOptions={chartOptions}
-                        tableName={tableName}
-                        tableViewMode={selectedVisualizationType === 'table'}
-                        mode={editorMode}
-                        onUpdateWidget={this.handleUpdateWidget}
-                        showSaveButton={showSaveButton}
-                        hasGeoInfo={hasGeoInfo}
-                        onEmbedTable={this.handleEmbedTable}
-                      />
-                    )
-                }
-                {
-                  (selectedVisualizationType === 'chart' ||
-                  selectedVisualizationType === 'table')
-                    && !fieldsError && tableName && datasetProvider === 'nexgddp'
-                    && (
-                      <NEXGDDPEditor
-                        datasetId={datasetId}
-                        datasetType={datasetType}
-                        datasetProvider={datasetProvider}
-                        chartOptions={chartOptions}
-                        tableName={tableName}
-                        tableViewMode={selectedVisualizationType === 'table'}
-                        mode={editorMode}
-                        onUpdateWidget={this.handleUpdateWidget}
-                        showSaveButton={showSaveButton}
-                        hasGeoInfo={hasGeoInfo}
-                        onEmbedTable={this.handleEmbedTable}
-                      />
-                    )
-                }
-                {
-                  selectedVisualizationType === 'map'
-                    && layers && layers.length > 0
-                    && tableName
-                    && datasetProvider
-                    && (
-                      <MapEditor
-                        datasetId={datasetId}
-                        tableName={tableName}
-                        provider={datasetProvider}
-                        datasetType={datasetType}
-                        layerGroups={this.state.layerGroups}
-                        layers={layers}
-                        mode={editorMode}
-                        onUpdateWidget={this.handleUpdateWidget}
-                        showSaveButton={showSaveButton}
-                      />
-                    )
-                }
-                {
-                  selectedVisualizationType === 'raster_chart'
-                    && tableName
-                    && datasetProvider
-                    && (
-                      <RasterChartEditor
-                        datasetId={datasetId}
-                        tableName={tableName}
-                        provider={datasetProvider}
-                        mode={editorMode}
-                        hasGeoInfo={hasGeoInfo}
-                        showSaveButton={showSaveButton}
-                        onUpdateWidget={this.handleUpdateWidget}
-                      />
-                    )
-                }
-              </div>
-              {visualization}
+        <div className="customize-visualization">
+          { this.isLoading() && <Spinner className="-light" isLoading /> }
+          <h2
+            className="title"
+          >
+            Customize Visualization
+          </h2>
+          <div className="visualization-type">
+            <div className="c-field">
+              <label htmlFor="visualization-type-select">
+                Visualization type
+              </label>
+              <Select
+                id="visualization-type-select"
+                properties={{
+                  className: 'visualization-type-selector',
+                  name: 'visualization-type',
+                  value: selectedVisualizationType
+                }}
+                options={visualizationOptions}
+                onChange={value => this.handleVisualizationTypeChange(value, false)}
+              />
             </div>
           </div>
-        }
+          {
+            (selectedVisualizationType === 'chart' ||
+            selectedVisualizationType === 'table')
+              && !fieldsError && tableName && datasetProvider !== 'nexgddp'
+              && (
+                <ChartEditor
+                  datasetId={datasetId}
+                  datasetType={datasetType}
+                  datasetProvider={datasetProvider}
+                  chartOptions={chartOptions}
+                  tableName={tableName}
+                  tableViewMode={selectedVisualizationType === 'table'}
+                  mode={editorMode}
+                  onUpdateWidget={this.handleUpdateWidget}
+                  showSaveButton={showSaveButton}
+                  hasGeoInfo={hasGeoInfo}
+                  onEmbedTable={this.handleEmbedTable}
+                />
+              )
+          }
+          {
+            (selectedVisualizationType === 'chart' ||
+            selectedVisualizationType === 'table')
+              && !fieldsError && tableName && datasetProvider === 'nexgddp'
+              && (
+                <NEXGDDPEditor
+                  datasetId={datasetId}
+                  datasetType={datasetType}
+                  datasetProvider={datasetProvider}
+                  chartOptions={chartOptions}
+                  tableName={tableName}
+                  tableViewMode={selectedVisualizationType === 'table'}
+                  mode={editorMode}
+                  onUpdateWidget={this.handleUpdateWidget}
+                  showSaveButton={showSaveButton}
+                  hasGeoInfo={hasGeoInfo}
+                  onEmbedTable={this.handleEmbedTable}
+                />
+              )
+          }
+          {
+            selectedVisualizationType === 'map'
+              && layers && layers.length > 0
+              && tableName
+              && datasetProvider
+              && (
+                <MapEditor
+                  datasetId={datasetId}
+                  tableName={tableName}
+                  provider={datasetProvider}
+                  datasetType={datasetType}
+                  layerGroups={this.state.layerGroups}
+                  layers={layers}
+                  mode={editorMode}
+                  onUpdateWidget={this.handleUpdateWidget}
+                  showSaveButton={showSaveButton}
+                />
+              )
+          }
+          {
+            selectedVisualizationType === 'raster_chart'
+              && tableName
+              && datasetProvider
+              && (
+                <RasterChartEditor
+                  datasetId={datasetId}
+                  tableName={tableName}
+                  provider={datasetProvider}
+                  mode={editorMode}
+                  hasGeoInfo={hasGeoInfo}
+                  showSaveButton={showSaveButton}
+                  onUpdateWidget={this.handleUpdateWidget}
+                />
+              )
+          }
+        </div>
+        {visualization}
       </div>
     );
   }

@@ -21,5 +21,9 @@ module.exports = merge(common, {
       title: 'Test WidgetEditor'
     }),
     new ExtractTextPlugin('styles.css'),
-  ]
+  ],
+
+  devServer: {
+    contentBase: path.resolve(__dirname, 'dist')
+  }
 });
