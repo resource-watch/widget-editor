@@ -22,6 +22,13 @@ setConfig({
 });
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
+      widgetId: undefined
+    };
+  }
   componentWillMount() {
     // We inject basic styles so the test page
     // renders correctly
@@ -50,11 +57,35 @@ class App extends React.Component {
     return (
       <div>
         <h1>Test WidgetEditor</h1>
+        <div style={{ border: '1px solid black', margin: '20px 0 40px', padding: '0 10px' }}>
+          <p>
+            Change here the params of the editor:
+          </p>
+          <p>
+            <label htmlFor="dataset">Dataset ID:</label>
+            <input
+              type="text"
+              id="dataset"
+              value={this.state.datasetId}
+              onChange={({ target }) => this.setState({ datasetId: target.value })}
+            />
+            <br/>
+            <label htmlFor="widget">Widget ID (optional):</label>
+            <input
+              type="text"
+              placeholder="Widget to restore"
+              id="widget"
+              value={this.state.widgetId}
+              onChange={({ target }) => this.setState({ widgetId: target.value })}
+            />
+          </p>
+        </div>
         <Icons />
         <Tooltip />
         <Modal />
         <WidgetEditor
-          datasetId="0b9f0100-ce5b-430f-ad8f-3363efa05481"
+          datasetId={this.state.datasetId}
+          widgetId={this.state.widgetId}
           showSaveButton={false}
         />
       </div>
