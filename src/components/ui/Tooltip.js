@@ -63,10 +63,9 @@ class Tooltip extends React.Component {
       position: 'absolute',
       top: `${topPos}px`,
       left: `${bottomPos}px`,
-      width: '2px',
-      height: '2px',
-      background: 'red'
-      // visibility: 'hidden'
+      width: '1px',
+      height: '1px',
+      visibility: 'hidden'
     };
   }
 
