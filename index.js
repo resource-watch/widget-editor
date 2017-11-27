@@ -1,3 +1,5 @@
+import 'rc-slider/assets/index.css';
+
 import { default as widgetEditorExplore } from 'reducers/explore';
 import { default as widgetEditorModal } from 'reducers/modal';
 import { default as widgetEditorTooltip } from 'reducers/tooltip';

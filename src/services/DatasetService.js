@@ -93,14 +93,12 @@ export default class DatasetService {
 
   /**
    * Return the min an max value of a numeric column
-   * @static
-   * @param {string} datasetId Dataset ID
    * @param {string} columnName Name of the field/column
    * @param {string} tableName Name of the table
    * @param {string} [geostore] ID of the geostore, if any
    * @returns {{ min: number, max: number }}
    */
-  static getColumnMinAndMax(datasetId, columnName, tableName, geostore) {
+  getColumnMinAndMax(columnName, tableName, geostore) {
     const query = `SELECT min(${columnName}) AS min, max(${columnName}) AS max FROM ${tableName}`;
     const qGeostore = geostore ? `&geostore=${geostore}` : '';
 
@@ -110,14 +108,12 @@ export default class DatasetService {
 
   /**
    * Get the values of a columns
-   * @static
-   * @param {string} datasetId Dataset ID
    * @param {string} columnName Name of the field/column
    * @param {string} tableName Name of the table
    * @param {boolean} [uniq=true] Get unique value
    * @param {string} [geostore] ID of the geostore, if any
    */
-  static getColumnValues(datasetId, columnName, tableName, uniq = true, geostore) {
+  getColumnValues(columnName, tableName, uniq = true, geostore) {
     const uniqQueryPart = uniq ? `GROUP BY ${columnName}` : '';
     const query = `SELECT ${columnName} FROM ${tableName} ${uniqQueryPart} ORDER BY ${columnName}`;
     const qGeostore = geostore ? `&geostore=${geostore}` : '';

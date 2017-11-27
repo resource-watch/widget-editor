@@ -50,17 +50,17 @@ class FilterNumberTooltip extends React.Component {
     const { selected } = this.props;
 
     this.props.getFilter()
-      .then((result) => {
+      .then(({ min, max }) => {
         this.setState({
           // We round the values to have a nicer UI
-          min: Math.floor(result.properties.min),
-          max: Math.ceil(result.properties.max)
+          min: Math.floor(min),
+          max: Math.ceil(max)
         });
 
         if (this.props.onChange && !selected.length) {
           this.props.onChange([
-            Math.floor(result.properties.min),
-            Math.ceil(result.properties.max)
+            Math.floor(min),
+            Math.ceil(max)
           ]);
         }
 
@@ -124,7 +124,7 @@ class FilterNumberTooltip extends React.Component {
           </div>
         }
 
-        {!loading && selected.length &&
+        {!loading && !!selected.length &&
           <div className="text-inputs-container">
             <input className="-first" type="number" value={selected[0]} onChange={this.handleMinChange} />
             -
@@ -132,7 +132,7 @@ class FilterNumberTooltip extends React.Component {
           </div>
         }
 
-        {!loading && selected.length &&
+        {!loading && !!selected.length &&
           <div className="buttons">
             <Button
               properties={{ type: 'button', className: '-primary -compressed' }}

@@ -47,8 +47,8 @@ class FilterStringTooltip extends React.Component {
    */
   getFilter() {
     this.props.getFilter()
-      .then((result) => {
-        const values = result.properties.map(val => ({ name: val, label: val, value: val }));
+      .then((arr) => {
+        const values = arr.map(val => ({ name: val, label: val, value: val }));
 
         this.setState({ values, filteredValues: values });
 

@@ -84,16 +84,14 @@ class FilterTooltip extends React.Component {
    */
   getFilter() {
     if (this.props.type === 'number' || this.props.type === 'date') {
-      return DatasetService.getColumnMinAndMax(
-        this.props.datasetId,
+      return this.datasetService.getColumnMinAndMax(
         this.props.name,
         this.props.tableName,
         this.props.widgetEditor.areaIntersection
       );
     }
 
-    return DatasetService.getColumnValues(
-      this.props.datasetId,
+    return this.datasetService.getColumnValues(
       this.props.name,
       this.props.tableName,
       true,
