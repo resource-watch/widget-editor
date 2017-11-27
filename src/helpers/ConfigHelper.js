@@ -9,6 +9,7 @@ let config = null;
  * @property {string} authUrl - URL to authenticate the user
  * @property {string} [userToken] - Token of the logged user
  * @property {string} [userEmail] - Email of the logged user
+ * @property {string} [locale] - Locale used to fetch the data
  */
 
 /**
@@ -44,6 +45,7 @@ export function setConfig(params) {
     applications: params.applications,
     authUrl: params.authUrl,
     userToken: params.userToken || null,
-    userEmail: params.userEmail || null
+    userEmail: params.userEmail || null,
+    locale: params.locale || 'en'
   };
 };
