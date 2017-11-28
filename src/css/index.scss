@@ -70,7 +70,13 @@ $ease-out-sine: cubic-bezier(0.390, 0.575, 0.565, 1.000);
 $ease-in-out-sine: cubic-bezier(0.445, 0.050, 0.550, 0.950);
 
 
-
+$breakpoints: (
+  small: 0,
+  medium: 720px,
+  large: 960px,
+  xlarge: 1260px,
+  xxlarge: 1440px,
+);
 
 
 // General settings
@@ -137,10 +143,14 @@ $margin-size: 50px;
 $margin-size-big: 100px;
 
 @import
+  "~leaflet/dist/leaflet.css",
+  "~rc-slider/assets/index.css",
   "add_widget_to_collection_tooltip",
   "aggregate_function_tooltip",
+  "button",
   "chart_editor",
   "chart_tooltip",
+  "checkbox",
   "column_container",
   "column_details",
   "columnbox",
@@ -154,17 +164,23 @@ $margin-size-big: 100px;
   "how_to_widget_editor_modal",
   "icon",
   "limit_container",
+  "map",
+  "map_controls",
   "map_editor",
+  "map_legend",
   "modal",
   "order_by_tooltip",
+  "radio",
   "raster_chart_editor",
   "save_widget_modal",
   "select",
   "sort_container",
   "spinner",
+  "table",
   "table_view",
   "text_chart",
   "tooltip",
+  "upload_area_intersection_modal",
   "vega_chart_legend",
   "widget-tooltip-list",
   "widget_actions_tooltip",

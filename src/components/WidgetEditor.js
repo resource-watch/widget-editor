@@ -667,6 +667,7 @@ class WidgetEditor extends React.Component {
     // In case the dataset is a raster one, we add a special chart option which is
     // different from the other one (the user won't have to choose columns but bands)
     if (this.state.datasetType === 'raster') {
+      visualizationOptions = visualizationOptions.filter(val => val.value !== 'chart' && val.value !== 'table');
       visualizationOptions.push(VISUALIZATION_TYPES.find(vis => vis.value === 'raster_chart'));
     }
 

@@ -42,7 +42,7 @@ class AggregateFunctionTooltip extends React.Component {
 
   @Autobind
   triggerMouseDown(e) {
-    const el = document.querySelector('.c-tooltip');
+    const el = document.querySelector('.c-tooltip-editor');
     const clickOutside = el && el.contains && !el.contains(e.target);
     if (clickOutside) {
       this.props.toggleTooltip(false);

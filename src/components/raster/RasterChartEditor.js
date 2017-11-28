@@ -4,7 +4,7 @@ import Autobind from 'autobind-decorator';
 import { toastr } from 'react-redux-toastr';
 import isEmpty from 'lodash/isEmpty';
 import truncate from 'lodash/truncate';
-import { format } from 'd3-time-format';
+import { format } from 'd3-format';
 
 // Redux
 import { connect } from 'react-redux';
@@ -130,9 +130,9 @@ class RasterChartEditor extends React.Component {
 
   render() {
     const { loading, bands, error, bandStatsInfo, bandStatsInfoLoading } = this.state;
-    const { band, mode, showSaveButton, hasGeoInfo } = this.props;
+    const { band, mode, showSaveButton, hasGeoInfo, widgetEditor, provider } = this.props;
 
-    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canSave = canRenderChart(widgetEditor, provider);
     const canShowSaveButton = showSaveButton && canSave;
 
     let description = band && band.description;
@@ -238,6 +238,7 @@ RasterChartEditor.propTypes = {
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({
+  widgetEditor,
   band: widgetEditor.band,
   bandsInfo: widgetEditor.bandsInfo
 });

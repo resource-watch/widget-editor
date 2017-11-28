@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Autobind from 'autobind-decorator';
 
 // Redux
 import { connect } from 'react-redux';
@@ -24,8 +25,9 @@ class BasemapControl extends React.Component {
     document.removeEventListener('click', this.onScreenClick);
   }
 
+  @Autobind
   onScreenClick(e) {
-    const el = document.querySelector('.c-tooltip');
+    const el = document.querySelector('.c-tooltip-editor');
     const clickOutside = el && el.contains && !el.contains(e.target);
 
     if (clickOutside) {
@@ -33,12 +35,14 @@ class BasemapControl extends React.Component {
     }
   }
 
+  @Autobind
   onBasemapChange(basemap) {
     const { basemapControl } = this.props;
 
     this.props.setBasemap(basemapControl.basemaps[basemap]);
   }
 
+  @Autobind
   onLabelChange(label) {
     this.props.setLabels(label.checked);
   }
@@ -71,7 +75,7 @@ class BasemapControl extends React.Component {
         }]}
         targetOffset="8px 100%"
         classes={{
-          element: 'c-tooltip -arrow-right'
+          element: 'c-tooltip-editor -arrow-right'
         }}
       >
         {/* First child: This is what the item will be tethered to */}
@@ -128,8 +132,8 @@ const mapStateToProps = ({ widgetEditorExplore }) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setBasemap,
-  setLabels
+  setBasemap: (...params) => dispatch(setBasemap(...params)),
+  setLabels: (...params) => dispatch(setLabels(...params))
 });
 
 export default (connect(mapStateToProps, mapDispatchToProps)(BasemapControl));

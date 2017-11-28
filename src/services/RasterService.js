@@ -32,9 +32,7 @@ export default class RasterService {
       query = `SELECT (st_metadata(st_union(the_raster_webmercator))).* from ${this.tableName}`;
     }
 
-    return this.datasetService.fetchFilteredData(query)
-
-    return fetch(`${getConfig().url}/query/${this.dataset}?sql=${query}`)
+    return this.datasetService.fetchFilteredData(`sql=${query}`)
       .then((data) => {
         if (this.provider === 'gee') {
           return data[0].bands.map(b => b.id);
@@ -71,7 +69,7 @@ export default class RasterService {
       }
 
       // We now fetch the actual data
-      this.datasetService.fetchFilteredData(query)
+      this.datasetService.fetchFilteredData(`sql=${query}`)
         .then((data) => {
           if (this.provider === 'gee') {
             // We cache the data because the information of all the

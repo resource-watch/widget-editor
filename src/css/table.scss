@@ -1,0 +1,162 @@
+$table-column-padding: 20px;
+$table-font-size: $font-size-normal;
+
+.c-table {
+
+  .table, table {
+    border-collapse: separate;
+    border-spacing:0;
+    width: 100%;
+    padding: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    border-top: 1px solid $border-color-1;
+    border-left: 1px solid $border-color-1;
+    border-right: 1px solid $border-color-1;
+
+    font-size: $table-font-size;
+
+    li {
+      list-style: none;
+    }
+
+    // thead, tbody, tfoot {
+    //   border-top: 1px solid $border-color-1;
+    //   border-left: 1px solid $border-color-1;
+    //   border-right: 1px solid $border-color-1;
+    // }
+
+    // tbody {
+    //   border-bottom: 1px solid $border-color-1;
+    // }
+
+    td, th {
+      border-bottom: 1px solid $border-color-1;
+    }
+
+    thead {
+      background-color: $color-white;
+
+      th {
+        position: relative;
+        font-size: $table-font-size;
+        color: $color-text-1;
+        font-weight: bold;
+        white-space: nowrap;
+
+        padding: $table-column-padding;
+
+        .filter-action {
+          fill: $color-mid-grey;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background-color: $color-white;
+
+        &.-selected {
+          // background-color: $color-secondary;
+        }
+      }
+
+      td {
+        width: 100%; // It will force the tds to be expanded along the table
+        padding: $table-column-padding;
+      }
+
+      .individual-actions {
+        > ul {
+          display: inline-flex;
+          margin: 0;
+          padding: 0;
+
+          > li {
+            margin-right: 20px;
+
+            &:last-child {
+              margin: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .th-wrapper {
+    display: flex;
+    align-items: flex-end;
+
+    ul {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      margin-left: 10px;
+    }
+  }
+
+  .table-footer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: $space-1;
+    margin-top: 10px;
+  }
+
+  .c-paginator {
+    margin-bottom: 20px;
+  }
+
+  // CUSTOM TDs
+  // Main
+  td.main {
+    color: $color-text-1;
+
+    a {
+      color: $color-text-1;
+      text-decoration: none;
+
+      &:hover {
+        color: darken($color-text-1, 10%);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // Status
+  td.status {
+    &:before {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 5px;
+      margin-bottom: 1px;
+    }
+
+    &.-success,
+    &.-saved,
+    &.-completed {
+      color: $color-green;
+      &:before { background-color: $color-green; }
+    }
+
+    &.-pending {
+      color: $color-mid-grey;
+      &:before { background-color: $color-mid-grey; }
+    }
+
+    &.-failed {
+      color: $color-mango;
+      &:before { background-color: $color-mango; }
+    }
+
+    &.-deleted {
+      color: $color-error;
+      &:before { background-color: $color-error; }
+    }
+  }
+}

@@ -22,10 +22,10 @@ class MapEditor extends React.Component {
   }
 
   render() {
-    const { widgetEditor, layers, mode, showSaveButton } = this.props;
+    const { widgetEditor, layers, mode, showSaveButton, provider } = this.props;
     const { layer } = widgetEditor;
 
-    const canSave = canRenderChart(widgetEditor, datasetProvider);
+    const canSave = canRenderChart(widgetEditor, provider);
     const canShowSaveButton = showSaveButton && canSave;
 
     return (
