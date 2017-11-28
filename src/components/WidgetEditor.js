@@ -24,7 +24,14 @@ import {
   setCategory,
   setValue,
   setSize,
-  setOrderBy
+  setOrderBy,
+  setBand,
+  setLayer,
+  setAggregateFunction,
+  setLimit,
+  setChartType,
+  setAreaIntersection,
+  setEmbed
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 
@@ -163,6 +170,10 @@ class WidgetEditor extends React.Component {
     // We load the initial data
     this.loadData(true);
 
+    if (this.props.widgetId) {
+      this.restoreWidget(this.props.widgetId);
+    }
+
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(this.getWidgetConfig.bind(this));
     }
@@ -170,9 +181,12 @@ class WidgetEditor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // If the dataset changes...
-    if (nextProps.datasetId !== this.props.datasetId) {
+    if (nextProps.datasetId !== this.props.datasetId || nextProps.widgetId !== this.props.widgetId) {
       this.setState(this.initComponent(nextProps), () => {
         this.loadData();
+        if (nextProps.widgetId) {
+          this.restoreWidget(nextProps.widgetId);
+        }
       });
     } else if (!isEqual(this.props.widgetEditor.layer, nextProps.widgetEditor.layer)) {
       // We update the layerGroups each time the layer changes
@@ -711,7 +725,6 @@ class WidgetEditor extends React.Component {
   initComponent(props) {
     // First, we init the services
     this.datasetService = new DatasetService(props.datasetId);
-    this.widgetService = new WidgetService(props.datasetId);
 
     // Each time the editor is opened again, we reset the Redux's state
     // associated with it
@@ -737,6 +750,59 @@ class WidgetEditor extends React.Component {
       ...DEFAULT_STATE,
       layerGroups
     };
+  }
+
+  /**
+   * Restore the state of the editor according to the widget
+   * @param {string} widgetId Widget ID
+   */
+  restoreWidget(widgetId) {
+    const widgetService = new WidgetService(widgetId);
+
+    widgetService.fetchData()
+      .then((data) => {
+        console.log(data);
+        const { widgetConfig, name } = data.attributes;
+        const { paramsConfig, zoom, lat, lng } = widgetConfig;
+        const {
+          visualizationType,
+          band,
+          value,
+          category,
+          color,
+          size,
+          aggregateFunction,
+          orderBy,
+          filters,
+          limit,
+          chartType,
+          layer,
+          areaIntersection,
+          embed
+        } = paramsConfig;
+
+        // We restore the type of visualization
+        // We default to "chart" to maintain the compatibility with previously created
+        // widgets (at that time, only "chart" widgets could be created)
+        this.props.setVisualizationType(visualizationType || 'chart');
+
+        if (band) this.props.setBand(band);
+        if (layer) this.props.setLayer(layer);
+        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
+        if (value) this.props.setValue(value);
+        if (size) this.props.setSize(size);
+        if (color) this.props.setColor(color);
+        if (orderBy) this.props.setOrderBy(orderBy);
+        if (category) this.props.setCategory(category);
+        if (filters) this.props.setFilters(filters);
+        if (limit) this.props.setLimit(limit);
+        if (chartType) this.props.setChartType(chartType);
+        if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
+        if (name) this.props.setTitle(name);
+        if (zoom) this.props.setZoom(zoom);
+        if (lat && lng) this.props.setLatLng({ lat, lng });
+        if (embed) this.props.setEmbed(embed);
+      });
   }
 
   /**
@@ -1120,7 +1186,14 @@ const mapDispatchToProps = dispatch => ({
   setCategory: filter => dispatch(setCategory(filter)),
   setValue: filter => dispatch(setValue(filter)),
   setSize: filter => dispatch(setSize(filter)),
-  setOrderBy: filter => dispatch(setOrderBy(filter))
+  setOrderBy: filter => dispatch(setOrderBy(filter)),
+  setBand: (...params) => dispatch(setBand(...params)),
+  setLayer: (...params) => dispatch(setLayer(...params)),
+  setAggregateFunction: (...params) => dispatch(setAggregateFunction(...params)),
+  setLimit: (...params) => dispatch(setLimit(...params)),
+  setChartType: (...params) => dispatch(setChartType(...params)),
+  setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
+  setEmbed: (...params) => dispatch(setEmbed(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1171,9 +1244,14 @@ WidgetEditor.propTypes = {
   setCategory: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
   setValue: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
   setSize: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setOrderBy: PropTypes.func // eslint-disable-line react/no-unused-prop-types
-
-
+  setOrderBy: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setBand: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setLayer: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setAggregateFunction: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setLimit: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setChartType: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setAreaIntersection: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
+  setEmbed: PropTypes.func // eslint-disable-line react/no-unused-prop-types
 };
 
 WidgetEditor.defaultProps = {
