@@ -11,7 +11,6 @@ import 'css/index.scss';
 
 // Redux
 import { connect } from 'react-redux';
-
 import {
   resetWidgetEditor,
   setFields,
@@ -37,6 +36,13 @@ import WidgetService from 'services/WidgetService';
 import Select from 'components/form/SelectInput';
 import Spinner from 'components/ui/Spinner';
 import VegaChart from 'components/chart/VegaChart';
+import Map from 'components/map/Map';
+import MapControls from 'components/map/MapControls';
+import BasemapControl from 'components/map/controls/BasemapControl';
+import Legend from 'components/ui/Legend';
+import TableView from 'components/table/TableView';
+import ShareModalExplore from 'components/modal/ShareModalExplore';
+import EmbedTableModal from 'components/modal/EmbedTableModal';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
@@ -44,16 +50,9 @@ import MapEditor from 'components/map/MapEditor';
 import RasterChartEditor from 'components/raster/RasterChartEditor';
 import NEXGDDPEditor from 'components/nexgddp/NEXGDDPEditor';
 
-import Map from 'components/map/Map';
-import MapControls from 'components/map/MapControls';
-import BasemapControl from 'components/map/controls/BasemapControl';
 
-import Legend from 'components/ui/Legend';
-import TableView from 'components/table/TableView';
-import ShareModalExplore from 'components/modal/ShareModalExplore';
-import EmbedTableModal from 'components/modal/EmbedTableModal';
 
-// Utils
+// Helpers
 import {
   getChartInfo,
   getChartConfig,
@@ -63,7 +62,6 @@ import {
   getWidgetConfig
 } from 'helpers/WidgetHelper';
 import { getConfig } from 'helpers/ConfigHelper';
-
 import ChartTheme from 'helpers/theme';
 import LayerManager from 'helpers/LayerManager';
 import getQueryByFilters from 'helpers/getQueryByFilters';
@@ -75,16 +73,14 @@ const VISUALIZATION_TYPES = [
   { label: 'Table', value: 'table', available: true }
 ];
 
-const ALL_CHART_TYPES = {
-  general: [
-    '1d_scatter',
-    '1d_tick',
-    'bar',
-    'line',
-    'pie',
-    'scatter'
-  ]
-};
+const CHART_TYPES = [
+  { label: '1d_scatter', value: '1d_scatter' },
+  { label: '1d_tick', value: '1d_tick' },
+  { label: 'bar', value: 'bar' },
+  { label: 'line', value: 'line' },
+  { label: 'pie', value: 'pie' },
+  { label: 'scatter', value: 'scatter' }
+];
 
 const DEFAULT_STATE = {
   // DATASET
@@ -120,6 +116,32 @@ const DEFAULT_STATE = {
   visualizationOptions: [] // Available visualizations
 };
 
+/**
+ * GANTT TO "LOADED" STATE
+ *
+ * |-initComponent (1)-|
+ *                     ⮑|-restoreWidget (2)-|
+ *                     ⮑|-loadData-(3)-----------------------------------------------------------------------------|
+ *                       |-getDatasetInfo (4)-|
+ *                                            ⮑|-getFields (5)-|
+ *                                            |                 ⮑|-getJiminy (6)-|
+ *                                            |                 |                  ⮑|-checkEditorRestoredState (7)-|
+ *                                            ⮑|-getLayers (8)-|
+ *                                                              ⮑|-setVisualizationOptions (9)-|
+ *
+ * (1) Reset the state of the component and Redux
+ * (2) If this.props.widgetId is provided, load the widget info and set Redux' state
+ * (3) Get all the information about the dataset to display the UI
+ * (4) Get the dataset info (type, provider, etc.), the aliases and descriptions of the fields, the relevant ones
+ * (5) Depend on (4). Get the actual list of fields and their types. Filter them according to (4). Not executed
+ *     if dataset is a raster.
+ * (6) Depend on (5). Get the chart recommendations. Not executed if dataset is a raster.
+ * (7) Depend on and (6). Check that the widget is based on fields that still exist and update the fields
+ *     aliases and descriptions. Not executed if dataset is a raster.
+ * (8) Depend on (4). Get the list of layers.
+ * (9) Depend on (5) and (8). Set the defaut vizualization. Executed even if (5) is not.
+ */
+
 @DragDropContext(HTML5Backend)
 class WidgetEditor extends React.Component {
   constructor(props) {
@@ -136,9 +158,6 @@ class WidgetEditor extends React.Component {
   * - componentWillReceiveProps
   * - componentDidUpdate
   */
-  componentWillMount() {
-    this.props.resetWidgetEditor(true);
-  }
 
   componentDidMount() {
     // We load the initial data
@@ -266,9 +285,11 @@ class WidgetEditor extends React.Component {
 
   /**
    * Fetch the fields and save them in the state
-   * @returns {Promise<void>}
+   * @param {{ metadata: { [name: string]: { alias?: string, description?: string }}, relevantFields: string[] }} fieldsInfo
+   * Information about the fields (alias, description, relevant or not)
+   * @returns {Promise<{ columnName: string, columnType: string, alias?: string, description?: string }[]>}
    */
-  getFields() {
+  getFields(fieldsInfo) {
     // Functions to resolve and reject the promise
     let resolve;
     let reject;
@@ -279,35 +300,23 @@ class WidgetEditor extends React.Component {
       reject = rej;
     });
 
+    this.setState({ fieldsLoaded: false, fieldsError: false });
+
     this.datasetService.getFields()
       .then((fields) => {
         const fieldsError = !fields || !fields.length || fields.length === 0;
+        this.setState({ fieldsError, fieldsLoaded: true });
+        if (fieldsError) throw new Error('The dataset doesn\'t have fields');
 
-        this.setState({
-          // We still need to fetch the aliases in getDatasetInfo
-          // so we let the loader spinning
-          // FIXME: once the fields enpoint is updated, the aliases
-          // should come with this query
-          fieldsLoaded: false,
-          fieldsError
-        }, () => {
-          // We wait for the state to be updated before doing anything
-          // else
-          // If there's an error, we throw to enter the catch block
-          if (fieldsError) throw new Error('The dataset doesn\'t have fields');
+        const filteredFields = fields
+          .map(f => Object.assign({}, f, fieldsInfo.metadata[f.columnName] || {}))
+          .filter(f => !fieldsInfo.relevantFields.length
+            || fieldsInfo.relevantFields.indexOf(f.columnName) !== -1);
 
-          this.props.setFields(fields);
-          resolve();
-        });
+        this.props.setFields(filteredFields);
+        resolve(filteredFields);
       })
-      // We can't show an error here because for the raster datasets
-      // there won't be fields
-      // Unfortunately, at this stage, we don't know if the dataset
-      // is a raster one, so the error is never shown
-      .catch(err => this.setState({ fieldsError: true }))
-      // If we reach this point, either we have already resolved the promise
-      // and so rejecting it has no effect, or we haven't and so we reject it
-      .then(reject);
+      .catch(() => this.setState({ fieldsError: true, fieldsLoaded: true }, resolve([])));
 
     return promise;
   }
@@ -317,6 +326,7 @@ class WidgetEditor extends React.Component {
    * @returns {Promise<any>}
    */
   getLayers() {
+    this.setState({ layersError: false, layersLoaded: false });
     return this.datasetService.getLayers()
       .then(response => new Promise(resolve => this.setState({
         layers: response.map(val => ({
@@ -326,8 +336,7 @@ class WidgetEditor extends React.Component {
           ...val.attributes,
           order: 1,
           hidden: false
-        })),
-        layersLoaded: true
+        }))
       }, resolve)))
       // TODO: properly handle this in the UI
       .catch((err) => {
@@ -342,11 +351,12 @@ class WidgetEditor extends React.Component {
    * state
    * @returns {Promise<any>}
    */
-  getJiminy() {
+  getJiminy(fields) {
+    this.setState({ jiminyError: false, jiminyLoaded: false });
+
     // We get the name of the columns that we can use to build the
     // charts
-    const fieldsSt = this.props.widgetEditor.fields
-      .map(elem => elem.columnName);
+    const fieldsSt = fields.map(elem => elem.columnName);
 
     const querySt = `SELECT ${fieldsSt} FROM ${this.props.datasetId} LIMIT 300`;
     return DatasetService.getJiminySuggestions(querySt)
@@ -356,34 +366,35 @@ class WidgetEditor extends React.Component {
   }
 
   /**
-   * Fetch the name of the table and the aliases and descriptions
+   * Fetch the name of the table, the aliases and descriptions
    * of the columns and save all of that in the store
-   * @returns {Promise<any>}
+   * Return the info about the fields
+   * @returns {Promise<{ metadata: { [name: string]: { alias?: string, description?: string }}, relevantFields: string[] }>}
    */
   getDatasetInfo() {
     return this.datasetService.fetchData('metadata')
       .then(({ attributes }) => { // eslint-disable-line arrow-body-style
         return new Promise((resolve) => {
-          const metadata = !!attributes.metadata.length
-            && !!attributes.metadata[0]
-            && attributes.metadata[0].attributes.columns;
+          const metadata = (attributes.metadata.length && attributes.metadata[0] && attributes.metadata[0].attributes.columns)
+            ? attributes.metadata[0].attributes.columns
+            : {};
 
           // Return the metadata's field for the specified column
-          const getMetadata = (column, field) =>(!!metadata
-            && !!metadata[column]
-            && metadata[column][field]
+          const getMetadata = (column, field) =>((metadata && metadata[column])
+            ? metadata[column][field]
+            : undefined
           );
 
-          // We add the aliases and descriptions to the fields
-          let fields = this.props.widgetEditor.fields.map(field => Object.assign({}, field, {
-            alias: getMetadata(field.columnName, 'alias') || '',
-            description: getMetadata(field.columnName, 'description') || ''
-          }));
-
-          // We filter the fields according to the relevant columns
-          const relevantColumns = attributes.widgetRelevantProps || [];
-          fields = fields.filter(field => !relevantColumns.length
-            || attributes.widgetRelevantProps.indexOf(field.columnName) !== -1);
+          // Object that is returned by the function
+          // Contains the metadata information associated with
+          // the fields, as well as the relevant ones
+          const fieldsInfo = {
+            metadata: Object.keys(metadata).map(field => ({
+              alias: getMetadata(field, 'alias'),
+              description: getMetadata(field, 'description'),
+            })),
+            relevantFields: attributes.widgetRelevantProps
+          };
 
           // If the widget is a raster one, we save the information
           // related to its bands (alias, description, etc.)
@@ -396,15 +407,13 @@ class WidgetEditor extends React.Component {
             this.props.setBandsInfo(metadata);
           }
 
-          this.props.setFields(fields);
-
           this.setState({
             datasetInfoLoaded: true,
             tableName: attributes.tableName,
             hasGeoInfo: attributes.geoInfo,
             datasetType: attributes.type,
             datasetProvider: attributes.provider
-          }, resolve);
+          }, () => resolve(fieldsInfo));
         });
       })
       // TODO: handle the error case in the UI
@@ -737,48 +746,57 @@ class WidgetEditor extends React.Component {
    * @param {boolean} [initialLoading=false] Whether this is the inital loading
    */
   loadData(initialLoading = false) {
-    this.setState({
-      fieldsLoaded: false,
-      fieldsError: false,
-      layersLoaded: false,
-      layersError: false,
-      jiminyLoaded: false,
-      jiminyError: false
-    }, () => {
-      Promise.all([this.getFields(), this.getLayers()])
-        .then(() => this.getJiminy())
-        .catch(() => {
-          // If either of the promises reject, it's not a real issue
-          // because the state will be updated consequently and we
-          // can take further actions in the UI
-        })
-        // Whether or not the dataset has fields, we fetch the dataset info
-        // to get for example the type of dataset
-        .then(() => this.getDatasetInfo())
-        // Two cases:
-        //  * either we successfully loaded the fields and in that case we want
-        //    to remove the loader
-        //  * either we couldn't load them and fieldsError is set to true so the
-        //    next line won't do anything
-        // NOTE: jiminy must also be set as loaded to remove the spinner in case
-        // one of the two promises rejected
-        .then(() => new Promise(resolve => this.setState({
-          fieldsLoaded: true,
-          jiminyLoaded: true
-        }, resolve)))
-        // If this is the inital call to this method (when the component is
-        // mounted), we don't want to reset the store because we might set it
-        // from the outside when editing an existing widget
-        .then(() => this.setVisualizationOptions(!initialLoading))
-        .then(() => {
-          if (initialLoading) {
-            // If the editor is initially loaded, a previous state might have
-            // been restored. In such a case, we make sure the data is still
-            // up to date (for example, the aliases)
-            this.checkEditorRestoredState();
+    let fieldsInfo;
+
+    this.getDatasetInfo()
+      .then(info => { fieldsInfo = info; })
+      .then(() => {
+        // This promise basically calls this.getFields but makes
+        // sure that if the dataset is a raster, we don't call it
+        const getFields = new Promise((resolve, reject) => {
+          if (this.state.datasetType === 'raster') {
+            this.setState({ fieldsError: false, fieldsLoaded: true }, resolve);
+          } else {
+            this.getFields(fieldsInfo)
+              .then(resolve)
+              .catch(reject);
           }
         });
-    });
+
+        // This promise basically calls this.getJiminy but makes
+        // sure that if the dataset is a raster, we don't call it
+        const getJiminy = fields => new Promise((resolve, reject) => {
+          if (this.state.datasetType === 'raster') {
+            this.setState({ jiminyLoaded: true, jiminyError: false }, resolve);
+          } else {
+            return this.getJiminy(fields)
+              .then(resolve)
+              .catch(reject);
+          }
+        });
+
+        const checkEditorRestoredState = () => {
+          if (this.state.datasetType !== 'raster') {
+            this.checkEditorRestoredState(fieldsInfo);
+          }
+        };
+
+        Promise.all([
+          getFields
+            .then((fields) => {
+              getJiminy(fields)
+                // If the editor is initially loaded, a previous state might have
+                // been restored. In such a case, we make sure the data is still
+                // up to date (for example, the aliases)
+                .then(() => checkEditorRestoredState());
+            }),
+          this.getLayers()
+        ])
+          // If this is the inital call to this method (when the component is
+          // mounted), we don't want to reset the store because we might set it
+          // from the outside when editing an existing widget
+          .then(() => this.setVisualizationOptions(!initialLoading));
+      });
   }
 
   /**
@@ -966,11 +984,9 @@ class WidgetEditor extends React.Component {
 
     // TODO: could be saved in the state instead of computing it
     // each time
-    let chartOptions = ALL_CHART_TYPES;
-    if (!jiminyError && jiminyLoaded) {
-      chartOptions = jiminy.general
-        ? jiminy.general.map(val => ({ label: val, value: val }))
-        : chartOptions;
+    let chartOptions = CHART_TYPES;
+    if (!jiminyError && jiminyLoaded && datasetType !== 'raster') {
+      chartOptions = jiminy.general.map(val => ({ label: val, value: val }));
     }
 
     return (
