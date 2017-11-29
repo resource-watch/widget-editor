@@ -69,7 +69,6 @@
     "react-select": "^1.0.0-rc.10",
     "react-sortable-hoc": "^0.6.8",
     "react-tether": "^0.6.0",
-    "react-tokeninput": "^2.4.0",
     "toastr": "^2.1.2",
     "vega": "^2.6.5"
   },

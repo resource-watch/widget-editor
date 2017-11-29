@@ -21,33 +21,22 @@ export { default as VegaChartTooltip } from 'components/chart/VegaChartTooltip';
 
 export { default as Checkbox } from 'components/form/Checkbox';
 export { default as CheckboxGroup } from 'components/form/CheckboxGroup';
-// export { default as Code } from 'components/form/Code';
 export { default as Field } from 'components/form/Field';
-export { default as File } from 'components/form/File';
-// export { default as FileImage } from 'components/form/FileImage';
 export { default as FormElement } from 'components/form/FormElement';
 export { default as Input } from 'components/form/Input';
-export { default as Navigation } from 'components/form/Navigation';
 export { default as RadioGroup } from 'components/form/RadioGroup';
 export { default as SelectInput } from 'components/form/SelectInput';
-export { default as TextArea } from 'components/form/TextArea';
-// export { default as ToggleSearch } from 'components/form/ToggleSearch';
-// export { default as Token } from 'components/form/Token';
 export { default as Validator } from 'components/form/Validator';
-// export { default as Wysiwyg } from 'components/form/Wysiwyg';
 
 export { default as BasemapControl } from 'components/map/controls/BasemapControl';
-export { default as ShareControl } from 'components/map/controls/ShareControl';
 export { default as Map } from 'components/map/Map';
 export { default as MapControls } from 'components/map/MapControls';
 export { default as MapEditor } from 'components/map/MapEditor';
 
-export { default as EmbedLayerModal } from 'components/modal/EmbedLayerModal';
 export { default as EmbedTableModal } from 'components/modal/EmbedTableModal';
 export { default as HowToWidgetEditorModal } from 'components/modal/HowToWidgetEditorModal';
 export { default as LayerInfoModal } from 'components/modal/LayerInfoModal';
 export { default as SaveWidgetModal } from 'components/modal/SaveWidgetModal';
-export { default as ShareModalExplore } from 'components/modal/ShareModalExplore';
 export { default as UploadAreaIntersectionModal } from 'components/modal/UploadAreaIntersectionModal';
 
 export { default as NEXGDDPEditor } from 'components/nexgddp/NEXGDDPEditor';

@@ -1248,7 +1248,7 @@ clap@^1.0.9:
   dependencies:
     chalk "^1.1.3"
 
-classnames@^2.2.1, classnames@^2.2.3, classnames@^2.2.4, classnames@^2.2.5:
+classnames@^2.2.3, classnames@^2.2.4, classnames@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
 
@@ -5132,12 +5132,6 @@ react-tether@^0.6.0:
   dependencies:
     prop-types "^15.5.8"
     tether "^1.3.7"
-
-react-tokeninput@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/react-tokeninput/-/react-tokeninput-2.4.0.tgz#b9c7b173ac2527dad473a4ef0a6d77ab89e07ce4"
-  dependencies:
-    classnames "^2.2.1"
 
 react@^16.1.1:
   version "16.1.1"

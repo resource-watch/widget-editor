@@ -10,7 +10,6 @@ import { toggleModal, setModalOptions } from 'reducers/modal';
 
 // Components
 import Select from 'components/form/SelectInput';
-// import EmbedLayerModal from 'components/modal/EmbedLayerModal';
 
 // Helpers
 import { canRenderChart } from 'helpers/WidgetHelper';

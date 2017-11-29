@@ -48,7 +48,6 @@ import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
 import Legend from 'components/ui/Legend';
 import TableView from 'components/table/TableView';
-import ShareModalExplore from 'components/modal/ShareModalExplore';
 import EmbedTableModal from 'components/modal/EmbedTableModal';
 
 // Editors
@@ -271,32 +270,6 @@ class WidgetEditor extends React.Component {
     });
 
     this.setState({ layerGroups: [...layerGroups] });
-  }
-
-  /**
-   * Event handler executed when the user clicks the
-   * embed button of the map
-   */
-  onClickShareMap() {
-    const layerGroups = [{
-      dataset: this.props.widgetEditor.layer.dataset,
-      visible: true,
-      layers: [{
-        id: this.props.widgetEditor.layer.id,
-        active: true
-      }]
-    }];
-
-    const options = {
-      children: ShareModalExplore,
-      childrenProps: {
-        url: window.location.href,
-        layerGroups,
-        toggleModal: this.props.toggleModal
-      }
-    };
-
-    this.props.toggleModal(true, options);
   }
 
   /**
