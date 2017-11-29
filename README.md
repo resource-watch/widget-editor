@@ -9,8 +9,15 @@ Initially developped for RW, the editor was then needed for PREP so it has been 
 The widget editor needs a [React](https://reactjs.org) environment with [Redux](https://redux.js.org), as well as needs some peer dependencies to be installed:
 ```bash
 $ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega@^2.6.5
-$ yarn add https://github.com/resource-watch/widget-editor.git#0.0.1
 ```
+
+The most recent version of the library at the time of writting is `v0.0.1` so you need to run this command to install the actual library:
+```bash
+$ yarn add https://github.com/resource-watch/widget-editor.git#v0.0.1
+```
+
+You can [check the release tab](https://github.com/resource-watch/widget-editor/releases) on Github to see what is the most recent version.
+
 *NOTE: you can either use npm or yarn.*
 
 Your app must configure Redux' store so it uses the editor's reducers and [react-thunk](https://github.com/gaearon/redux-thunk):
@@ -215,6 +222,6 @@ which will open a server on the port 8888.
 
 ## Changelog
 
-### 0.0.1
+### v0.0.1
 
 Initial version of the library
