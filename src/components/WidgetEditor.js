@@ -763,7 +763,6 @@ class WidgetEditor extends React.Component {
 
     widgetService.fetchData()
       .then((data) => {
-        console.log(data);
         const { widgetConfig, name } = data.attributes;
         const { paramsConfig, zoom, lat, lng } = widgetConfig;
         const {
