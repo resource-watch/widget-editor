@@ -101,6 +101,7 @@ const DEFAULT_STATE = {
   hasGeoInfo: false, // Whether the dataset includes geographical information
   tableName: null, // Name of the table
   chartLoading: false, // Whether the chart is loading its data/rendering
+  initializing: false, // Flag to prevent rendering the vis before the end of the init
 
   // CHART CONFIG
   chartConfig: null, // Vega chart configuration
@@ -244,7 +245,8 @@ class WidgetEditor extends React.Component {
       && canRenderChart(this.props.widgetEditor, this.state.datasetProvider)
       && this.props.widgetEditor.visualizationType !== 'table'
       && this.props.widgetEditor.visualizationType !== 'map'
-      && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName)) {
+      && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName)
+      && !this.state.initializing) {
       this.fetchChartConfig();
     }
   }
@@ -815,6 +817,8 @@ class WidgetEditor extends React.Component {
   loadData(initialLoading = false) {
     let fieldsInfo;
 
+    this.setState({ initializing: true })
+
     this.getDatasetInfo()
       .then(info => { fieldsInfo = info; })
       .then(() => {
@@ -855,7 +859,8 @@ class WidgetEditor extends React.Component {
                 // If the editor is initially loaded, a previous state might have
                 // been restored. In such a case, we make sure the data is still
                 // up to date (for example, the aliases)
-                .then(() => checkEditorRestoredState());
+                .then(() => checkEditorRestoredState())
+                .then(() => this.setState({ initializing: false }));
             }),
           this.getLayers()
         ])
