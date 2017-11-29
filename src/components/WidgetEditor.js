@@ -34,6 +34,7 @@ import {
   setEmbed
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
+import { toggleTooltip } from 'reducers/tooltip';
 
 // Services
 import DatasetService from 'services/DatasetService';
@@ -55,8 +56,6 @@ import ChartEditor from 'components/chart/ChartEditor';
 import MapEditor from 'components/map/MapEditor';
 import RasterChartEditor from 'components/raster/RasterChartEditor';
 import NEXGDDPEditor from 'components/nexgddp/NEXGDDPEditor';
-
-
 
 // Helpers
 import {
@@ -181,7 +180,8 @@ class WidgetEditor extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     // If the dataset changes...
-    if (nextProps.datasetId !== this.props.datasetId || nextProps.widgetId !== this.props.widgetId) {
+    if (nextProps.datasetId !== this.props.datasetId
+      || nextProps.widgetId !== this.props.widgetId) {
       this.setState(this.initComponent(nextProps), () => {
         this.loadData();
         if (nextProps.widgetId) {
@@ -273,42 +273,13 @@ class WidgetEditor extends React.Component {
   }
 
   /**
-   * Fetch the fields and save them in the state
-   * @param {{ metadata: { [name: string]: { alias?: string, description?: string }}, relevantFields: string[] }} fieldsInfo
-   * Information about the fields (alias, description, relevant or not)
-   * @returns {Promise<{ columnName: string, columnType: string, alias?: string, description?: string }[]>}
+   * Handler for when the save/update button of the editors
+   * is clicked
    */
-  getFields(fieldsInfo) {
-    // Functions to resolve and reject the promise
-    let resolve;
-    let reject;
-
-    // Actual promise
-    const promise = new Promise((res, rej) => {
-      resolve = res;
-      reject = rej;
-    });
-
-    this.setState({ fieldsLoaded: false, fieldsError: false });
-
-    this.datasetService.getFields()
-      .then((fields) => {
-        const fieldsError = !fields || !fields.length || fields.length === 0;
-        this.setState({ fieldsError, fieldsLoaded: true });
-        if (fieldsError) throw new Error('The dataset doesn\'t have fields');
-
-        const filteredFields = fields
-          .map(f => Object.assign({}, f, fieldsInfo.metadata[f.columnName] || {}))
-          .filter(f => !fieldsInfo.relevantFields.length
-            || fieldsInfo.relevantFields.indexOf(f.columnName) !== -1);
-
-        this.props.setFields(filteredFields);
-        resolve(filteredFields);
-      })
-      .catch(() => this.setState({ fieldsError: true, fieldsLoaded: true }, resolve([])));
-
-    return promise;
+  onClickSave() {
+    if (this.props.onSave) this.props.onSave();
   }
+
 
   /**
    * Fetch the information about the layers and save it in the state
@@ -364,12 +335,13 @@ class WidgetEditor extends React.Component {
     return this.datasetService.fetchData('metadata')
       .then(({ attributes }) => { // eslint-disable-line arrow-body-style
         return new Promise((resolve) => {
-          const metadata = (attributes.metadata.length && attributes.metadata[0] && attributes.metadata[0].attributes.columns)
+          const metadata = ((attributes.metadata.length && attributes.metadata[0]
+            && attributes.metadata[0].attributes.columns))
             ? attributes.metadata[0].attributes.columns
             : {};
 
           // Return the metadata's field for the specified column
-          const getMetadata = (column, field) =>((metadata && metadata[column])
+          const getMetadata = (column, field) => ((metadata && metadata[column])
             ? metadata[column][field]
             : undefined
           );
@@ -380,7 +352,7 @@ class WidgetEditor extends React.Component {
           const fieldsInfo = {
             metadata: Object.keys(metadata).map(field => ({
               alias: getMetadata(field, 'alias'),
-              description: getMetadata(field, 'description'),
+              description: getMetadata(field, 'description')
             })),
             relevantFields: attributes.widgetRelevantProps
           };
@@ -406,17 +378,10 @@ class WidgetEditor extends React.Component {
         });
       })
       // TODO: handle the error case in the UI
-      .catch(err => toastr.error('Error', `Unable to load the information about the dataset.`));
-  }
-
-  /**
-   * Return whether the editor is loading
-   * @returns {boolean}
-   */
-  isLoading() {
-    return !this.state.layersLoaded
-      || !this.state.fieldsLoaded
-      || (!this.state.fieldsError && !this.state.jiminyLoaded);
+      .catch((err) => {
+        console.error(err);
+        toastr.error('Error', 'Unable to load the information about the dataset.');
+      });
   }
 
   /**
@@ -427,9 +392,6 @@ class WidgetEditor extends React.Component {
     const {
       tableName,
       chartLoading,
-      layersLoaded,
-      fieldsError,
-      jiminyLoaded,
       datasetProvider
     } = this.state;
 
@@ -682,52 +644,165 @@ class WidgetEditor extends React.Component {
   }
 
   /**
-   * Event handler executed when the user changes the
-   * title of the graph
-   * @param {InputEvent} event
+   * Fetch the fields and save them in the state
+   * @param {{ metadata: { [name: string]: { alias?: string, description?: string }}, relevantFields: string[] }} fieldsInfo
+   * Information about the fields (alias, description, relevant or not)
+   * @returns {Promise<{ columnName: string, columnType: string, alias?: string, description?: string }[]>}
    */
-  @Autobind
-  handleTitleChange(event) {
-    const title = event.target.value;
-    this.props.setTitle(title);
+  getFields(fieldsInfo) {
+    // Function to resolve the promise
+    let resolve;
+
+    // Actual promise
+    const promise = new Promise((res) => { resolve = res; });
+
+    this.setState({ fieldsLoaded: false, fieldsError: false });
+
+    this.datasetService.getFields()
+      .then((fields) => {
+        const fieldsError = !fields || !fields.length || fields.length === 0;
+        this.setState({ fieldsError, fieldsLoaded: true });
+        if (fieldsError) throw new Error('The dataset doesn\'t have fields');
+
+        const filteredFields = fields
+          .map(f => Object.assign({}, f, fieldsInfo.metadata[f.columnName] || {}))
+          .filter(f => !fieldsInfo.relevantFields.length
+            || fieldsInfo.relevantFields.indexOf(f.columnName) !== -1);
+
+        this.props.setFields(filteredFields);
+        resolve(filteredFields);
+      })
+      .catch(() => this.setState({ fieldsError: true, fieldsLoaded: true }, resolve([])));
+
+    return promise;
   }
 
   /**
-   * Initialize the componnent by setting its initial state, resetting
-   * the store and instantiating the services
-   * The method resolves when the initialization is done
-   *
-   * @param {object} props Current props
-   * @returns {Promise<void>}
+   * Return the widget config of the widget
+   * NOTE: If no widget is rendered, rejects
+   * NOTE: this method is public
+   * @returns {Promise<object>}
    */
-  initComponent(props) {
-    // First, we init the services
-    this.datasetService = new DatasetService(props.datasetId);
+  getWidgetConfig() {
+    const { tableName, datasetType, datasetProvider, datasetInfoLoaded } = this.state;
+    const { widgetEditor, datasetId } = this.props;
 
-    // Each time the editor is opened again, we reset the Redux's state
-    // associated with it
-    props.resetWidgetEditor();
-
-    // If the there's a layer, we compute the LayerGroup
-    // representation
-    const layerGroups = [];
-    if (props.widgetEditor.layer) {
-      layerGroups.push({
-        dataset: props.widgetEditor.layer.dataset,
-        visible: true,
-        layers: [{
-          id: props.widgetEditor.layer.id,
-          active: true,
-          ...props.widgetEditor.layer
-        }]
-      });
+    if (!datasetInfoLoaded || !canRenderChart(widgetEditor, datasetProvider)) {
+      return new Promise((_, reject) => reject());
     }
 
-    // Then we reset the state of the component
-    return {
-      ...DEFAULT_STATE,
-      layerGroups
+    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+  }
+
+  /**
+   * Fetch the Vega chart configuration and store it in
+   * the state
+   * NOTE: the vega chart *will* contain the whole dataset
+   * inside and not the URL of the data
+   */
+  fetchChartConfig() {
+    const { tableName, datasetType, datasetProvider } = this.state;
+    const { widgetEditor, datasetId, band } = this.props;
+
+    this.setState({ chartConfigLoading: true, chartConfigError: null });
+
+    const chartInfo = getChartInfo(datasetId, datasetType, datasetProvider, widgetEditor);
+
+    getChartConfig(
+      datasetId,
+      datasetType,
+      tableName,
+      band,
+      datasetProvider,
+      chartInfo,
+      true
+    )
+      .then(chartConfig => this.setState({ chartConfig }))
+      .catch(({ message }) => this.setState({ chartConfig: null, chartConfigError: message }))
+      .then(() => this.setState({ chartConfigLoading: false }));
+  }
+
+  /**
+   * Check if the restored state of the editor is up to date,
+   * if any
+   */
+  checkEditorRestoredState() {
+    const { widgetEditor } = this.props;
+
+    const attrToSetter = {
+      category: this.props.setCategory,
+      value: this.props.setValue,
+      size: this.props.setSize,
+      color: this.props.setColor,
+      orderBy: this.props.setOrderBy,
+      filters: this.props.setFilters
     };
+
+    checkEditorRestoredState(widgetEditor, attrToSetter);
+  }
+
+  /**
+   * Load all the initial data needed to render the component and
+   * set the available visualization types
+   * NOTE: If the initialLoading param is set to true, the widget
+   * editor's data saved in the store won't be resetted
+   * @param {boolean} [initialLoading=false] Whether this is the inital loading
+   */
+  loadData(initialLoading = false) {
+    let fieldsInfo;
+
+    this.setState({ initializing: true });
+
+    this.getDatasetInfo()
+      .then((info) => { fieldsInfo = info; })
+      .then(() => {
+        // This promise basically calls this.getFields but makes
+        // sure that if the dataset is a raster, we don't call it
+        const getFields = new Promise((resolve, reject) => {
+          if (this.state.datasetType === 'raster') {
+            this.setState({ fieldsError: false, fieldsLoaded: true }, resolve);
+          } else {
+            this.getFields(fieldsInfo)
+              .then(resolve)
+              .catch(reject);
+          }
+        });
+
+        // This promise basically calls this.getJiminy but makes
+        // sure that if the dataset is a raster, we don't call it
+        const getJiminy = fields => new Promise((resolve, reject) => {
+          if (this.state.datasetType === 'raster') {
+            this.setState({ jiminyLoaded: true, jiminyError: false }, resolve);
+          } else {
+            this.getJiminy(fields)
+              .then(resolve)
+              .catch(reject);
+          }
+        });
+
+        const checkEditorRestoredState = () => { // eslint-disable-line no-shadow
+          if (this.state.datasetType !== 'raster') {
+            this.checkEditorRestoredState(fieldsInfo);
+          }
+        };
+
+        Promise.all([
+          getFields
+            .then((fields) => {
+              getJiminy(fields)
+                // If the editor is initially loaded, a previous state might have
+                // been restored. In such a case, we make sure the data is still
+                // up to date (for example, the aliases)
+                .then(() => checkEditorRestoredState())
+                .then(() => this.setState({ initializing: false }));
+            }),
+          this.getLayers()
+        ])
+          // If this is the inital call to this method (when the component is
+          // mounted), we don't want to reset the store because we might set it
+          // from the outside when editing an existing widget
+          .then(() => this.setVisualizationOptions(!initialLoading));
+      });
   }
 
   /**
@@ -783,131 +858,62 @@ class WidgetEditor extends React.Component {
   }
 
   /**
-   * Load all the initial data needed to render the component and
-   * set the available visualization types
-   * NOTE: If the initialLoading param is set to true, the widget
-   * editor's data saved in the store won't be resetted
-   * @param {boolean} [initialLoading=false] Whether this is the inital loading
+   * Initialize the componnent by setting its initial state, resetting
+   * the store and instantiating the services
+   * The method resolves when the initialization is done
+   *
+   * @param {object} props Current props
+   * @returns {Promise<void>}
    */
-  loadData(initialLoading = false) {
-    let fieldsInfo;
+  initComponent(props) {
+    // First, we init the services
+    this.datasetService = new DatasetService(props.datasetId);
 
-    this.setState({ initializing: true })
+    // Each time the editor is opened again, we reset the Redux's state
+    // associated with it
+    props.resetWidgetEditor();
 
-    this.getDatasetInfo()
-      .then(info => { fieldsInfo = info; })
-      .then(() => {
-        // This promise basically calls this.getFields but makes
-        // sure that if the dataset is a raster, we don't call it
-        const getFields = new Promise((resolve, reject) => {
-          if (this.state.datasetType === 'raster') {
-            this.setState({ fieldsError: false, fieldsLoaded: true }, resolve);
-          } else {
-            this.getFields(fieldsInfo)
-              .then(resolve)
-              .catch(reject);
-          }
-        });
-
-        // This promise basically calls this.getJiminy but makes
-        // sure that if the dataset is a raster, we don't call it
-        const getJiminy = fields => new Promise((resolve, reject) => {
-          if (this.state.datasetType === 'raster') {
-            this.setState({ jiminyLoaded: true, jiminyError: false }, resolve);
-          } else {
-            return this.getJiminy(fields)
-              .then(resolve)
-              .catch(reject);
-          }
-        });
-
-        const checkEditorRestoredState = () => {
-          if (this.state.datasetType !== 'raster') {
-            this.checkEditorRestoredState(fieldsInfo);
-          }
-        };
-
-        Promise.all([
-          getFields
-            .then((fields) => {
-              getJiminy(fields)
-                // If the editor is initially loaded, a previous state might have
-                // been restored. In such a case, we make sure the data is still
-                // up to date (for example, the aliases)
-                .then(() => checkEditorRestoredState())
-                .then(() => this.setState({ initializing: false }));
-            }),
-          this.getLayers()
-        ])
-          // If this is the inital call to this method (when the component is
-          // mounted), we don't want to reset the store because we might set it
-          // from the outside when editing an existing widget
-          .then(() => this.setVisualizationOptions(!initialLoading));
+    // If the there's a layer, we compute the LayerGroup
+    // representation
+    const layerGroups = [];
+    if (props.widgetEditor.layer) {
+      layerGroups.push({
+        dataset: props.widgetEditor.layer.dataset,
+        visible: true,
+        layers: [{
+          id: props.widgetEditor.layer.id,
+          active: true,
+          ...props.widgetEditor.layer
+        }]
       });
-  }
-
-  /**
-   * Check if the restored state of the editor is up to date,
-   * if any
-   */
-  checkEditorRestoredState() {
-    const { widgetEditor } = this.props;
-
-    const attrToSetter = {
-      category: this.props.setCategory,
-      value: this.props.setValue,
-      size: this.props.setSize,
-      color: this.props.setColor,
-      orderBy: this.props.setOrderBy,
-      filters: this.props.setFilters
-    };
-
-    checkEditorRestoredState(widgetEditor, attrToSetter);
-  }
-
-  /**
-   * Fetch the Vega chart configuration and store it in
-   * the state
-   * NOTE: the vega chart *will* contain the whole dataset
-   * inside and not the URL of the data
-   */
-  fetchChartConfig() {
-    const { tableName, datasetType, datasetProvider } = this.state;
-    const { widgetEditor, datasetId, band } = this.props;
-
-    this.setState({ chartConfigLoading: true, chartConfigError: null });
-
-    const chartInfo = getChartInfo(datasetId, datasetType, datasetProvider, widgetEditor);
-
-    getChartConfig(
-      datasetId,
-      datasetType,
-      tableName,
-      band,
-      datasetProvider,
-      chartInfo,
-      true
-    )
-      .then((chartConfig) => this.setState({ chartConfig }))
-      .catch(({ message }) => this.setState({ chartConfig: null, chartConfigError: message }))
-      .then(() => this.setState({ chartConfigLoading: false }));
-  }
-
-  /**
-   * Return the widget config of the widget
-   * NOTE: If no widget is rendered, rejects
-   * NOTE: this method is public
-   * @returns {Promise<object>}
-   */
-  getWidgetConfig() {
-    const { tableName, datasetType, datasetProvider, datasetInfoLoaded } = this.state;
-    const { widgetEditor, datasetId, band } = this.props;
-
-    if (!datasetInfoLoaded || !canRenderChart(widgetEditor, datasetProvider)) {
-      return new Promise((_, reject) => reject());
     }
 
-    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+    // Then we reset the state of the component
+    return {
+      ...DEFAULT_STATE,
+      layerGroups
+    };
+  }
+
+  /**
+   * Event handler executed when the user changes the
+   * title of the graph
+   * @param {InputEvent} event
+   */
+  @Autobind
+  handleTitleChange(event) {
+    const title = event.target.value;
+    this.props.setTitle(title);
+  }
+
+  /**
+   * Return whether the editor is loading
+   * @returns {boolean}
+   */
+  isLoading() {
+    return !this.state.layersLoaded
+      || !this.state.fieldsLoaded
+      || (!this.state.fieldsError && !this.state.jiminyLoaded);
   }
 
   @Autobind
@@ -978,14 +984,6 @@ class WidgetEditor extends React.Component {
     this.props.setVisualizationType(selectedVisualizationType);
   }
 
-  /**
-   * Handler for when the save/update button of the editors
-   * is clicked
-   */
-  onClickSave() {
-    if (this.props.onSave) this.props.onSave();
-  }
-
   render() {
     const {
       tableName,
@@ -993,9 +991,7 @@ class WidgetEditor extends React.Component {
       jiminyError,
       jiminyLoaded,
       fieldsError,
-      fieldsLoaded,
       layersError,
-      layersLoaded,
       layers,
       datasetType,
       datasetProvider,
@@ -1007,7 +1003,6 @@ class WidgetEditor extends React.Component {
       datasetId,
       widgetId,
       saveButtonMode,
-      showNotLoggedInText,
       selectedVisualizationType
     } = this.props;
 
@@ -1156,6 +1151,7 @@ const mapDispatchToProps = dispatch => ({
   setBandsInfo: bands => dispatch(setBandsInfo(bands)),
   setVisualizationType: vis => dispatch(setVisualizationType(vis)),
   toggleModal: (open, options) => dispatch(toggleModal(open, options)),
+  toggleTooltip: (...params) => dispatch(toggleTooltip(...params)),
   setTitle: title => dispatch(setTitle(title)),
   setMapParams: (params) => {
     dispatch(setZoom(params.zoom));
@@ -1217,28 +1213,30 @@ WidgetEditor.propTypes = {
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
-  modal: PropTypes.object,
   resetWidgetEditor: PropTypes.func.isRequired,
   setFields: PropTypes.func.isRequired,
   setVisualizationType: PropTypes.func.isRequired,
   selectedVisualizationType: PropTypes.string,
   toggleModal: PropTypes.func,
+  toggleTooltip: PropTypes.func,
   setBandsInfo: PropTypes.func,
   setTitle: PropTypes.func,
   setMapParams: PropTypes.func,
-  setFilters: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setColor: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setCategory: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setValue: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setSize: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setOrderBy: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setBand: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setLayer: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setAggregateFunction: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setLimit: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setChartType: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setAreaIntersection: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
-  setEmbed: PropTypes.func // eslint-disable-line react/no-unused-prop-types
+  setZoom: PropTypes.func,
+  setLatLng: PropTypes.func,
+  setFilters: PropTypes.func,
+  setColor: PropTypes.func,
+  setCategory: PropTypes.func,
+  setValue: PropTypes.func,
+  setSize: PropTypes.func,
+  setOrderBy: PropTypes.func,
+  setBand: PropTypes.func,
+  setLayer: PropTypes.func,
+  setAggregateFunction: PropTypes.func,
+  setLimit: PropTypes.func,
+  setChartType: PropTypes.func,
+  setAreaIntersection: PropTypes.func,
+  setEmbed: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {

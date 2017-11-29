@@ -1,11 +1,7 @@
-import { default as widgetEditorExplore } from 'reducers/explore';
-import { default as widgetEditorModal } from 'reducers/modal';
-import { default as widgetEditorTooltip } from 'reducers/tooltip';
-import { default as widgetEditor } from 'reducers/widgetEditor';
-import * as exploreActions from 'reducers/explore';
-import * as modalActions from 'reducers/modal';
-import * as tooltipActions from 'reducers/tooltip';
-import * as widgetEditorActions from 'reducers/widgetEditor';
+import widgetEditorExplore, * as exploreActions from 'reducers/explore';
+import widgetEditorModal, * as modalActions from 'reducers/modal';
+import widgetEditorTooltip, * as tooltipActions from 'reducers/tooltip';
+import widgetEditor, * as widgetEditorActions from 'reducers/widgetEditor';
 import * as widgetHelper from 'helpers/WidgetHelper';
 
 // Components
@@ -66,5 +62,10 @@ export { default as WidgetService } from 'services/WidgetService';
 export { getConfig, setConfig } from 'helpers/ConfigHelper';
 
 // Redux
-export const reducers = { widgetEditorExplore, widgetEditorModal, widgetEditorTooltip, widgetEditor };
+export const reducers = {
+  widgetEditorExplore,
+  widgetEditorModal,
+  widgetEditorTooltip,
+  widgetEditor
+};
 export { exploreActions, modalActions, tooltipActions, widgetEditorActions };

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import ReduxThunk from 'redux-thunk';
-import { Provider, connect } from 'react-redux'
-import { createStore, combineReducers, applyMiddleware, compose } from 'redux'
+import { Provider, connect } from 'react-redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
 import 'dist/styles.css';
 

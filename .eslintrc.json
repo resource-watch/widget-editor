@@ -14,7 +14,14 @@
     "import/named": 0,
     "react/jsx-filename-extension": 0,
     "linebreak-style": 0,
-    "no-plusplus": 0
+    "no-plusplus": 0,
+    "max-len": ["error", 100, 2, {
+      "ignoreUrls": true,
+      "ignoreComments": true,
+      "ignoreRegExpLiterals": true,
+      "ignoreStrings": true,
+      "ignoreTemplateLiterals": true
+    }]
   },
   "parser": "babel-eslint",
   "parserOptions": {
