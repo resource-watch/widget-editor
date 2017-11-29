@@ -98,9 +98,13 @@
       }
 
       input {
+        min-width: 340px;
         max-width: 100%; // Make the input respect its container width
+        padding: 10px 15px;
+        border: 1px solid $border-color-2;
+        border-radius: 4px;
         font-family: $body-font-family;
-        font-size: $font-size-big;
+        font-size: $font-size-medium;
       }
     }
 

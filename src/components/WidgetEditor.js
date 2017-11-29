@@ -463,21 +463,24 @@ class WidgetEditor extends React.Component {
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
     const { chartType, layer, zoom, latLng } = widgetEditor;
 
-    const chartTitle = (
+    let chartTitle = (
       <div className="chart-title">
-        {getConfig().userToken &&
+        <span>{widgetEditor.title}</span>
+      </div>
+    );
+    if (this.props.titleMode === 'always'
+      || (this.props.titleMode === 'auto' && getConfig().userToken)) {
+      chartTitle = (
+        <div className="chart-title">
           <AutosizeInput
             name="widget-title"
             value={widgetEditor.title || ''}
-            placeholder="Title..."
+            placeholder="Widget title"
             onChange={this.handleTitleChange}
           />
-        }
-        {!getConfig().userToken &&
-          <span>{widgetEditor.title}</span>
-        }
-      </div>
-    );
+        </div>
+      );
+    }
 
     let visualization = null;
     switch (selectedVisualizationType) {
@@ -1223,6 +1226,13 @@ WidgetEditor.propTypes = {
    */
   saveButtonMode: PropTypes.oneOf(['auto', 'always', 'never']),
   /**
+   * When to make the title editable in the editor:
+   *  * "auto": only if a user token is set in ConfigHelper
+   *  * "always": always editable
+   *  * "never": never
+   */
+  titleMode: PropTypes.oneOf(['auto', 'always', 'never']),
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1260,6 +1270,7 @@ WidgetEditor.propTypes = {
 
 WidgetEditor.defaultProps = {
   saveButtonMode: 'auto',
+  titleMode: 'auto',
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
