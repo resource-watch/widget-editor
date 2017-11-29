@@ -12,3 +12,4 @@ Provide the link to the task(s), if any.
 ## Checklist before submitting
 [ ] Title: Don't forget to make it clear for everyone, even for people that don't know about the feature/bug.
 [ ] Meaningful commits and code rebased on `develop`.
+[ ] Update the changelog
