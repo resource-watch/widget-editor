@@ -218,6 +218,10 @@ which will open a server on the port 8888.
 
 ## Changelog
 
+### v0.0.2
+
+- Use react 15.x instead of react 16
+
 ### v0.0.1
 
 Initial version of the library

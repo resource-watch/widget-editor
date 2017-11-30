@@ -7,7 +7,7 @@ const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = merge(common, {
-  entry: './src/components/WidgetEditor.js',
+  entry: './index.js',
 
   output: {
     path: path.resolve(__dirname, 'dist'),

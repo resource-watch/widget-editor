@@ -35,8 +35,8 @@
     "path": "^0.12.7",
     "postcss-loader": "^2.0.8",
     "prop-types": "^15.6.0",
-    "react": "^16.1.1",
-    "react-dom": "^16.1.1",
+    "react": "15.6.2",
+    "react-dom": "^15.6.2",
     "react-redux": "^5.0.6",
     "redux-thunk": "^2.2.0",
     "sass-loader": "^6.0.6",
@@ -82,7 +82,8 @@
   "peerDependencies": {
     "leaflet": "^1.2.0",
     "prop-types": "^15.6.0",
-    "react": "^16.1.1",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2",
     "react-redux": "^5.0.6",
     "redux-thunk": "^2.2.0",
     "vega": "^2.6.5"
