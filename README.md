@@ -240,7 +240,7 @@ which will open a server on the port 8888.
 
 ## Changelog
 
-### v0.0.5 (not released yet)
+### v0.0.5
 - Add missing params to the queries (`application` and `env`)
 
 ### v0.0.4
