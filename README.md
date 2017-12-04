@@ -240,7 +240,7 @@ which will open a server on the port 8888.
 
 ## Changelog
 
-### v0.0.4 (not released yet)
+### v0.0.4
 - Added an option to set the default state of the map
 
 ### v0.0.3
