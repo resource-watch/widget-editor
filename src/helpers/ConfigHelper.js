@@ -18,11 +18,11 @@ let config = null;
  */
 export function getConfig() {
   if (!config) {
-    throw new Error('You must provide a configuration for widget-editor.'); // TODO: library name
+    throw new Error('You must provide a configuration for widget-editor.');
   } else {
     return config;
   }
-};
+}
 
 /**
  * Set the configuration of the widget editor
@@ -32,11 +32,7 @@ export function setConfig(params) {
   if (config) return;
 
   if (!params || !params.url || !params.env || !params.applications || !params.authUrl) {
-    throw new Error('The configuration of widget-editor must provide the env, applications and url and authUrl attributes.'); // TODO: library name
-  }
-
-  if (params && ((params.userToken && !params.userEmail) || !params.userToken && params.userEmail)) {
-    throw new Error('If the user is logged in, specify their token *and* email in the configuration of the widget-editor.'); // TODO: library name
+    throw new Error('The configuration of widget-editor must provide the env, applications and url and authUrl attributes.');
   }
 
   config = {
@@ -48,4 +44,4 @@ export function setConfig(params) {
     userEmail: params.userEmail || null,
     locale: params.locale || 'en'
   };
-};
+}

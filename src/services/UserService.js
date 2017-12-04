@@ -4,9 +4,8 @@ import 'isomorphic-fetch';
 import { getConfig } from 'helpers/ConfigHelper';
 
 export default class UserService {
-  constructor(token, email) {
+  constructor(token) {
     this.token = token;
-    this.email = email;
   }
 
   /**
@@ -92,7 +91,7 @@ export default class UserService {
   /**
    * Creates a subscription for a pair of dataset and country
    */
-  createSubscriptionToArea(areaId, datasets, datasetsQuery, name = '') {
+  createSubscriptionToArea(userEmail, areaId, datasets, datasetsQuery, name = '') {
     const bodyObj = {
       name,
       application: getConfig().applications,
@@ -101,7 +100,7 @@ export default class UserService {
       datasetsQuery,
       resource: {
         type: 'EMAIL',
-        content: this.email
+        content: userEmail
       },
       params: {
         area: areaId

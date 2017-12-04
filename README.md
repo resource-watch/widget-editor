@@ -78,7 +78,7 @@ Name | Default value | Mandatory | Description
 `applications: string` | `undefined` | Yes | Applications of the API (comma-separated string)
 `authUrl: string` | `undefined` | Yes | URL to authenticate the user
 `userToken: string` | `null` | No | Token of the logged user
-`userEmail: string` | `null` | Yes if `userToken` is provided | Email of the logged user
+`userEmail: string` | `null` | No | Email of the logged user
 `locale: string` | `"en"` | No | Locale used to fetch the data
 
 ## How to use the `WidgetEditor` component
@@ -241,6 +241,7 @@ which will open a server on the port 8888.
 ### v0.0.3 (not released yet)
 - External images use absolute URLs and documentation about how to configure webpack to load them
 - Fixed bug that prevented layers from other apps than RW to be displayed
+- Made the `userEmail` property optional in the configuration
 
 ### v0.0.2
 
