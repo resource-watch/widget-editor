@@ -240,6 +240,7 @@ which will open a server on the port 8888.
 
 ### v0.0.3 (not released yet)
 - External images use absolute URLs and documentation about how to configure webpack to load them
+- Fixed bug that prevented layers from other apps than RW to be displayed
 
 ### v0.0.2
 
