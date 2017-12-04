@@ -31,6 +31,26 @@ let store = createStore(
 
 The reducers are: `widgetEditorExplore`, `widgetEditorModal`, `widgetEditorTooltip` and `widgetEditor`.
 
+Finally, the library contains some external images you need to include in your build process. In your [webpack](https://webpack.js.org) configuration file, please add the following:
+```js
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: { glob: 'node_modules/widget-editor/dist/images/**/*', to: 'images' }
+      }
+    ])
+  ]
+};
+```
+
+And don't forget to install the dev dependency:
+```bash
+$ yarn add copy-webpack-plugin --dev
+```
+
 
 ### Configuration
 
@@ -217,6 +237,9 @@ $ yarn analyze
 which will open a server on the port 8888.
 
 ## Changelog
+
+### v0.0.3 (not released yet)
+- External images use absolute URLs and documentation about how to configure webpack to load them
 
 ### v0.0.2
 
