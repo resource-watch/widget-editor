@@ -243,6 +243,7 @@ which will open a server on the port 8888.
 - Fixed bug that prevented layers from other apps than RW to be displayed
 - Made the `userEmail` property optional in the configuration
 - Scope the styles of the modal
+- Fixed bug that would prevent the editor from correctly restoring some widgets
 
 ### v0.0.2
 

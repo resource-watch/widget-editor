@@ -244,7 +244,8 @@ class WidgetEditor extends React.Component {
       && canRenderChart(this.props.widgetEditor, this.state.datasetProvider)
       && this.props.widgetEditor.visualizationType !== 'table'
       && this.props.widgetEditor.visualizationType !== 'map'
-      && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName)
+      && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName
+        || previousState.initializing !== this.state.initializing)
       && !this.state.initializing) {
       this.fetchChartConfig();
     }
