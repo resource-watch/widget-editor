@@ -155,6 +155,10 @@ class WidgetEditor extends React.Component {
 
     // We init the state, store and services
     this.state = this.initComponent(props);
+
+    // We set the default position of the map according
+    // to the external prop
+    this.setDefaultMapState(props);
   }
 
   /**
@@ -179,6 +183,11 @@ class WidgetEditor extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    // If the default state of the map is updated...
+    if (!isEqual(this.props.mapConfig, nextProps.mapConfig)) {
+      this.setDefaultMapState(nextProps);
+    }
+
     // If the dataset changes...
     if (nextProps.datasetId !== this.props.datasetId
       || nextProps.widgetId !== this.props.widgetId) {
@@ -281,6 +290,19 @@ class WidgetEditor extends React.Component {
     if (this.props.onSave) this.props.onSave();
   }
 
+  /**
+   * Set the default state of the map
+   * @param {object} props Props of the component
+   */
+  setDefaultMapState(props) {
+    if (props.mapConfig) {
+      const { zoom, lat, lng } = props.mapConfig;
+      this.props.setMapParams({
+        zoom,
+        latLng: { lat, lng }
+      });
+    }
+  }
 
   /**
    * Fetch the information about the layers and save it in the state
@@ -637,7 +659,7 @@ class WidgetEditor extends React.Component {
 
     this.setState({ visualizationOptions }, () => {
       if (this.props.selectedVisualizationType === null) {
-      // We only set a default visualization if none of them has been set in the past
+        // We only set a default visualization if none of them has been set in the past
         // (we don't want to conflict with the "state restoration" made in My RW)
         this.handleVisualizationTypeChange(defaultVis, resetStore);
       }
@@ -874,6 +896,9 @@ class WidgetEditor extends React.Component {
     // associated with it
     props.resetWidgetEditor();
 
+    // We also reset the default map state
+    this.setDefaultMapState(props);
+
     // If the there's a layer, we compute the LayerGroup
     // representation
     const layerGroups = [];
@@ -980,7 +1005,10 @@ class WidgetEditor extends React.Component {
     // information relative to the old one (for example: the band,
     // the layer, etc) which might interfere with other part
     // of the app (for example, My RW)
-    if (resetStore) this.props.resetWidgetEditor(false);
+    if (resetStore) {
+      this.props.resetWidgetEditor(false);
+      this.setDefaultMapState(this.props);
+    }
 
     this.props.setVisualizationType(selectedVisualizationType);
   }
@@ -1202,6 +1230,15 @@ WidgetEditor.propTypes = {
    *  * "never": never
    */
   titleMode: PropTypes.oneOf(['auto', 'always', 'never']),
+  /**
+   * Set the default state of the map for geographical
+   * widgets
+   */
+  mapConfig: PropTypes.shape({
+    zoom: PropTypes.number,
+    lat: PropTypes.number,
+    lng: PropTypes.number
+  }),
   /**
    * Callback executed when the user clicks the save/update button
    */

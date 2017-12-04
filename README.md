@@ -127,6 +127,7 @@ Name | Default value | Mandatory | Description
 `widgetId: string` | `undefined` | No | If provided, the ID of the widget to edit
 `saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(*)**
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title is only editable if a user token is passed to the configuration. If `"always"`, the title is always editable. If `"never"`, it is always fixed.
+`mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
 
@@ -237,6 +238,9 @@ $ yarn analyze
 which will open a server on the port 8888.
 
 ## Changelog
+
+### v0.0.4 (not released yet)
+- Added an option to set the default state of the map
 
 ### v0.0.3
 - External images use absolute URLs and documentation about how to configure webpack to load them
