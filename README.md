@@ -242,6 +242,7 @@ which will open a server on the port 8888.
 - External images use absolute URLs and documentation about how to configure webpack to load them
 - Fixed bug that prevented layers from other apps than RW to be displayed
 - Made the `userEmail` property optional in the configuration
+- Scope the styles of the modal
 
 ### v0.0.2
 
