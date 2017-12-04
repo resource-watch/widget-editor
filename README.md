@@ -39,7 +39,8 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([
       {
-        from: { glob: 'node_modules/widget-editor/dist/images/**/*', to: 'images' }
+        from: 'node_modules/widget-editor/dist/images',
+        to: 'images/'
       }
     ])
   ]
