@@ -22,7 +22,7 @@ export default class DatasetService {
    * Get dataset info
    */
   fetchData(includes = '', applications = [getConfig().applications]) {
-    return fetch(`${getConfig().url}/dataset/${this.datasetId}?application=${applications.join(',')}&language=${getConfig().locale}&includes=${includes}&page[size]=999`)
+    return fetch(`${getConfig().url}/dataset/${this.datasetId}?application=${applications.join(',')}&env=${getConfig().env}&language=${getConfig().locale}&includes=${includes}&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -74,7 +74,7 @@ export default class DatasetService {
   }
 
   getLayers() {
-    return fetch(`${getConfig().url}/dataset/${this.datasetId}/layer?app=${getConfig().applications}`)
+    return fetch(`${getConfig().url}/dataset/${this.datasetId}/layer?app=${getConfig().applications}&env=${getConfig().env}`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();

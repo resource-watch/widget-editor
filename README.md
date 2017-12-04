@@ -240,6 +240,9 @@ which will open a server on the port 8888.
 
 ## Changelog
 
+### v0.0.5 (not released yet)
+- Add missing params to the queries (`application` and `env`)
+
 ### v0.0.4
 - Added an option to set the default state of the map
 

@@ -9,7 +9,7 @@ export default class WidgetService {
   }
 
   fetchData(includes = '') {
-    return fetch(`${getConfig().url}/widget/${this.widgetId}?includes=${includes}&page[size]=999`)
+    return fetch(`${getConfig().url}/widget/${this.widgetId}?application=${getConfig().applications}&env=${getConfig().env}&includes=${includes}&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
@@ -55,7 +55,7 @@ export default class WidgetService {
   }
 
   static removeUserWidget(widgetId, token) {
-    return fetch(`${getConfig().url}/widget/${widgetId}`, {
+    return fetch(`${getConfig().url}/widget/${widgetId}?application=${getConfig().applications}&env=${getConfig().env}&`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export default class WidgetService {
   static getUserWidgets(userId, sortByUpdatedAt = true, direction = 'asc', includes = '') {
     const directionPart = (direction === 'asc') ? '&sort=updatedAt' : '&sort=-updatedAt';
     const sortSt = sortByUpdatedAt ? directionPart : '';
-    return fetch(`${getConfig().url}/widget/?userId=${userId}${sortSt}&includes=${includes}&env=production,preproduction&page[size]=999`)
+    return fetch(`${getConfig().url}/widget/?userId=${userId}${sortSt}&includes=${includes}&application=${getConfig().applications}&env=${getConfig().env}&page[size]=999`)
       .then((response) => {
         if (response.status >= 400) throw new Error(response.statusText);
         return response.json();
