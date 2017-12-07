@@ -40,14 +40,14 @@ class Modal extends React.Component {
     return (
       <section ref={(node) => { this.el = node; }} className={`c-modal-editor ${this.props.open ? '' : '-hidden'} ${this.props.options.size || ''}`}>
         <div className="modal-container">
-          <button className="modal-close" onClick={() => this.props.toggleModal(false)}>
+          <button className="modal-close" onClick={() => this.props.toggleModal(false, {}, true)}>
             <Icon name="icon-cross" className="-big" />
           </button>
           <div className="modal-content">
             {this.props.loading ? <Spinner isLoading /> : this.getContent()}
           </div>
         </div>
-        <div className="modal-backdrop" onClick={() => this.props.toggleModal(false)} />
+        <div className="modal-backdrop" onClick={() => this.props.toggleModal(false, {}, true)} />
       </section>
     );
   }
@@ -76,7 +76,7 @@ const mapStateToProps = ({ widgetEditorModal }) => ({
 
 const mapDispatchToProps = dispatch => ({
   toggleModal: (...params) => dispatch(toggleModal(...params)),
-  setModalOptions: (...params) => dispatch(setModalOptions(...params)),
+  setModalOptions: (...params) => dispatch(setModalOptions(...params))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Modal);

@@ -248,6 +248,7 @@ which will open a server on the port 8888.
 - Add the `embedButtonMode` prop for the `WidgetEditor` component
 - Add the `onEmbed` prop for the `WidgetEditor` component
 - Possibility to use `EmbedTableModal` as an external component
+- Fix a bug where the area intersection filter would display "Waiting for actions"
 
 ### v0.0.5
 - Add missing params to the queries (`application` and `env`)
