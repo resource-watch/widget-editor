@@ -5,7 +5,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
-  entry: ['babel-polyfill', './test.js'],
+  entry: ['./test.js'],
 
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -20,7 +20,7 @@ module.exports = merge(common, {
     new HtmlWebpackPlugin({
       title: 'Test WidgetEditor'
     }),
-    new ExtractTextPlugin('styles.css'),
+    new ExtractTextPlugin('styles.css')
   ],
 
   devServer: {

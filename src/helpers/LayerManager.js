@@ -9,7 +9,7 @@ import { getConfig } from 'helpers/ConfigHelper';
 
 let L;
 if (typeof window !== 'undefined') {
-  L = require('leaflet/dist/leaflet');
+  L = require('leaflet');
   // adding support for esri
   const esri = require('esri-leaflet/dist/esri-leaflet');
   L.esri = esri;

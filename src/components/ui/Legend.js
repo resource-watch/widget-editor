@@ -5,7 +5,6 @@ import isEqual from 'lodash/isEqual';
 import throttle from 'lodash/throttle';
 import sortBy from 'lodash/sortBy';
 // import { Router } from 'routes';
-import moment from 'moment';
 import InputRange from 'react-input-range';
 
 // Redux
@@ -280,7 +279,7 @@ class Legend extends React.PureComponent {
 
   onTimelineChange(currentValue = 0, datasetSpec) {
     const currentLayer = datasetSpec.layers.find((l) => {
-      return moment(l.layerConfig.dateTime, 'YYYY-MM-DD').year() === parseInt(currentValue);
+      return new Date(l.layerConfig.dateTime).getFullYear() === parseInt(currentValue);
     });
     this.setState({ currentStepTimeline: currentValue });
     this.props.setLayerGroupActiveLayer(datasetSpec.dataset, currentLayer.id); // datasetId, layerId
@@ -355,7 +354,7 @@ class Legend extends React.PureComponent {
         }
         const currentValue = (this.state.currentStepTimeline || minValue);
         const currentLayer = datasetSpec.layers.find((l) => {
-          return moment(l.layerConfig.dateTime, 'YYYY-MM-DD').year() === parseInt(currentValue);
+          return new Date(l.layerConfig.dateTime).getFullYear() === parseInt(currentValue);
         });
         requestAnimationFrame(() => {
           this.props.setLayerGroupActiveLayer(datasetSpec.dataset, currentLayer.id);
@@ -386,11 +385,11 @@ class Legend extends React.PureComponent {
         datasetSpec.layers.length) {
         const firstLayer = datasetSpec.layers[0];
         const lastLayer = datasetSpec.layers[datasetSpec.layers.length - 1];
-        const minYear = moment(firstLayer.layerConfig.dateTime, 'YYYY-MM-DD').year();
-        const maxYear = moment(lastLayer.layerConfig.dateTime, 'YYYY-MM-DD').year();
+        const minYear = new Date(firstLayer.layerConfig.dateTime).getFullYear();
+        const maxYear = new Date(lastLayer.layerConfig.dateTime).getFullYear();
 
         const currentLayer = datasetSpec.layers.find((l) => {
-          const lYear = moment(l.layerConfig.dateTime, 'YYYY-MM-DD').year();
+          const lYear = new Date(l.layerConfig.dateTime).getFullYear();
           return lYear === (this.state.currentStepTimeline || minYear);
         });
 

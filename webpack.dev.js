@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const PeerDepsExternalsPlugin = require('peer-deps-externals-webpack-plugin');
 const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 
@@ -25,6 +26,7 @@ module.exports = merge(common, {
     }),
     new ExtractTextPlugin('styles.css'),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new PeerDepsExternalsPlugin(),
     process.env.ANALYZE ? new BundleAnalyzerPlugin() : null
   ].filter(p => !!p),
 

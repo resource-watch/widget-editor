@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { toastr } from 'react-redux-toastr';
-import Moment from 'moment';
-import { extendMoment } from 'moment-range';
 
 // Redux
 import { connect } from 'react-redux';
@@ -13,8 +11,6 @@ import DatasetService from 'services/DatasetService';
 
 // Components
 import Button from 'components/ui/Button';
-
-const moment = extendMoment(Moment);
 
 class FilterDateTooltip extends React.Component {
   constructor(props) {
@@ -45,25 +41,21 @@ class FilterDateTooltip extends React.Component {
 
     this.props.getFilter()
       .then((result) => {
-        const range = moment.range(result.properties.min, result.properties.max);
-        const years = Array.from(range.by('year'));
+        const yearRange = [
+          new Date(result.min).getFullYear(),
+          new Date(result.max).getFullYear()
+        ];
+        const years = new Array((yearRange[1] - yearRange[0]) + 1)
+          .fill(undefined)
+          .map((_, index) => yearRange[0] + index);
 
         this.setState({
-          values: years.map(y => ({
-            value: y,
-            label: y.format('YYYY')
-          })),
-          // We round the values to have a nicer UI
-          min: moment(result.properties.min),
-          max: moment(result.properties.max)
+          values: years.map(y => ({ value: y, label: y }))
         });
 
 
         if (this.props.onChange && !selected.length) {
-          this.props.onChange([
-            moment(result.properties.min).utc().format(),
-            moment(result.properties.max).utc().format()
-          ]);
+          this.props.onChange([yearRange[0], yearRange[1]]);
         }
 
         if (this.props.onToggleLoading) {
@@ -96,19 +88,19 @@ class FilterDateTooltip extends React.Component {
       <div className="c-filter-string-tooltip">
         {!loading && selected.length &&
           <select
-            value={moment(selected[0]).utc().format()}
+            value={selected[0]}
             onChange={(e) => {
               this.props.onChange([
-                moment(e.currentTarget.value).utc().format(),
-                moment(selected[1]).utc().format()
+                e.currentTarget.value,
+                selected[1]
               ]);
             }}
           >
             {values.map(v => (
               <option
                 key={v.label}
-                disabled={v.value.valueOf() > moment(selected[1]).valueOf()}
-                value={v.value.utc().format()}
+                disabled={+v.value > +selected[1]}
+                value={v.value}
               >
                 {v.label}
               </option>
@@ -118,19 +110,19 @@ class FilterDateTooltip extends React.Component {
 
         {!loading && selected.length &&
           <select
-            value={moment(selected[1]).utc().format()}
+            value={selected[1]}
             onChange={(e) => {
               this.props.onChange([
-                moment(selected[0]).utc().format(),
-                moment(e.currentTarget.value).utc().format()
+                selected[0],
+                e.currentTarget.value
               ]);
             }}
           >
             {values.map(v => (
               <option
                 key={v.label}
-                disabled={v.value.valueOf() < moment(selected[0]).valueOf()}
-                value={v.value.utc().format()}
+                disabled={+v.value < +selected[0]}
+                value={v.value}
               >
                 {v.label}
               </option>

@@ -5,6 +5,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const PeerDepsExternalsPlugin = require('peer-deps-externals-webpack-plugin');
 
 module.exports = merge(common, {
   entry: './index.js',
@@ -23,7 +24,8 @@ module.exports = merge(common, {
     }),
     new UglifyJSPlugin(),
     new ExtractTextPlugin('styles.css'),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new PeerDepsExternalsPlugin()
   ],
 
   externals: ['react', 'prop-types', 'react-redux']
