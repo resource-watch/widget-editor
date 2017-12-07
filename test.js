@@ -1,42 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions } from 'dist/bundle';
 import 'dist/styles.css';
 
 const root = document.createElement('div');
-document.body.appendChild(root)
+document.body.appendChild(root);
 
+// eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const enhancer = composeEnhancers(applyMiddleware(ReduxThunk));
-let store = createStore(combineReducers(reducers), enhancer);
+const store = createStore(combineReducers(reducers), enhancer);
 
 // We set the config of the library
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'prep',
+  applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth'
 });
 
 class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
-      widgetId: undefined
-    };
-  }
-
-  componentWillMount() {
-    // We inject basic styles so the test page
-    // renders correctly
-    this.injectStyles()
-  }
-
-  injectStyles() {
+  static injectStyles() {
     const styles = `
       *,
       *:before,
@@ -54,6 +42,20 @@ class App extends React.Component {
     document.body.appendChild(node);
   }
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
+      widgetId: undefined
+    };
+  }
+
+  componentWillMount() {
+    // We inject basic styles so the test page
+    // renders correctly
+    App.injectStyles();
+  }
+
   async onSave() {
     if (this.getWidgetConfig) {
       try {
@@ -66,10 +68,19 @@ class App extends React.Component {
             onClickCheckWidgets: () => alert('Check my widgets')
           }
         });
-      } catch(err) {
+      } catch (err) {
         console.error('Unable to get the widget config', err);
       }
     }
+  }
+
+  async onEmbed() {
+    const { protocol, hostname, port } = location;
+    const baseUrl = `${protocol}//${hostname}${port !== '' ? `:${port}` : port}`;
+    this.props.toggleModal(true, {
+      children: EmbedTableModal,
+      childrenProps: { baseUrl }
+    });
   }
 
   render() {
@@ -88,7 +99,7 @@ class App extends React.Component {
               value={this.state.datasetId}
               onChange={({ target }) => this.setState({ datasetId: target.value })}
             />
-            <br/>
+            <br />
             <label htmlFor="widget">Widget ID (optional):</label>
             <input
               type="text"
@@ -106,14 +117,19 @@ class App extends React.Component {
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
           saveButtonMode="always"
-          embedButtonMode="never"
+          embedButtonMode="always"
           onSave={() => this.onSave()}
+          onEmbed={() => this.onEmbed()}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
       </div>
     );
   }
 }
+
+App.propTypes = {
+  toggleModal: PropTypes.func
+};
 
 const mapStateToProps = () => ({});
 const mapDispatchToProps = dispatch => ({

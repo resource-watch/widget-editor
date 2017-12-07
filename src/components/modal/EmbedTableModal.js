@@ -1,6 +1,11 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { toastr } from 'react-redux-toastr';
+
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
+import getQueryByFilters from 'helpers/getQueryByFilters';
 
 class EmbedTableModal extends React.Component {
   constructor(props) {
@@ -22,11 +27,60 @@ class EmbedTableModal extends React.Component {
     }
   }
 
+  /**
+   * Return the queryUrl part of the embed URL
+   * @returns {string}
+   */
+  getQueryUrl() {
+    const { widgetEditor } = this.props;
+    const {
+      filters,
+      fields,
+      value,
+      aggregateFunction,
+      category,
+      orderBy,
+      limit,
+      areaIntersection,
+      tableName,
+      datasetId
+    } = widgetEditor;
+
+    const aggregateFunctionExists = aggregateFunction && aggregateFunction !== 'none';
+    const arrColumns = fields.map((val) => {
+      // Value
+      if (value && value.name === val.columnName && aggregateFunctionExists) {
+        return { value: val.columnName, key: val.columnName, aggregateFunction, group: false };
+      }
+
+      // Category
+      if (category && category.name === val.columnName && aggregateFunctionExists) {
+        return { value: val.columnName, key: val.columnName, group: true };
+      }
+
+      // Rest of columns
+      return {
+        value: val.columnName,
+        key: val.columnName,
+        remove: aggregateFunctionExists
+      };
+    }).filter(val => !val.remove);
+
+    const orderByColumn = orderBy ? [orderBy] : [];
+    if (orderByColumn.length > 0 && value && orderByColumn[0].name === value.name
+      && aggregateFunction && aggregateFunction !== 'none') {
+      orderByColumn[0].name = `${aggregateFunction}(${value.name})`;
+    }
+
+    const sortOrder = orderBy ? orderBy.orderType : 'asc';
+    const query = `${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
+    const geostore = areaIntersection ? `&geostore=${areaIntersection}` : '';
+
+    return `${getConfig().url}/query/${datasetId}?sql=${query}${geostore}`;
+  }
+
   render() {
-    const { queryURL } = this.props;
-    const { protocol, hostname, port } = window && window.location ? window.location : {};
-    const embedHost = window && window.location ? `${protocol}//${hostname}${port !== '' ? `:${port}` : port}` : '';
-    const url = `${embedHost}/embed/table?queryURL=${queryURL}`;
+    const url = `${this.props.baseUrl}?queryURL=${this.getQueryUrl()}`;
     const iframeText = `<iframe src="${url}" width="100%" height="474" frameBorder="0"></iframe>`;
     return (
       <div className="c-embed-table-modal">
@@ -45,7 +99,16 @@ class EmbedTableModal extends React.Component {
 }
 
 EmbedTableModal.propTypes = {
-  queryURL: PropTypes.string.isRequired
+  /**
+   * Base URL of the embed page
+   * At the end of that URL will be added "?queryURL=xxx"
+   */
+  baseUrl: PropTypes.string.isRequired,
+  widgetEditor: PropTypes.object
 };
 
-export default EmbedTableModal;
+const mapStateToProps = state => ({
+  widgetEditor: state.widgetEditor
+});
+
+export default connect(mapStateToProps, null)(EmbedTableModal);

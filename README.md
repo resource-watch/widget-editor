@@ -131,6 +131,7 @@ Name | Default value | Mandatory | Description
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title is only editable if a user token is passed to the configuration. If `"always"`, the title is always editable. If `"never"`, it is always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
+`onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
 
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
@@ -245,6 +246,8 @@ which will open a server on the port 8888.
 
 ### v0.0.6 (not released yet)
 - Add the `embedButtonMode` prop for the `WidgetEditor` component
+- Add the `onEmbed` prop for the `WidgetEditor` component
+- Possibility to use `EmbedTableModal` as an external component
 
 ### v0.0.5
 - Add missing params to the queries (`application` and `env`)

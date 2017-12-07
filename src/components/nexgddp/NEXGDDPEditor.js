@@ -38,14 +38,10 @@ class NEXGDDPEditor extends React.Component {
     this.props.setModalOptions(options);
   }
 
-  @Autobind
-  handleEmbedTable() {
-    this.props.onEmbedTable();
-  }
-
   render() {
     const {
       datasetId,
+      datasetProvider,
       tableName,
       chartOptions,
       widgetEditor,
@@ -53,12 +49,13 @@ class NEXGDDPEditor extends React.Component {
       mode,
       showSaveButton,
       hasGeoInfo,
-      showEmbedTable
+      showEmbedButton
     } = this.props;
     const { chartType, fields, areaIntersection } = widgetEditor;
 
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
+    const canShowEmbedButton = showEmbedButton && canSave && tableViewMode && areaIntersection;
 
     return (
       <div className="c-chart-editor">
@@ -121,15 +118,13 @@ class NEXGDDPEditor extends React.Component {
               {mode === 'save' ? 'Save widget' : 'Update widget'}
             </button>
           }
-          { tableViewMode && showEmbedTable && areaIntersection &&
-            <a
-              role="button"
+          { canShowEmbedButton &&
+            <button
               className="c-button -primary"
-              tabIndex={0}
-              onClick={this.handleEmbedTable}
+              onClick={this.props.onEmbed}
             >
               Embed table
-            </a>
+            </button>
           }
         </div>
       </div>
@@ -165,18 +160,25 @@ NEXGDDPEditor.propTypes = {
    */
   showSaveButton: PropTypes.bool.isRequired,
   /**
+   * Whether the embed button should be shown
+   * when a widget is rendered
+   */
+  showEmbedButton: PropTypes.bool,
+  /**
    * Callback executed when the save/update button
    * is clicked
    */
   onSave: PropTypes.func,
-  showEmbedTable: PropTypes.bool,
+  /**
+   * Callback executed when the embed button is
+   * clicked
+   */
+  onEmbed: PropTypes.func,
   // Store
   widgetEditor: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
-  setModalOptions: PropTypes.func.isRequired,
-  // Callback
-  onEmbedTable: PropTypes.func
+  setModalOptions: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });

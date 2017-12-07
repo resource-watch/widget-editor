@@ -40,11 +40,6 @@ class ChartEditor extends React.Component {
     this.props.setModalOptions(options);
   }
 
-  @Autobind
-  handleEmbedTable() {
-    this.props.onEmbedTable();
-  }
-
   render() {
     const {
       datasetId,
@@ -62,6 +57,7 @@ class ChartEditor extends React.Component {
 
     const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave;
+    const canShowEmbedButton = showEmbedButton && canSave && tableViewMode;
 
     return (
       <div className="c-chart-editor">
@@ -121,15 +117,13 @@ class ChartEditor extends React.Component {
               {mode === 'save' ? 'Save widget' : 'Update widget'}
             </button>
           }
-          { tableViewMode && showEmbedButton &&
-            <a
-              role="button"
+          { canShowEmbedButton &&
+            <button
               className="c-button -primary"
-              tabIndex={0}
-              onClick={this.handleEmbedTable}
+              onClick={this.props.onEmbed}
             >
               Embed table
-            </a>
+            </button>
           }
         </div>
       </div>
@@ -169,13 +163,16 @@ ChartEditor.propTypes = {
    * is clicked
    */
   onSave: PropTypes.func,
+  /**
+   * Callback executed when the embed button is
+   * clicked
+   */
+  onEmbed: PropTypes.func,
   // Store
   widgetEditor: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
-  setModalOptions: PropTypes.func.isRequired,
-  // Callback
-  onEmbedTable: PropTypes.func
+  setModalOptions: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });

@@ -29,6 +29,8 @@ const SET_TITLE = 'widgetEditor/SET_TITLE';
 const SET_BANDS_INFO = 'widgetEditor/SET_BANDS_INFO';
 const SET_ZOOM = 'widgetEditor/SET_ZOOM';
 const SET_LATLNG = 'widgetEditor/SET_LATLNG';
+const SET_DATASET_ID = 'widgetEditor/SET_DATASET_ID';
+const SET_TABLENAME = 'widgetEditor/SET_TABLENAME';
 
 /**
  * REDUCER
@@ -248,6 +250,18 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_DATASET_ID: {
+      return Object.assign({}, state, {
+        datasetId: action.payload
+      });
+    }
+
+    case SET_TABLENAME: {
+      return Object.assign({}, state, {
+        tableName: action.payload
+      });
+    }
+
     default:
       return state;
   }
@@ -378,4 +392,12 @@ export function setZoom(zoom) {
 
 export function setLatLng(latLng) {
   return dispatch => dispatch({ type: SET_LATLNG, payload: latLng });
+}
+
+export function setDatasetId(datasetId) {
+  return dispatch => dispatch({ type: SET_DATASET_ID, payload: datasetId });
+}
+
+export function setTableName(tableName) {
+  return dispatch => dispatch({ type: SET_TABLENAME, payload: tableName });
 }

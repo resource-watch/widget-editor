@@ -31,7 +31,9 @@ import {
   setLimit,
   setChartType,
   setAreaIntersection,
-  setEmbed
+  setEmbed,
+  setDatasetId,
+  setTableName
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -49,7 +51,6 @@ import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
 import Legend from 'components/ui/Legend';
 import TableView from 'components/table/TableView';
-import EmbedTableModal from 'components/modal/EmbedTableModal';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
@@ -69,7 +70,6 @@ import {
 import { getConfig } from 'helpers/ConfigHelper';
 import ChartTheme from 'helpers/theme';
 import LayerManager from 'helpers/LayerManager';
-import getQueryByFilters from 'helpers/getQueryByFilters';
 
 const VISUALIZATION_TYPES = [
   { label: 'Chart', value: 'chart', available: true },
@@ -173,6 +173,8 @@ class WidgetEditor extends React.Component {
     // We load the initial data
     this.loadData(true);
 
+    this.props.setDatasetId(this.props.datasetId);
+
     if (this.props.widgetId) {
       this.restoreWidget(this.props.widgetId);
     }
@@ -193,6 +195,7 @@ class WidgetEditor extends React.Component {
       || nextProps.widgetId !== this.props.widgetId) {
       this.setState(this.initComponent(nextProps), () => {
         this.loadData();
+        this.props.setDatasetId(this.props.datasetId);
         if (nextProps.widgetId) {
           this.restoreWidget(nextProps.widgetId);
         }
@@ -288,6 +291,14 @@ class WidgetEditor extends React.Component {
    */
   onClickSave() {
     if (this.props.onSave) this.props.onSave();
+  }
+
+  /**
+   * Handler for when the embed button of the editors is
+   * clicked
+   */
+  onClickEmbed() {
+    if (this.props.onEmbed) this.props.onEmbed();
   }
 
   /**
@@ -390,6 +401,8 @@ class WidgetEditor extends React.Component {
             // whereas there are bands
             this.props.setBandsInfo(metadata);
           }
+
+          this.props.setTableName(attributes.tableName);
 
           this.setState({
             datasetInfoLoaded: true,
@@ -942,56 +955,6 @@ class WidgetEditor extends React.Component {
       || (!this.state.fieldsError && !this.state.jiminyLoaded);
   }
 
-  @Autobind
-  handleEmbedTable() {
-    const { tableName } = this.state;
-    const { datasetId, widgetEditor } = this.props;
-    const { filters, fields, value, aggregateFunction, category, orderBy,
-      limit, areaIntersection } = widgetEditor;
-    const aggregateFunctionExists = aggregateFunction && aggregateFunction !== 'none';
-
-    const arrColumns = fields.filter(val => val.columnName !== 'cartodb_id' && val.columnType !== 'geometry').map(
-      (val) => {
-        if (value && value.name === val.columnName && aggregateFunctionExists) {
-          // Value
-          return { value: val.columnName, key: val.columnName, aggregateFunction, group: false };
-        } else if (category && category.name === val.columnName && aggregateFunctionExists) {
-          // Category
-          return { value: val.columnName, key: val.columnName, group: true };
-        } else { // eslint-disable-line
-          // Rest of columns
-          return {
-            value: val.columnName,
-            key: val.columnName,
-            remove: aggregateFunctionExists
-          };
-        }
-      }
-    ).filter(val => !val.remove);
-
-    const orderByColumn = orderBy ? [orderBy] : [];
-    if (orderByColumn.length > 0 && value && orderByColumn[0].name === value.name && aggregateFunction && aggregateFunction !== 'none') {
-      orderByColumn[0].name = `${aggregateFunction}(${value.name})`;
-    }
-
-    const geostore = areaIntersection ? `&geostore=${areaIntersection}` : '';
-
-    const sortOrder = orderBy ? orderBy.orderType : 'asc';
-    const query = `${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
-    const queryURL = `${getConfig().url}/query/${datasetId}?sql=${query}${geostore}`;
-
-    const options = {
-      children: EmbedTableModal,
-      childrenProps: {
-        url: window.location.href,
-        queryURL,
-        toggleModal: this.props.toggleModal
-      }
-    };
-
-    this.props.toggleModal(true, options);
-  }
-
   /**
    * Change the selected visualization in the state
    * @param {string} selectedVisualizationType Visualization type
@@ -1105,8 +1068,8 @@ class WidgetEditor extends React.Component {
                   showSaveButton={showSaveButton}
                   showEmbedButton={showEmbedButton}
                   onSave={() => this.onClickSave()}
+                  onEmbed={() => this.onClickEmbed()}
                   hasGeoInfo={hasGeoInfo}
-                  onEmbedTable={this.handleEmbedTable}
                 />
               )
           }
@@ -1124,9 +1087,10 @@ class WidgetEditor extends React.Component {
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
                   showSaveButton={showSaveButton}
+                  showEmbedButton={showEmbedButton}
                   onSave={() => this.onClickSave()}
+                  onEmbed={() => this.onClickEmbed()}
                   hasGeoInfo={hasGeoInfo}
-                  onEmbedTable={this.handleEmbedTable}
                 />
               )
           }
@@ -1202,7 +1166,9 @@ const mapDispatchToProps = dispatch => ({
   setLimit: (...params) => dispatch(setLimit(...params)),
   setChartType: (...params) => dispatch(setChartType(...params)),
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
-  setEmbed: (...params) => dispatch(setEmbed(...params))
+  setEmbed: (...params) => dispatch(setEmbed(...params)),
+  setDatasetId: (...params) => dispatch(setDatasetId(...params)),
+  setTableName: (...params) => dispatch(setTableName(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1255,6 +1221,10 @@ WidgetEditor.propTypes = {
    */
   onSave: PropTypes.func,
   /**
+   * Callback executed when the user clicks the embed button
+   */
+  onEmbed: PropTypes.func,
+  /**
    * Callback executed at mounting time to provide a function
    * to get the widget config
    */
@@ -1285,7 +1255,9 @@ WidgetEditor.propTypes = {
   setLimit: PropTypes.func,
   setChartType: PropTypes.func,
   setAreaIntersection: PropTypes.func,
-  setEmbed: PropTypes.func
+  setEmbed: PropTypes.func,
+  setDatasetId: PropTypes.func,
+  setTableName: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {
