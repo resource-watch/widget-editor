@@ -244,7 +244,7 @@ which will open a server on the port 8888.
 
 ## Changelog
 
-### v0.0.6 (not released yet)
+### v0.0.6
 - Add the `embedButtonMode` prop for the `WidgetEditor` component
 - Add the `onEmbed` prop for the `WidgetEditor` component
 - Possibility to use `EmbedTableModal` as an external component
