@@ -126,13 +126,16 @@ Name | Default value | Mandatory | Description
 -----|---------------|-----------|------------
 `datasetId: string` | `undefined` | Yes | The ID of the dataset to load the data from
 `widgetId: string` | `undefined` | No | If provided, the ID of the widget to edit
-`saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(*)**
+`saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(1)**
+`embedButtonMode: string` | `"auto"` | No | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title is only editable if a user token is passed to the configuration. If `"always"`, the title is always editable. If `"never"`, it is always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
 
-**(*)** The button is **never** shown a widget hasn't been rendered yet.
+**(1)** The button is **never** shown a widget hasn't been rendered yet.
+
+**(2)** The button is currently only available for the table visualization.
 
 ### Get the widget config
 
@@ -239,6 +242,9 @@ $ yarn analyze
 which will open a server on the port 8888.
 
 ## Changelog
+
+### v0.0.6 (not released yet)
+- Add the `embedButtonMode` prop for the `WidgetEditor` component
 
 ### v0.0.5
 - Add missing params to the queries (`application` and `env`)

@@ -106,6 +106,7 @@ class App extends React.Component {
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
           saveButtonMode="always"
+          embedButtonMode="never"
           onSave={() => this.onSave()}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />

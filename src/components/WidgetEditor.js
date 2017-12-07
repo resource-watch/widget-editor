@@ -1032,12 +1032,15 @@ class WidgetEditor extends React.Component {
       datasetId,
       widgetId,
       saveButtonMode,
+      embedButtonMode,
       selectedVisualizationType
     } = this.props;
 
     const editorMode = !widgetId ? 'save' : 'update';
     const showSaveButton = saveButtonMode === 'always'
       || (saveButtonMode === 'auto' && !!getConfig().userToken);
+    const showEmbedButton = embedButtonMode === 'always'
+      || (embedButtonMode === 'auto' && !!getConfig().userToken);
 
     const visualization = this.getVisualization();
 
@@ -1100,6 +1103,7 @@ class WidgetEditor extends React.Component {
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
                   showSaveButton={showSaveButton}
+                  showEmbedButton={showEmbedButton}
                   onSave={() => this.onClickSave()}
                   hasGeoInfo={hasGeoInfo}
                   onEmbedTable={this.handleEmbedTable}
@@ -1224,6 +1228,13 @@ WidgetEditor.propTypes = {
    */
   saveButtonMode: PropTypes.oneOf(['auto', 'always', 'never']),
   /**
+   * When to show the embed button in the editor:
+   *  * "auto": only if a user token is set in ConfigHelper
+   *  * "always": always shown
+   *  * "never": never shown
+   */
+  embedButtonMode: PropTypes.oneOf(['auto', 'always', 'never']),
+  /**
    * When to make the title editable in the editor:
    *  * "auto": only if a user token is set in ConfigHelper
    *  * "always": always editable
@@ -1279,6 +1290,7 @@ WidgetEditor.propTypes = {
 
 WidgetEditor.defaultProps = {
   saveButtonMode: 'auto',
+  embedButtonMode: 'auto',
   titleMode: 'auto',
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };

@@ -56,7 +56,7 @@ class ChartEditor extends React.Component {
       mode,
       showSaveButton,
       hasGeoInfo,
-      showEmbedTable
+      showEmbedButton
     } = this.props;
     const { chartType, fields } = widgetEditor;
 
@@ -121,7 +121,7 @@ class ChartEditor extends React.Component {
               {mode === 'save' ? 'Save widget' : 'Update widget'}
             </button>
           }
-          { tableViewMode && showEmbedTable &&
+          { tableViewMode && showEmbedButton &&
             <a
               role="button"
               className="c-button -primary"
@@ -137,16 +137,11 @@ class ChartEditor extends React.Component {
   }
 }
 
-ChartEditor.defaultProps = {
-  showEmbedTable: true
-};
-
 ChartEditor.propTypes = {
   /**
    * Dataset ID
    */
   datasetId: PropTypes.string.isRequired,
-  datasetType: PropTypes.string,
   datasetProvider: PropTypes.string,
   mode: PropTypes.oneOf(['save', 'update']).isRequired,
   tableName: PropTypes.string.isRequired,
@@ -165,11 +160,15 @@ ChartEditor.propTypes = {
    */
   showSaveButton: PropTypes.bool.isRequired,
   /**
+   * Whether the embed button should be shown
+   * when a widget is rendered
+   */
+  showEmbedButton: PropTypes.bool,
+  /**
    * Callback executed when the save/update button
    * is clicked
    */
   onSave: PropTypes.func,
-  showEmbedTable: PropTypes.bool,
   // Store
   widgetEditor: PropTypes.object.isRequired,
   setChartType: PropTypes.func.isRequired,
