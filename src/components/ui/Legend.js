@@ -11,7 +11,6 @@ import InputRange from 'react-input-range';
 import { connect } from 'react-redux';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip, setTooltipPosition } from 'reducers/tooltip';
-import { setLayerGroupOpacity } from 'reducers/explore';
 
 // Components
 import LegendType from 'components/ui/LegendType';
@@ -178,9 +177,9 @@ class Legend extends React.PureComponent {
    * @param {LayerGroup} layerGroup
    */
   onChangeOpacity(value, layerGroup) {
-    // const updateUrl = Router.route === '/app/Explore';
-    const updateUrl = false;
-    this.props.setLayerGroupOpacity(layerGroup.dataset, value, updateUrl);
+    if (this.props.setLayerGroupOpacity) {
+      this.props.setLayerGroupOpacity(value, layerGroup);
+    }
   }
 
   /**
@@ -564,7 +563,7 @@ Legend.propTypes = {
   removeLayerGroup: PropTypes.func,
   // Callback to change which layer of the layer group is active
   setLayerGroupActiveLayer: PropTypes.func.isRequired,
-  // Set layers opacity
+  // Callback to change the opacity of a layer group
   setLayerGroupOpacity: PropTypes.func,
 
   // Redux
@@ -590,10 +589,7 @@ const mapStateToProps = ({ widgetEditorTooltip }) => ({
 const mapDispatchToProps = dispatch => ({
   toggleModal: (open, options) => dispatch(toggleModal(open, options)),
   toggleTooltip: (open, options) => dispatch(toggleTooltip(open, options)),
-  setTooltipPosition: pos => dispatch(setTooltipPosition(pos)),
-  setLayerGroupOpacity: (dataset, layers, opacity) => {
-    dispatch(setLayerGroupOpacity(dataset, layers, opacity));
-  }
+  setTooltipPosition: pos => dispatch(setTooltipPosition(pos))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Legend);

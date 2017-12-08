@@ -29,7 +29,7 @@ let store = createStore(
 );
 ```
 
-The reducers are: `widgetEditorExplore`, `widgetEditorModal`, `widgetEditorTooltip` and `widgetEditor`.
+The reducers are: `widgetEditorModal`, `widgetEditorTooltip` and `widgetEditor`.
 
 Finally, the library contains some external images you need to include in your build process. In your [webpack](https://webpack.js.org) configuration file, please add the following:
 ```js
@@ -243,6 +243,10 @@ $ yarn analyze
 which will open a server on the port 8888.
 
 ## Changelog
+
+### v0.0.7 (not release yet)
+- Remove the `widgetEditorExplore` reducer and actions
+- Reduce the size of the library by 1% (-9kB) minified
 
 ### v0.0.6
 - Add the `embedButtonMode` prop for the `WidgetEditor` component

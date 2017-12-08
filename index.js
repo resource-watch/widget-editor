@@ -1,4 +1,3 @@
-import widgetEditorExplore, * as exploreActions from 'reducers/explore';
 import widgetEditorModal, * as modalActions from 'reducers/modal';
 import widgetEditorTooltip, * as tooltipActions from 'reducers/tooltip';
 import widgetEditor, * as widgetEditorActions from 'reducers/widgetEditor';
@@ -63,9 +62,8 @@ export { getConfig, setConfig } from 'helpers/ConfigHelper';
 
 // Redux
 export const reducers = {
-  widgetEditorExplore,
   widgetEditorModal,
   widgetEditorTooltip,
   widgetEditor
 };
-export { exploreActions, modalActions, tooltipActions, widgetEditorActions };
+export { modalActions, tooltipActions, widgetEditorActions };

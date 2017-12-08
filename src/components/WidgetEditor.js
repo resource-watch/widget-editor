@@ -119,6 +119,10 @@ const DEFAULT_STATE = {
   // DATASET INFO
   datasetInfoLoaded: false,
 
+  // MAP
+  basemap: undefined, // Which basemap to display
+  labels: undefined, // Whether to show the labels
+
   visualizationOptions: [] // Available visualizations
 };
 
@@ -523,6 +527,8 @@ class WidgetEditor extends React.Component {
             <div className="visualization">
               {chartTitle}
               <Map
+                basemap={this.state.basemap}
+                labels={this.state.labels}
                 LayerManager={LayerManager}
                 mapConfig={mapConfig}
                 layerGroups={this.state.layerGroups}
@@ -530,7 +536,12 @@ class WidgetEditor extends React.Component {
               />
 
               <MapControls>
-                <BasemapControl />
+                <BasemapControl
+                  basemap={this.state.basemap}
+                  labels={this.state.labels}
+                  onChangeBasemap={basemap => this.setState({ basemap })}
+                  onToggleLabels={labels => this.setState({ labels })}
+                />
               </MapControls>
 
               <Legend

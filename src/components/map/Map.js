@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
+import { BASEMAPS, LABELS } from 'components/map/constants';
 
 // Components
 import Spinner from 'components/ui/Spinner';
 
-// Redux
-import { connect } from 'react-redux';
-
-import { LABELS } from 'components/map/constants';
-
+// Types
+/**
+ * Basemap
+ * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
+ */
 
 // Leaflet can't be imported on the server because it's not isomorphic
 const L = (typeof window !== 'undefined') ? require('leaflet') : null;
@@ -28,11 +29,7 @@ class Map extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading: false,
-      sidebar: {
-        open: props.sidebar.open,
-        width: props.sidebar.width
-      }
+      loading: false
     };
   }
 
@@ -128,11 +125,6 @@ class Map extends React.Component {
       }
     }
 
-    if (this.props.sidebar.width !== nextProps.sidebar.width) {
-      this.setState({
-        sidebar: nextProps.sidebar
-      });
-    }
     if (this.props.basemap !== nextProps.basemap) {
       this.setBasemap(nextProps.basemap);
     }
@@ -143,8 +135,8 @@ class Map extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const loadingChanged = this.state.loading !== nextState.loading;
-    const sidebarWidthChanged = this.props.sidebar.width !== nextProps.sidebar.width;
-    return loadingChanged || sidebarWidthChanged;
+    const offsetChanged = this.props.horizontalOffset !== nextProps.horizontalOffset;
+    return loadingChanged || offsetChanged;
   }
 
   componentWillUnmount() {
@@ -227,16 +219,13 @@ class Map extends React.Component {
   }
 
   setSpinnerPosition() {
-    const windowWidth = window.innerWidth;
-    const sidebarWidth = this.state.sidebar.width;
-
-    return ((windowWidth - sidebarWidth) / 2);
+    return this.props.horizontalOffset / 2;
   }
 
-  fitBounds(geoJson, sidebarWidth) {
+  fitBounds(geoJson) {
     const geojsonLayer = L.geoJson(geoJson);
     this.map.fitBounds(geojsonLayer.getBounds(), {
-      paddingTopLeft: [sidebarWidth || 0, 0],
+      paddingTopLeft: [this.props.horizontalOffset || 0, 0],
       paddingBottomRight: [0, 0]
     });
   }
@@ -265,48 +254,49 @@ class Map extends React.Component {
 
   // RENDER
   render() {
-    // FIXME: First, the loader can't me just moved like that because the map
-    // can be used in a variety of context (different pages).
-    // Second, even in the case of the Explore page this rule doesn't make sense:
-    // if the sidebar is collapsed, the loader shouldn't be on the side
-    // eslint-disable-next-line max-len
-    // const spinnerStyles = (typeof window === 'undefined') ? {} : { marginLeft: this.setSpinnerPosition() };
-    const spinnerStyles = {};
-    const mapClass = !this.state.sidebar.open ? '-fullWidth' : '';
+    const spinnerStyles = { marginLeft: this.setSpinnerPosition() };
 
     return (
-      <div className={`c-map ${mapClass}`}>
-        {this.state.loading && <Spinner isLoading style={spinnerStyles} />}
+      <div className="c-map">
+        <Spinner isLoading={this.state.loading} style={spinnerStyles} />
         <div ref={(node) => { this.mapNode = node; }} className="map-leaflet" />
       </div>
     );
   }
 }
 
-Map.defaultProps = {
-  interactionEnabled: true,
-  useLightBasemap: false
-};
-
 Map.propTypes = {
-  interactionEnabled: PropTypes.bool.isRequired,
+  interactionEnabled: PropTypes.bool,
   setMapInstance: PropTypes.func,
-  // STORE
+  /**
+   * Selected basemap
+   * @type {Basemap} basemap
+   */
   basemap: PropTypes.object,
+  /**
+   * Whether the labels are show or not
+   * @type {boolean} labels
+   */
   labels: PropTypes.bool,
+  /**
+   * Horizontal offset for the center of the map and
+   * loader
+   */
+  horizontalOffset: PropTypes.number,
+  // STORE
   mapConfig: PropTypes.object,
   filters: PropTypes.object,
-  sidebar: PropTypes.object,
   LayerManager: PropTypes.func,
   layerGroups: PropTypes.array, // List of LayerGroup items
   // ACTIONS
   setMapParams: PropTypes.func
 };
 
-const mapStateToProps = ({ widgetEditorExplore }) => ({
-  basemap: widgetEditorExplore.basemap,
-  labels: widgetEditorExplore.labels,
-  sidebar: widgetEditorExplore.sidebar
-});
+Map.defaultProps = {
+  basemap: BASEMAPS.dark,
+  labels: false,
+  interactionEnabled: true,
+  horizontalOffset: 0
+};
 
-export default connect(mapStateToProps, null)(Map);
+export default Map;

@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Autobind from 'autobind-decorator';
-
-// Redux
-import { connect } from 'react-redux';
-import { setBasemap, setLabels } from 'reducers/explore';
+import { BASEMAPS } from 'components/map/constants';
 
 // Components
 import TetherComponent from 'react-tether';
 import Icon from 'components/ui/Icon';
 import Checkbox from 'components/form/Checkbox';
 import RadioGroup from 'components/form/RadioGroup';
+
+// Types
+/**
+ * Basemap
+ * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
+ */
 
 class BasemapControl extends React.Component {
   constructor(props) {
@@ -22,11 +25,11 @@ class BasemapControl extends React.Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.onScreenClick);
+    document.removeEventListener('click', this.onClickScreen);
   }
 
   @Autobind
-  onScreenClick(e) {
+  onClickScreen(e) {
     const el = document.querySelector('.c-tooltip-editor');
     const clickOutside = el && el.contains && !el.contains(e.target);
 
@@ -36,15 +39,18 @@ class BasemapControl extends React.Component {
   }
 
   @Autobind
-  onBasemapChange(basemap) {
-    const { basemapControl } = this.props;
-
-    this.props.setBasemap(basemapControl.basemaps[basemap]);
+  onChangeBasemap(basemap) {
+    if (this.props.onChangeBasemap) {
+      const { basemaps } = this.props;
+      this.props.onChangeBasemap(basemaps[basemap]);
+    }
   }
 
   @Autobind
-  onLabelChange(label) {
-    this.props.setLabels(label.checked);
+  onToggleLabels(label) {
+    if (this.props.onToggleLabels) {
+      this.props.onToggleLabels(label.checked);
+    }
   }
 
   toggleDropdown(to) {
@@ -54,9 +60,9 @@ class BasemapControl extends React.Component {
 
     requestAnimationFrame(() => {
       if (to) {
-        window.addEventListener('click', this.onScreenClick);
+        window.addEventListener('click', this.onClickScreen);
       } else {
-        window.removeEventListener('click', this.onScreenClick);
+        window.removeEventListener('click', this.onClickScreen);
       }
     });
     this.setState({ active });
@@ -64,7 +70,7 @@ class BasemapControl extends React.Component {
 
   // RENDER
   render() {
-    const { basemap, basemapControl } = this.props;
+    const { basemap, basemaps, labels } = this.props;
     const { active } = this.state;
 
     return (
@@ -87,8 +93,8 @@ class BasemapControl extends React.Component {
         {active &&
           <div>
             <RadioGroup
-              options={Object.keys(basemapControl.basemaps).map((k) => {
-                const bs = basemapControl.basemaps[k];
+              options={Object.keys(basemaps).map((k) => {
+                const bs = basemaps[k];
                 return {
                   label: bs.label,
                   value: bs.id
@@ -98,16 +104,17 @@ class BasemapControl extends React.Component {
               properties={{
                 default: basemap.id
               }}
-              onChange={this.onBasemapChange}
+              onChange={this.onChangeBasemap}
             />
             <div className="divisor" />
             <Checkbox
               properties={{
                 name: 'label',
-                title: 'Label',
-                value: 'label'
+                title: 'Show labels',
+                value: 'label',
+                checked: labels
               }}
-              onChange={this.onLabelChange}
+              onChange={this.onToggleLabels}
             />
           </div>
         }
@@ -117,23 +124,37 @@ class BasemapControl extends React.Component {
 }
 
 BasemapControl.propTypes = {
-  // STORE
-  basemapControl: PropTypes.object,
+  /**
+   * List of available basemaps
+   * @type {{ [name: string]: Basemap} basemaps
+   */
+  basemaps: PropTypes.object,
+  /**
+   * Selected basemap
+   * @type {Basemap} basemap
+   */
   basemap: PropTypes.object,
+  /**
+   * Whether the labels are show or not
+   * @type {boolean} labels
+   */
+  labels: PropTypes.bool,
+  /**
+   * Callback executed when the basemap is changed
+   * @type {(basemap: Basemap) => void} onChangeBasemap
+   */
+  onChangeBasemap: PropTypes.func,
+  /**
+   * Callback executed when the labels are toggled
+   * @type {(visibleLabels: boolean) => void} onChangeBasemap
+   */
+  onToggleLabels: PropTypes.func
+};
 
-  // ACTIONS
-  setBasemap: PropTypes.func,
-  setLabels: PropTypes.func
-}
+BasemapControl.defaultProps = {
+  basemap: BASEMAPS.dark,
+  basemaps: BASEMAPS,
+  labels: false
+};
 
-const mapStateToProps = ({ widgetEditorExplore }) => ({
-  basemap: widgetEditorExplore.basemap,
-  basemapControl: widgetEditorExplore.basemapControl
-});
-
-const mapDispatchToProps = dispatch => ({
-  setBasemap: (...params) => dispatch(setBasemap(...params)),
-  setLabels: (...params) => dispatch(setLabels(...params))
-});
-
-export default (connect(mapStateToProps, mapDispatchToProps)(BasemapControl));
+export default BasemapControl;
