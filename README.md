@@ -244,7 +244,7 @@ which will open a server on the port 8888.
 
 ## Changelog
 
-### v0.0.7 (not release yet)
+### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions
 - Reduce the size of the library by 1% (-9kB) minified
 
