@@ -1,3 +1,5 @@
+import pick from 'lodash/pick';
+
 let config = null;
 
 /**
@@ -17,11 +19,11 @@ let config = null;
  * @return {WidgetEditorConfig}
  */
 export function getConfig() {
-  if (!config) {
-    throw new Error('You must provide a configuration for widget-editor.');
-  } else {
-    return config;
+  if (!config || !config.url || !config.env || !config.applications || !config.authUrl) {
+    console.error('You must provide a complete configuration for widget-editor.', config);
   }
+
+  return config;
 }
 
 /**
@@ -29,19 +31,10 @@ export function getConfig() {
  * @param {WidgetEditorConfig} params Configuration of the widget editor
  */
 export function setConfig(params) {
-  if (config) return;
+  const acceptedParams = pick(
+    params,
+    ['url', 'env', 'applications', 'authUrl', 'userToken', 'userEmail', 'locale']
+  );
 
-  if (!params || !params.url || !params.env || !params.applications || !params.authUrl) {
-    throw new Error('The configuration of widget-editor must provide the env, applications and url and authUrl attributes.');
-  }
-
-  config = {
-    url: params.url,
-    env: params.env,
-    applications: params.applications,
-    authUrl: params.authUrl,
-    userToken: params.userToken || null,
-    userEmail: params.userEmail || null,
-    locale: params.locale || 'en'
-  };
+  config = { ...config, ...acceptedParams };
 }

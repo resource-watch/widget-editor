@@ -82,6 +82,8 @@ Name | Default value | Mandatory | Description
 `userEmail: string` | `null` | No | Email of the logged user
 `locale: string` | `"en"` | No | Locale used to fetch the data
 
+Later, you can update any of the properties (mandatory or not) if you need to.
+
 ## How to use the `WidgetEditor` component
 
 ![Widget editor configured to render a bar chart](README_IMG_EDITOR.png)
@@ -243,6 +245,9 @@ $ yarn analyze
 which will open a server on the port 8888.
 
 ## Changelog
+
+### v0.0.8 (not released yet)
+- Fix an issue that would prevent the update of the config
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions
