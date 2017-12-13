@@ -11,6 +11,7 @@
   "author": "Clément Prod'homme <clement.prodhomme@vizzuality.com>",
   "license": "MIT",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.2",
     "babel-loader": "^7.1.2",
@@ -52,7 +53,7 @@
     "start": "NODE_ENV=development webpack-dev-server --open --config webpack.test.js",
     "watch": "NODE_ENV=development webpack --watch --config webpack.dev.js",
     "analyze": "NODE_ENV=development ANALYZE=true webpack --config webpack.dev.js",
-    "build": "NODE_ENV=production webpack --config webpack.prod.js"
+    "build": "NODE_ENV=production webpack --config webpack.prod.js && BABEL_DISABLE_CACHE=1 BABEL_ENV=build babel src --out-dir dist && BABEL_DISABLE_CACHE=1 BABEL_ENV=build babel src/index.js --out-file dist/index.js"
   },
   "dependencies": {
     "autobind-decorator": "^2.1.0",
