@@ -55,7 +55,7 @@ export default class WidgetService {
   }
 
   static removeUserWidget(widgetId, token) {
-    return fetch(`${getConfig().url}/widget/${widgetId}?application=${getConfig().applications}&env=${getConfig().env}&`, {
+    return fetch(`${getConfig().url}/widget/${widgetId}?env=${getConfig().env}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
