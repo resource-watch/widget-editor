@@ -8,7 +8,7 @@ const merge = require('webpack-merge');
 const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
-  entry: './index.js',
+  entry: './src/index.js',
 
   output: {
     path: path.resolve(__dirname, 'dist'),

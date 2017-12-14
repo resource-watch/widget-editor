@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions } from 'dist/index';
 import 'dist/styles.css';
 
 const root = document.createElement('div');

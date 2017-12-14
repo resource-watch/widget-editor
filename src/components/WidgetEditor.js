@@ -7,8 +7,6 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 
-import 'css/index.scss';
-
 // Redux
 import { connect } from 'react-redux';
 import {

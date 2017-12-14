@@ -3,6 +3,9 @@ import widgetEditorTooltip, * as tooltipActions from 'reducers/tooltip';
 import widgetEditor, * as widgetEditorActions from 'reducers/widgetEditor';
 import * as widgetHelper from 'helpers/WidgetHelper';
 
+// Styles
+import 'css/index.scss';
+
 // Components
 export { default } from 'components/WidgetEditor';
 export { default as Modal } from 'components/ui/Modal';
