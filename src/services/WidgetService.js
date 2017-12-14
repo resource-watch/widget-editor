@@ -30,7 +30,7 @@ export default class WidgetService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: `Bearer ${token}`
       }
     })
       .then((response) => {
@@ -45,7 +45,7 @@ export default class WidgetService {
       body: JSON.stringify(widget),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: `Bearer ${token}`
       }
     })
       .then((response) => {
@@ -59,7 +59,7 @@ export default class WidgetService {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token
+        Authorization: `Bearer ${token}`
       }
     })
       .then((response) => {

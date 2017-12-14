@@ -250,6 +250,7 @@ which will open a server on the port 8888.
 - Fix an issue that would prevent the update of the config
 - Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
 - Fix the endpoint used in `removeUserWidget` from the `WidgetService`
+- Fix issues with the auth token in `WidgetService`
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions
