@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Autobind from 'autobind-decorator';
-import Step1Img from 'images/howto-step1.png';
-import Step2Img from 'images/howto-step2.png';
 
 // Redux
 import { connect } from 'react-redux';
@@ -26,7 +24,7 @@ class HowToWidgetEditorModal extends React.Component {
               Start selecting a visualization type
             </div>
             <div className="image-container">
-              <img alt="" src={Step1Img} />
+              <img alt="" src="/images/howto-step1.png" />
             </div>
           </div>
           <div className="container2">
@@ -35,7 +33,7 @@ class HowToWidgetEditorModal extends React.Component {
               Then drag and drop elements from the list to the boxes to draw up your chart
             </div>
             <div className="image-container">
-              <img alt="" src={Step2Img} />
+              <img alt="" src="/images/howto-step2.png" />
             </div>
           </div>
         </div>
