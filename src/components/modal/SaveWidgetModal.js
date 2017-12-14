@@ -18,7 +18,6 @@ import Icon from 'components/ui/Icon';
 import WidgetService from 'services/WidgetService';
 
 // Helpers
-import { getChartConfig, getChartInfo, getWidgetConfig } from 'helpers/WidgetHelper';
 import { getConfig } from 'helpers/ConfigHelper';
 
 const FORM_ELEMENTS = {
@@ -61,34 +60,46 @@ class SaveWidgetModal extends React.Component {
     event.preventDefault();
 
     this.setState({
-      loading: true
+      loading: true,
+      error: false
     });
 
     const { description } = this.state;
-    const { widgetEditor, datasetId, widgetConfig } = this.props;
+    const { widgetEditor, datasetId, getWidgetConfig } = this.props;
 
-    const widgetObj = Object.assign(
-      {},
-      {
-        name: widgetEditor.title || null,
-        description
-      },
-      { widgetConfig }
-    );
+    try {
+      const widgetConfig = await getWidgetConfig();
 
-    WidgetService.saveUserWidget(widgetObj, datasetId, getConfig().userToken)
-      .then((response) => {
-        if (response.errors) throw new Error(response.errors[0].detail);
-      })
-      .then(() => this.setState({ saved: true, error: false }))
-      .catch((err) => {
-        this.setState({
-          saved: false,
-          error: true,
-          errorMessage: err.message
-        });
-      })
-      .then(() => this.setState({ loading: false }));
+      const widgetObj = Object.assign(
+        {},
+        {
+          name: widgetEditor.title || null,
+          description
+        },
+        { widgetConfig }
+      );
+
+      WidgetService.saveUserWidget(widgetObj, datasetId, getConfig().userToken)
+        .then((response) => {
+          if (response.errors) throw new Error(response.errors[0].detail);
+        })
+        .then(() => this.setState({ saved: true, error: false }))
+        .catch((err) => {
+          this.setState({
+            saved: false,
+            error: true,
+            errorMessage: err.message
+          });
+        })
+        .then(() => this.setState({ loading: false }));
+    } catch (err) {
+      console.error(err);
+
+      this.setState({
+        error: true,
+        errorMessage: 'Unable to generate the configuration of the chart'
+      });
+    }
   }
 
   /**
@@ -210,9 +221,9 @@ SaveWidgetModal.propTypes = {
    */
   datasetId: PropTypes.string.isRequired,
   /**
-   * Widget config
+   * Async callback to get the widget config
    */
-  widgetConfig: PropTypes.object.isRequired,
+  getWidgetConfig: PropTypes.func.isRequired,
   /**
    * Callback executed when the user clicks the
    * button to check their widgets

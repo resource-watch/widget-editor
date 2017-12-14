@@ -58,19 +58,14 @@ class App extends React.Component {
 
   async onSave() {
     if (this.getWidgetConfig) {
-      try {
-        const widgetConfig = await this.getWidgetConfig();
-        this.props.toggleModal(true, {
-          children: SaveWidgetModal,
-          childrenProps: {
-            datasetId: this.state.datasetId,
-            widgetConfig,
-            onClickCheckWidgets: () => alert('Check my widgets')
-          }
-        });
-      } catch (err) {
-        console.error('Unable to get the widget config', err);
-      }
+      this.props.toggleModal(true, {
+        children: SaveWidgetModal,
+        childrenProps: {
+          datasetId: this.state.datasetId,
+          getWidgetConfig: this.getWidgetConfig,
+          onClickCheckWidgets: () => alert('Check my widgets')
+        }
+      });
     }
   }
 
