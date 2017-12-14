@@ -245,6 +245,7 @@ In you're favorite text editor, you can find the source code in `/src` and the t
 - Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
 - Fix the endpoint used in `removeUserWidget` from the `WidgetService`
 - Fix issues with the auth token in `WidgetService`
+- Build the library with [Rollup](https://rollupjs.org/) and make it SSR-ready
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions
