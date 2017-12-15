@@ -249,6 +249,7 @@ In you're favorite text editor, you can find the source code in `/src` and the t
 - Fix issues with the auth token in `WidgetService`
 - Build the library with [Rollup](https://rollupjs.org/) and make it SSR-ready
 - Add a new attribute `assetsPath` to the configuration (mandatory)
+- Scope the actions to avoid conflicts
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions
