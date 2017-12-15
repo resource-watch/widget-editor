@@ -9,6 +9,7 @@ let config = null;
  * @property {string} env - Environment of the API (comma-separated string)
  * @property {string} applications - Applications of the API (comma-separated string)
  * @property {string} authUrl - URL to authenticate the user
+ * @property {string} assetsPath - Public path to the static assets (images)
  * @property {string} [userToken] - Token of the logged user
  * @property {string} [userEmail] - Email of the logged user
  * @property {string} [locale] - Locale used to fetch the data
@@ -19,7 +20,8 @@ let config = null;
  * @return {WidgetEditorConfig}
  */
 export function getConfig() {
-  if (!config || !config.url || !config.env || !config.applications || !config.authUrl) {
+  if (!config || !config.url || !config.env || !config.applications || !config.authUrl
+    || !config.assetsPath) {
     console.error('You must provide a complete configuration for widget-editor.', config);
   }
 
@@ -33,7 +35,7 @@ export function getConfig() {
 export function setConfig(params) {
   const acceptedParams = pick(
     params,
-    ['url', 'env', 'applications', 'authUrl', 'userToken', 'userEmail', 'locale']
+    ['url', 'env', 'applications', 'authUrl', 'assetsPath', 'userToken', 'userEmail', 'locale']
   );
 
   config = { ...config, ...acceptedParams };

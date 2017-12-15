@@ -7,8 +7,6 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 
-import 'css/index.scss';
-
 // Redux
 import { connect } from 'react-redux';
 import {
@@ -31,7 +29,6 @@ import {
   setLimit,
   setChartType,
   setAreaIntersection,
-  setEmbed,
   setDatasetId,
   setTableName
 } from 'reducers/widgetEditor';
@@ -900,7 +897,6 @@ class WidgetEditor extends React.Component {
         if (name) this.props.setTitle(name);
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
-        if (embed) this.props.setEmbed(embed);
       });
   }
 
@@ -1177,7 +1173,6 @@ const mapDispatchToProps = dispatch => ({
   setLimit: (...params) => dispatch(setLimit(...params)),
   setChartType: (...params) => dispatch(setChartType(...params)),
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
-  setEmbed: (...params) => dispatch(setEmbed(...params)),
   setDatasetId: (...params) => dispatch(setDatasetId(...params)),
   setTableName: (...params) => dispatch(setTableName(...params))
 });
@@ -1266,7 +1261,6 @@ WidgetEditor.propTypes = {
   setLimit: PropTypes.func,
   setChartType: PropTypes.func,
   setAreaIntersection: PropTypes.func,
-  setEmbed: PropTypes.func,
   setDatasetId: PropTypes.func,
   setTableName: PropTypes.func
 };

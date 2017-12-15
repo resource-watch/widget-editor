@@ -66,7 +66,8 @@ setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
   applications: 'rw',
-  authUrl: 'https://api.resourcewatch.org/auth'
+  authUrl: 'https://api.resourcewatch.org/auth',
+  assetsPath: '/images/'
 });
 ```
 
@@ -78,6 +79,7 @@ Name | Default value | Mandatory | Description
 `env: string` | `undefined` | Yes | Environment of the API (comma-separated string)
 `applications: string` | `undefined` | Yes | Applications of the API (comma-separated string)
 `authUrl: string` | `undefined` | Yes | URL to authenticate the user
+`assetsPath: string` | `undefined` | Yes | Public path of the editor's static assets (images)
 `userToken: string` | `null` | No | Token of the logged user
 `userEmail: string` | `null` | No | Email of the logged user
 `locale: string` | `"en"` | No | Locale used to fetch the data
@@ -96,7 +98,7 @@ The minimal setup is the following:
 ```jsx
 import React from 'react';
 import WidgetEditor, { Modal, Tooltip, Icons, setConfig } from 'widget-editor';
-import 'widget-editor/dist/styles.css';
+import 'widget-editor/dist/styles.min.css';
 
 // Change the configuration according to your needs
 setConfig({
@@ -225,24 +227,18 @@ Then, install the dependencies:
 $ cd widget-editor && yarn
 ```
 
-You need to run two terminals to start coding. The first one will watch for the source code and compile it:
+Build the project:
 ```bash
-$ yarn watch
+$ yarn build
 ```
 
-The second will contain the server that let's you test the editor:
+And finally, execute this line to start the development server:
 ```bash
 $ yarn start
 ```
-Once you've executed the command, your browser should open with a basic testing page.
+Once you've done it, your browser should open a tab with a basic testing page.
 
 In you're favorite text editor, you can find the source code in `/src` and the testing file `/test.js`.
-
-If you want to analyze the library's bundle, you can also run:
-```bash
-$ yarn analyze
-```
-which will open a server on the port 8888.
 
 ## Changelog
 
@@ -251,6 +247,8 @@ which will open a server on the port 8888.
 - Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
 - Fix the endpoint used in `removeUserWidget` from the `WidgetService`
 - Fix issues with the auth token in `WidgetService`
+- Build the library with [Rollup](https://rollupjs.org/) and make it SSR-ready
+- Add a new attribute `assetsPath` to the configuration (mandatory)
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions

@@ -1,9 +1,10 @@
 {
-  "presets": ["env", "react"],
+  "presets": [["env", { "modules": false }], "react"],
   "plugins": [
+    "external-helpers",
+    "transform-runtime",
     "transform-object-rest-spread",
     "babel-plugin-transform-decorators-legacy",
-    "transform-runtime",
     ["module-resolver", {
       "root": [".", "./src"]
     }]
