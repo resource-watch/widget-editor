@@ -242,7 +242,7 @@ In you're favorite text editor, you can find the source code in `/src` and the t
 
 ## Changelog
 
-### v0.0.8 (not released yet)
+### v0.0.8
 - Fix an issue that would prevent the update of the config
 - Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
 - Fix the endpoint used in `removeUserWidget` from the `WidgetService`
