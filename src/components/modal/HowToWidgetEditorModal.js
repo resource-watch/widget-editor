@@ -4,8 +4,10 @@ import Autobind from 'autobind-decorator';
 
 // Redux
 import { connect } from 'react-redux';
-
 import { toggleModal } from 'reducers/modal';
+
+// Helpers
+import { getConfig } from 'helpers/ConfigHelper';
 
 class HowToWidgetEditorModal extends React.Component {
   @Autobind
@@ -24,7 +26,7 @@ class HowToWidgetEditorModal extends React.Component {
               Start selecting a visualization type
             </div>
             <div className="image-container">
-              <img alt="" src="/images/howto-step1.png" />
+              <img alt="" src={`${getConfig().assetsPath}howto-step1.png`} />
             </div>
           </div>
           <div className="container2">
@@ -33,7 +35,7 @@ class HowToWidgetEditorModal extends React.Component {
               Then drag and drop elements from the list to the boxes to draw up your chart
             </div>
             <div className="image-container">
-              <img alt="" src="/images/howto-step2.png" />
+              <img alt="" src={`${getConfig().assetsPath}howto-step2.png`} />
             </div>
           </div>
         </div>

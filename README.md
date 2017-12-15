@@ -66,7 +66,8 @@ setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
   applications: 'rw',
-  authUrl: 'https://api.resourcewatch.org/auth'
+  authUrl: 'https://api.resourcewatch.org/auth',
+  assetsPath: '/images/'
 });
 ```
 
@@ -78,6 +79,7 @@ Name | Default value | Mandatory | Description
 `env: string` | `undefined` | Yes | Environment of the API (comma-separated string)
 `applications: string` | `undefined` | Yes | Applications of the API (comma-separated string)
 `authUrl: string` | `undefined` | Yes | URL to authenticate the user
+`assetsPath: string` | `undefined` | Yes | Public path of the editor's static assets (images)
 `userToken: string` | `null` | No | Token of the logged user
 `userEmail: string` | `null` | No | Email of the logged user
 `locale: string` | `"en"` | No | Locale used to fetch the data
@@ -246,6 +248,7 @@ In you're favorite text editor, you can find the source code in `/src` and the t
 - Fix the endpoint used in `removeUserWidget` from the `WidgetService`
 - Fix issues with the auth token in `WidgetService`
 - Build the library with [Rollup](https://rollupjs.org/) and make it SSR-ready
+- Add a new attribute `assetsPath` to the configuration (mandatory)
 
 ### v0.0.7
 - Remove the `widgetEditorExplore` reducer and actions

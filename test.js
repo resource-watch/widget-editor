@@ -20,7 +20,8 @@ setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
   applications: 'rw',
-  authUrl: 'https://api.resourcewatch.org/auth'
+  authUrl: 'https://api.resourcewatch.org/auth',
+  assetsPath: '/images/'
 });
 
 class App extends React.Component {
