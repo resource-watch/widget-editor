@@ -240,6 +240,17 @@ Once you've done it, your browser should open a tab with a basic testing page.
 
 In you're favorite text editor, you can find the source code in `/src` and the testing file `/test.js`.
 
+## Publish
+
+**Before publishing, make sure to test the library. Once published to npm, there's no way to modify the new version or to take it down.**
+
+Steps:
+1. Update the changelog below with the new version number and the list of changes **(*)**
+2. Tag the commit with the new version number: `git tag -a v0.0.X COMMIT_HASH` and add as description the list of changes from the changelog
+3. Publish to npm: `yarn publish`
+
+**(*)** Don't forget to remove the "(not yet released)" text next to the version number!
+
 ## Changelog
 
 ### v0.0.8
