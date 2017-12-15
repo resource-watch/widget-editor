@@ -68,7 +68,7 @@
     "prebuild:css": "node-sass src/css/index.scss dist/styles.css",
     "build:css": "postcss --use autoprefixer < dist/styles.css | postcss --use cssnano > dist/styles.min.css",
     "build:js": "rollup -c rollup.config.js",
-    "build": "$npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run build:js"
+    "build": "NODE_ENV=production $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run build:js"
   },
   "dependencies": {
     "autobind-decorator": "^2.1.0",
