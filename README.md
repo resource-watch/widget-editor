@@ -98,6 +98,7 @@ The minimal setup is the following:
 ```jsx
 import React from 'react';
 import WidgetEditor, { Modal, Tooltip, Icons, setConfig } from 'widget-editor';
+import 'rc-slider/assets/styles.css';
 import 'widget-editor/dist/styles.min.css';
 
 // Change the configuration according to your needs
