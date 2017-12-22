@@ -52,6 +52,7 @@ class MapEditor extends React.Component {
           {
             canShowSaveButton &&
             <button
+              type="button"
               className="c-button -primary"
               onClick={this.props.onSave}
             >

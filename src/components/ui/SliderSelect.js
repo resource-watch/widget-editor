@@ -404,12 +404,12 @@ export default class SliderSelect extends React.Component {
           <div>
             {selectText}
             {/*! selectedItem && closed &&
-              <button className="icon-btn" onClick={this.toggle}>
+              <button type="button" className="icon-btn" onClick={this.toggle}>
                 <Icon name="icon-arrow-down" className="-small icon-arrow-down" />
               </button>
             */}
             { selectedItem &&
-              <button className="icon-btn clear-button" onClick={this.clearSelectedItem}>
+              <button type="button" className="icon-btn clear-button" onClick={this.clearSelectedItem}>
                 <Icon name="icon-cross" className="-smaller icon-cross" />
               </button>
             }
@@ -445,7 +445,7 @@ export default class SliderSelect extends React.Component {
               >
                 <span className="label">{item.label}</span>
                 {item.items && item.items.length &&
-                  <button className="next" onClick={e => this.onSliderNext(e, item)}>
+                  <button type="button" className="next" onClick={e => this.onSliderNext(e, item)}>
                     <Icon name="icon-arrow-right" className="-small icon-arrow-right" />
                   </button>
                 }

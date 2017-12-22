@@ -166,7 +166,7 @@ class RasterChartEditor extends React.Component {
             <p className="description">
               {description}
               { longDescription &&
-                <button onClick={() => this.onClickReadMore()}>Read more</button>
+                <button type="button" onClick={() => this.onClickReadMore()}>Read more</button>
               }
             </p>
           ) }
@@ -198,6 +198,7 @@ class RasterChartEditor extends React.Component {
           {
             canShowSaveButton &&
             <button
+              type="button"
               className="c-button -primary"
               onClick={this.props.onSave}
             >

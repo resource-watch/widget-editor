@@ -154,7 +154,7 @@ export default class SearchSelect extends React.Component {
         <span className="custom-select-text" onClick={this.toggle}>
           <div>
             <span>{ this.state.value ? this.state.value : this.props.placeholder }</span>
-            <button className="icon-btn" onClick={this.toggle}>
+            <button type="button" className="icon-btn" onClick={this.toggle}>
               <Icon name="icon-search" className="-small" />
             </button>
           </div>

@@ -40,7 +40,7 @@ class Modal extends React.Component {
     return (
       <section ref={(node) => { this.el = node; }} className={`c-modal-editor ${this.props.open ? '' : '-hidden'} ${this.props.options.size || ''}`}>
         <div className="modal-container">
-          <button className="modal-close" onClick={() => this.props.toggleModal(false, {}, true)}>
+          <button type="button" className="modal-close" onClick={() => this.props.toggleModal(false, {}, true)}>
             <Icon name="icon-cross" className="-big" />
           </button>
           <div className="modal-content">

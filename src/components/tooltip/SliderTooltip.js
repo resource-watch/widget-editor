@@ -54,8 +54,8 @@ class SliderTooltip extends React.Component {
           onAfterChange={this.onChange}
         />
         <div className="actions-container">
-          <button className="c-button -primary" onClick={this.props.onClose}>Done</button>
-          <button className="c-button" onClick={() => this.onChange(options.max)}>Reset</button>
+          <button type="button" className="c-button -primary" onClick={this.props.onClose}>Done</button>
+          <button type="button" className="c-button" onClick={() => this.onChange(options.max)}>Reset</button>
         </div>
       </div>
     );

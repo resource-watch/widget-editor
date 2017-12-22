@@ -111,6 +111,7 @@ class ChartEditor extends React.Component {
           {
             canShowSaveButton &&
             <button
+              type="button"
               className="c-button -primary"
               onClick={this.props.onSave}
             >
@@ -119,6 +120,7 @@ class ChartEditor extends React.Component {
           }
           { canShowEmbedButton &&
             <button
+              type="button"
               className="c-button -primary"
               onClick={this.props.onEmbed}
             >

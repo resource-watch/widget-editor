@@ -89,7 +89,7 @@ class EmbedTableModal extends React.Component {
         code and insert it into the source code of your page:</p>
         <div className="url-container">
           <input ref={(n) => { this.input = n; }} value={iframeText} className="url" readOnly />
-          <button className="c-btn -primary" onClick={() => this.onCopyClick()}>
+          <button type="button" className="c-btn -primary" onClick={() => this.onCopyClick()}>
             Copy
           </button>
         </div>

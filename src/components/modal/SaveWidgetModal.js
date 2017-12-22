@@ -194,14 +194,14 @@ class SaveWidgetModal extends React.Component {
             <Icon name="widget-saved" />
             <div className="buttons-widget-saved">
               <Button
-                properties={{ className: '-primary' }}
+                properties={{ className: '-primary', type: 'button' }}
                 onClick={() => this.props.toggleModal(false)}
               >
                 OK
               </Button>
               { this.props.onClickCheckWidgets &&
                 <Button
-                  properties={{ className: '-secondary' }}
+                  properties={{ className: '-secondary', type: 'button' }}
                   onClick={this.onClickCheckWidgets}
                 >
                   Check my widgets

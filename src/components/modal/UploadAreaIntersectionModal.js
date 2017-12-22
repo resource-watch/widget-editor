@@ -204,6 +204,7 @@ class UploadAreaIntersectionModal extends React.Component {
             </div>
             <button
               className="c-button"
+              type="button"
               onClick={this.onOpenDialog}
             >
               Select file

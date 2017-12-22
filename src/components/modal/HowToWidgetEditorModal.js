@@ -41,6 +41,7 @@ class HowToWidgetEditorModal extends React.Component {
         </div>
         <div className="actions">
           <button
+            type="button"
             className="c-button -primary"
             onClick={this.handleOkGotIt}
           >
