@@ -68,7 +68,9 @@
     "prebuild:css": "node-sass src/css/index.scss dist/styles.css",
     "build:css": "postcss --use autoprefixer < dist/styles.css | postcss --use cssnano > dist/styles.min.css",
     "build:js": "rollup -c rollup.config.js",
+    "watch:js": "rollup -c rollup.config.js --watch",
     "build": "NODE_ENV=production $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run build:js",
+    "watch": "NODE_ENV=development $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run watch:js",
     "prepublish": "$npm_execpath run build"
   },
   "dependencies": {

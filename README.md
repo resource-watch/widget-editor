@@ -239,6 +239,11 @@ $ yarn start
 ```
 Once you've done it, your browser should open a tab with a basic testing page.
 
+You can also watch for the editor's JS files by typing this command in another terminal:
+```bash
+$ yarn watch
+```
+
 In you're favorite text editor, you can find the source code in `/src` and the testing file `/test.js`.
 
 ## Publish
@@ -257,6 +262,7 @@ Steps:
 ### v0.0.10 (not released yet)
 - Fix a bug that prevented map widgets from being restored
 - Add the missing Leaflet stylesheet to the testing file
+- Add a watch mode for the JS files
 
 ### v0.0.9
 - Add the missing type to some buttons
