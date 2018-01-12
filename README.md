@@ -256,6 +256,7 @@ Steps:
 
 ### v0.0.10 (not released yet)
 - Fix a bug that prevented map widgets from being restored
+- Add the missing Leaflet stylesheet to the testing file
 
 ### v0.0.9
 - Add the missing type to some buttons
