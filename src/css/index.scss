@@ -143,6 +143,7 @@ $margin-size: 50px;
 $margin-size-big: 100px;
 
 @import
+  "node_modules/rc-slider/dist/rc-slider",
   "add_widget_to_collection_tooltip",
   "aggregate_function_tooltip",
   "button",

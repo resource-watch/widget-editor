@@ -5,7 +5,6 @@ import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions } from 'dist/bundle';
-import 'rc-slider/assets/index.css';
 import 'leaflet/dist/leaflet.css';
 import 'dist/styles.css';
 
