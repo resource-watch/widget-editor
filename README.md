@@ -258,7 +258,7 @@ Steps:
 
 ## Changelog
 
-### v0.1.0 (not released yet)
+### v0.1.0
 - Fix a bug that prevented map widgets from being restored
 - Add the missing Leaflet stylesheet to the testing file
 - Add a watch mode for the JS files
