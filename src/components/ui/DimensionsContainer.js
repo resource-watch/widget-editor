@@ -20,7 +20,7 @@ class DimensionsContainer extends React.Component {
       (chartType === '1d_scatter' || chartType === '1d_tick');
 
     return (
-      <div className="c-dimensions-container">
+      <div className="c-we-dimensions-container">
         <CategoryContainer />
         {!oneDimensionalChart && <ValueContainer />}
         {false && <ColorContainer /> /* temporal while we have legends */}

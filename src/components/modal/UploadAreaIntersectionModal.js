@@ -175,13 +175,13 @@ class UploadAreaIntersectionModal extends React.Component {
     );
 
     return (
-      <div className={classnames('c-upload-area-intersection-modal', { '-embed': this.props.embed })}>
+      <div className={classnames('c-we-upload-area-intersection-modal', { '-embed': this.props.embed })}>
         <Spinner isLoading={loading} className="-light" />
         { !this.props.embed && <h2>Upload a new area</h2> }
 
         <Dropzone
           ref={(node) => { this.dropzone = node; }}
-          className="c-dropzone"
+          className="c-we-dropzone"
           activeClassName="-active"
           rejectClassName="-reject"
           multiple={false}
@@ -203,7 +203,7 @@ class UploadAreaIntersectionModal extends React.Component {
               { fileInputContent }
             </div>
             <button
-              className="c-button"
+              className="c-we-button"
               type="button"
               onClick={this.onOpenDialog}
             >

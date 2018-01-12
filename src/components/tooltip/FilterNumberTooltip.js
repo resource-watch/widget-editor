@@ -108,7 +108,7 @@ class FilterNumberTooltip extends React.Component {
     const { selected, loading } = this.props;
 
     return (
-      <div className="c-filter-string-tooltip">
+      <div className="c-we-filter-string-tooltip">
 
         {!loading &&
           !isNaN(min) && min !== null && typeof min !== 'undefined' &&

@@ -84,7 +84,7 @@ class LegendType extends React.Component {
 
   render() {
     return (
-      <div className="c-legend-type">
+      <div className="c-we-legend-type">
         {this.getLegendType()}
       </div>
     );

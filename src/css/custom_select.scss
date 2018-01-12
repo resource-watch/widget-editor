@@ -1,4 +1,4 @@
-.c-custom-select {
+.c-we-custom-select {
   position: relative;
   cursor: pointer;
   width: 100%;
@@ -73,7 +73,7 @@
     // clear button (the click gets caught by the input)
     z-index: 1;
 
-    .c-icon {
+    .c-we-icon {
       fill: rgba($dove-grey, .5);
     }
   }
@@ -121,7 +121,7 @@
       // when the focus is somewhere else
 
       > span {
-        .c-spinner {
+        .c-we-spinner {
           vertical-align: middle;
           margin-right: 10px;
         }
@@ -155,7 +155,7 @@
       line-height: 1.1;
       align-items: center;
 
-      .c-icon {
+      .c-we-icon {
         fill: $color-primary;
         width: 11px;
         height: 11px;

@@ -33,7 +33,7 @@ class LimitContainer extends React.Component {
 
   render() {
     return (
-      <div className="c-limit-container">
+      <div className="c-we-limit-container">
         <span className="text">
           Limit
         </span>

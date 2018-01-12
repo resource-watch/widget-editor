@@ -393,7 +393,7 @@ class Legend extends React.PureComponent {
         });
 
         return (
-          <li key={datasetSpec.dataset} className="c-legend-unit">
+          <li key={datasetSpec.dataset} className="c-we-legend-unit">
             <div className="legend-info">
               <header className="legend-item-header">
                 <h3 className={this.props.className.color}>
@@ -435,7 +435,7 @@ class Legend extends React.PureComponent {
 
       // Legend without timeline
       return (
-        <li key={layerGroup.dataset} className="c-legend-unit">
+        <li key={layerGroup.dataset} className="c-we-legend-unit">
           <div className="legend-info">
             <header className="legend-item-header">
               <h3 className={this.props.className.color}>
@@ -509,14 +509,14 @@ class Legend extends React.PureComponent {
     this.layersButtons = [];
 
     return (
-      <div className="c-legend-map">
+      <div className="c-we-legend-map">
         <div className={`open-legend ${this.state.open ? '-active' : ''}`} onScroll={this.onScrollLegend}>
           <button type="button" className="toggle-legend" onClick={() => this.setState({ open: false })}>
             <Icon name="icon-arrow-down" className="-small" />
           </button>
           <SortableList
             items={this.getLegendItems()}
-            helperClass="c-legend-unit -sort"
+            helperClass="c-we-legend-unit -sort"
             onSortStart={() => this.onSortStart()}
             onSortEnd={this.onSortEnd}
             axis="y"

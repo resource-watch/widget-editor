@@ -54,7 +54,7 @@ class DimensionYContainer extends React.Component {
     });
 
     return connectDropTarget(
-      <div className="c-column-container">
+      <div className="c-we-column-container">
         <span className="text">
           Value
         </span>

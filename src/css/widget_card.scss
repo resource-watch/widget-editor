@@ -1,4 +1,4 @@
-.c-widget-card {
+.c-we-widget-card {
   position: relative;
   width: 100%;
   background: $color-tertiary;
@@ -31,8 +31,8 @@
     }
   }
 
-  .c-widget-chart {
-    .c-chart {
+  .c-we-widget-chart {
+    .c-we-chart {
       .chart {
         display: flex;
 
@@ -79,7 +79,7 @@
       justify-content: space-between;
       height: 30px;
 
-      .c-button {
+      .c-we-button {
         height: 30px;
         padding: 0 10px;
       }

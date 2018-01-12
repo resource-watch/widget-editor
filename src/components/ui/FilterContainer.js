@@ -42,7 +42,7 @@ class FilterContainer extends React.Component {
     });
 
     return connectDropTarget(
-      <div className="c-filter-container">
+      <div className="c-we-filter-container">
         <span className="text">
           Filters
         </span>

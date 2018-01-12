@@ -38,7 +38,7 @@ class CategoryContainer extends React.Component {
     });
 
     return connectDropTarget(
-      <div className="c-column-container">
+      <div className="c-we-column-container">
         <span className="text">
           Category
         </span>

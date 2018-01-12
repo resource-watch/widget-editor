@@ -60,7 +60,7 @@ class FilterTooltip extends React.Component {
   }
 
   onScreenClick(e) {
-    const el = document.querySelector('.c-tooltip-editor');
+    const el = document.querySelector('.c-we-tooltip');
     const clickOutside = el && el.contains && !el.contains(e.target);
     if (clickOutside) {
       this.props.toggleTooltip(false);
@@ -104,7 +104,7 @@ class FilterTooltip extends React.Component {
     const { loading, notNullSelected } = this.state;
 
     return (
-      <div className="c-filter-tooltip">
+      <div className="c-we-filter-tooltip">
         {!!loading &&
           <Spinner
             className="-light -small"
@@ -113,7 +113,7 @@ class FilterTooltip extends React.Component {
         }
 
         {!loading &&
-          <div className="c-checkbox">
+          <div className="c-we-checkbox">
             <Checkbox
               properties={{
                 title: 'Not null values',

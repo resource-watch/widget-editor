@@ -1,4 +1,4 @@
-.c-map {
+.c-we-map {
   position: absolute;
   top: 0;
   right: 0;
@@ -18,7 +18,7 @@
     border-width: 1px;
     border-color: $border-color-2;
 
-    .c-embed-widget & {
+    .c-we-embed-widget & {
       margin-right: $margin-size-extra-small !important;
     }
   }

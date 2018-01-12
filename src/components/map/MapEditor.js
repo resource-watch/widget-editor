@@ -28,7 +28,7 @@ class MapEditor extends React.Component {
     const canShowSaveButton = showSaveButton && canSave;
 
     return (
-      <div className="c-map-editor">
+      <div className="c-we-map-editor">
         <div className="selector-container">
           <h5>
             Layers
@@ -53,7 +53,7 @@ class MapEditor extends React.Component {
             canShowSaveButton &&
             <button
               type="button"
-              className="c-button -primary"
+              className="c-we-button -primary"
               onClick={this.props.onSave}
             >
               {mode === 'save' ? 'Save widget' : 'Update widget'}

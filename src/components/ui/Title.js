@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default function Title({ children, className }) {
   return (
-    <div className={`c-title ${className || ''}`}>
+    <div className={`c-we-title ${className || ''}`}>
       {children}
     </div>
   );

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 function Spinner({ isLoading, className, style }) {
   const loading = (isLoading) ? '-loading' : '';
   return (
-    <div className={`c-spinner ${loading} ${className}`}>
+    <div className={`c-we-spinner ${loading} ${className}`}>
       <div className="spinner-box" style={style}>
         <div className="icon" />
       </div>

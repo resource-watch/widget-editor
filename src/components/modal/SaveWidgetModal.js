@@ -117,7 +117,7 @@ class SaveWidgetModal extends React.Component {
     const { widgetEditor } = this.props;
 
     return (
-      <div className="c-save-widget-modal">
+      <div className="c-we-save-widget-modal">
         {!saved &&
         <h2>Save widget</h2>
         }
@@ -136,7 +136,7 @@ class SaveWidgetModal extends React.Component {
         }
         {!saved && (
           <form className="form-container" onSubmit={this.onSubmit}>
-            <fieldset className="c-field-container">
+            <fieldset className="c-we-field-container">
               <Field
                 ref={(c) => { if (c) FORM_ELEMENTS.elements.title = c; }}
                 onChange={value => this.props.setTitle(value)}

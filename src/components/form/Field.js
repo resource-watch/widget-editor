@@ -48,7 +48,7 @@ class Field extends React.Component {
     });
 
     return (
-      <div className={`c-field ${fieldClasses}`}>
+      <div className={`c-we-field ${fieldClasses}`}>
         {properties.label &&
           <label htmlFor={`input-${properties.name}`} className="label">
             {properties.label} {properties.required && <abbr title="required">*</abbr>}

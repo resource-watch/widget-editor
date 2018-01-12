@@ -8,7 +8,7 @@ export default function MapControls({ children, className }) {
   });
 
   return (
-    <div className={`c-map-controls ${classNames}`}>
+    <div className={`c-we-map-controls ${classNames}`}>
       <ul className="map-controls-list">
         {React.Children.map(children, (ch, i) => (
           <li className="map-controls-item" key={i}>

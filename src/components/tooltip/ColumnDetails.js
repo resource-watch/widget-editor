@@ -30,7 +30,7 @@ class ColumnDetails extends React.Component {
         // because the event listener is just to prevent the
         // tooltip from being closed
         ref={(node) => { this.el = node; }}
-        className="c-column-details"
+        className="c-we-column-details"
         onClick={e => e.stopPropagation()}
       >
         <h4>{this.props.name}</h4>

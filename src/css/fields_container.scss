@@ -1,4 +1,4 @@
-.c-fields-container {
+.c-we-fields-container {
   max-width: 147px;
   max-height: 270px;
   overflow-y: auto;
@@ -10,7 +10,7 @@
   float: left;
   clear: right;
 
-  .c-columnbox {
+  .c-we-columnbox {
     margin-bottom: $space-1;
     &:last-child { margin-bottom: 0; }
   }

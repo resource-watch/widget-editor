@@ -85,7 +85,7 @@ class FilterDateTooltip extends React.Component {
     const { selected, loading } = this.props;
 
     return (
-      <div className="c-filter-string-tooltip">
+      <div className="c-we-filter-string-tooltip">
         {!loading && selected.length &&
           <select
             value={selected[0]}

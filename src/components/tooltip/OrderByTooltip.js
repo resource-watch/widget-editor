@@ -40,7 +40,7 @@ class OrderByTooltip extends React.Component {
 
   @Autobind
   triggerMouseDown(e) {
-    const el = document.querySelector('.c-tooltip-editor');
+    const el = document.querySelector('.c-we-tooltip');
     const clickOutside = el && el.contains && !el.contains(e.target);
     if (clickOutside) {
       this.props.toggleTooltip(false);
@@ -56,7 +56,7 @@ class OrderByTooltip extends React.Component {
   render() {
     const { orderBy } = this.state;
     return (
-      <div className="c-order-by-tooltip">
+      <div className="c-we-order-by-tooltip">
         Order by
         <div className="button-container">
           {ORDER_BY_OPTIONS.map((val, i) =>

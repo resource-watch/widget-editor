@@ -143,7 +143,7 @@ export default class SearchSelect extends React.Component {
 
   render() {
     // Class names
-    const cNames = ['c-custom-select -search'];
+    const cNames = ['c-we-custom-select -search'];
     if (this.props.className) cNames.push(this.props.className);
     if (this.state.closed) cNames.push('-closed');
 

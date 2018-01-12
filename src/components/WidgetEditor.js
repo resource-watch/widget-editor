@@ -1027,7 +1027,7 @@ class WidgetEditor extends React.Component {
       && (layersError || (layers && layers.length === 0));
 
     if (componentShouldNotShow) {
-      return <div className="c-widget-editor" />;
+      return <div className="c-we-widget-editor" />;
     }
 
     // TODO: could be saved in the state instead of computing it
@@ -1038,7 +1038,7 @@ class WidgetEditor extends React.Component {
     }
 
     return (
-      <div className="c-widget-editor">
+      <div className="c-we-widget-editor">
         <div className="customize-visualization">
           { this.isLoading() && <Spinner className="-light" isLoading /> }
           <h2
@@ -1047,7 +1047,7 @@ class WidgetEditor extends React.Component {
             Customize Visualization
           </h2>
           <div className="visualization-type">
-            <div className="c-field">
+            <div className="c-we-field">
               <label htmlFor="visualization-type-select">
                 Visualization type
               </label>

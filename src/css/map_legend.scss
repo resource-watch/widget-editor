@@ -1,4 +1,4 @@
-.c-legend-map {
+.c-we-legend-map {
   position: absolute;
   bottom: 35px;
   right: 30px;
@@ -8,7 +8,7 @@
   z-index: 2;
   border-radius: 4px;
 
-  .c-embed-widget & {
+  .c-we-embed-widget & {
     right: $margin-size-extra-small;
   }
 
@@ -26,7 +26,7 @@
       cursor: pointer;
     }
 
-    .c-icon {
+    .c-we-icon {
       fill: $color-charcoal-grey;
       margin-right: 12px;
     }
@@ -135,7 +135,7 @@
   }
 }
 
-.c-legend-unit {
+.c-we-legend-unit {
   position: relative;
   z-index: 10;
   list-style: none;
@@ -208,7 +208,7 @@
         cursor: default;
         opacity: .5;
 
-        &:hover .c-icon {
+        &:hover .c-we-icon {
           fill: $color-charcoal-grey;
         }
       }
@@ -217,33 +217,33 @@
         margin-right: 0;
       }
 
-      &:hover .c-icon {
+      &:hover .c-we-icon {
         fill: $color-secondary;
       }
 
-      .c-icon {
+      .c-we-icon {
         fill: $color-charcoal-grey;
       }
     }
 
     .info {
-      .c-icon { width: 14px; }
+      .c-we-icon { width: 14px; }
     }
 
     .close {
-      .c-icon { width: 11px; }
+      .c-we-icon { width: 11px; }
     }
 
     .toggle {
-      .c-icon { width: 16px; }
+      .c-we-icon { width: 16px; }
     }
 
     .opacity {
-      .c-icon { width: 11px; }
+      .c-we-icon { width: 11px; }
     }
 
     .layers {
-      .c-icon { width: 15px; }
+      .c-we-icon { width: 15px; }
     }
   }
 
@@ -253,7 +253,7 @@
   }
 }
 
-.c-legend-type {
+.c-we-legend-type {
   .type {
     margin: 8px 0 0;
 

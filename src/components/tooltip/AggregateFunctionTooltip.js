@@ -42,7 +42,7 @@ class AggregateFunctionTooltip extends React.Component {
 
   @Autobind
   triggerMouseDown(e) {
-    const el = document.querySelector('.c-tooltip-editor');
+    const el = document.querySelector('.c-we-tooltip');
     const clickOutside = el && el.contains && !el.contains(e.target);
     if (clickOutside) {
       this.props.toggleTooltip(false);
@@ -59,7 +59,7 @@ class AggregateFunctionTooltip extends React.Component {
     const { onlyCount } = this.props;
     const functions = onlyCount ? AGGREGATE_FUNCTIONS_ONLY_COUNT : AGGREGATE_FUNCTIONS;
     return (
-      <div className="c-aggregate-function-tooltip">
+      <div className="c-we-aggregate-function-tooltip">
         Aggregate functions
         <div>
           {functions.map((val, i) =>

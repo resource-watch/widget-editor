@@ -107,7 +107,7 @@ class Tooltip extends React.Component {
     const direction = this.props.tooltip.direction;
 
     const tooltipClasses = classnames({
-      'c-tooltip-editor': true,
+      'c-we-tooltip': true,
       '-hidden': !this.props.tooltip.opened,
       '-arrow-top': direction === 'top',
       '-arrow-bottom': direction === 'bottom'

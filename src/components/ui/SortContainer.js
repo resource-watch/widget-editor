@@ -39,7 +39,7 @@ class SortContainer extends React.Component {
     });
 
     return connectDropTarget(
-      <div className="c-column-container c-sort-container">
+      <div className="c-we-column-container c-we-sort-container">
         <span className="text">
           Order
         </span>

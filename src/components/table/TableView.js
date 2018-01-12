@@ -99,7 +99,7 @@ class TableView extends React.Component {
     })
 
     return (
-      <div className="c-table-view c-table">
+      <div className="c-we-table-view c-we-table">
         <Spinner
           isLoading={loading}
           className="-light"

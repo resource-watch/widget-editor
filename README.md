@@ -258,11 +258,12 @@ Steps:
 
 ## Changelog
 
-### v0.0.10 (not released yet)
+### v0.1.0 (not released yet)
 - Fix a bug that prevented map widgets from being restored
 - Add the missing Leaflet stylesheet to the testing file
 - Add a watch mode for the JS files
 - Remove external CSS for `rc-slider`
+- Scope all of the CSS classes of the components (now they start with `c-we-` instead of just `c-`)
 
 ### v0.0.9
 - Add the missing type to some buttons

@@ -257,7 +257,7 @@ class Map extends React.Component {
     const spinnerStyles = { marginLeft: this.setSpinnerPosition() };
 
     return (
-      <div className="c-map">
+      <div className="c-we-map">
         <Spinner isLoading={this.state.loading} style={spinnerStyles} />
         <div ref={(node) => { this.mapNode = node; }} className="map-leaflet" />
       </div>

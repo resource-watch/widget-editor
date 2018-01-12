@@ -27,7 +27,7 @@ export default class Checkbox extends FormElement {
     });
 
     return (
-      <div className={`c-checkbox ${customClassName}`}>
+      <div className={`c-we-checkbox ${customClassName}`}>
         <input
           {...this.props.properties}
           type="checkbox"

@@ -17,7 +17,7 @@ class HowToWidgetEditorModal extends React.Component {
 
   render() {
     return (
-      <div className="c-how-to-widget-editor-modal">
+      <div className="c-we-how-to-widget-editor-modal">
         <h2>How to customize the visualization</h2>
         <div className="container">
           <div className="container1">
@@ -42,7 +42,7 @@ class HowToWidgetEditorModal extends React.Component {
         <div className="actions">
           <button
             type="button"
-            className="c-button -primary"
+            className="c-we-button -primary"
             onClick={this.handleOkGotIt}
           >
           Ok, got it

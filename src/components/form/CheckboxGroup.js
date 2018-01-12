@@ -67,7 +67,7 @@ export default class CheckboxGroup extends React.Component {
     });
 
     return (
-      <div className={`c-checkbox-box ${customClassName}`}>
+      <div className={`c-we-checkbox-box ${customClassName}`}>
         {this.props.title && <span className="checkbox-box-title">{this.props.title}</span>}
         {this.getCheckbox()}
       </div>

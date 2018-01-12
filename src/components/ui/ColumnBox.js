@@ -424,7 +424,7 @@ class ColumnBox extends React.Component {
     return connectDragSource(
       <div // eslint-disable-line jsx-a11y/no-static-element-interactions
         // FIXME: which role to assign to the element to make it accessible?
-        className={classNames({ 'c-columnbox': true, '-dimmed': isDragging })}
+        className={classNames({ 'c-we-columnbox': true, '-dimmed': isDragging })}
         title={isA ? alias || name : ''}
         onClick={e => !isA && this.onClickColumn(e)}
         onMouseOver={() => !isA && this.onMouseOverColumn()}

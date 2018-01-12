@@ -140,10 +140,10 @@ class RasterChartEditor extends React.Component {
     description = truncate(description, { length: 250, separator: /,?.* +/ });
 
     return (
-      <div className="c-raster-chart-editor">
+      <div className="c-we-raster-chart-editor">
         <div className="content">
           <div className="selectors-container">
-            <div className="c-field">
+            <div className="c-we-field">
               <label htmlFor="raster-bands">
                 Bands { loading && <Spinner isLoading className="-light -small -inline" /> }
               </label>
@@ -170,7 +170,7 @@ class RasterChartEditor extends React.Component {
               }
             </p>
           ) }
-          <div className="c-table stats">
+          <div className="c-we-table stats">
             <Spinner isLoading={bandStatsInfoLoading} className="-light -small" />
             { bandStatsInfo && !isEmpty(bandStatsInfo) && (
               <table>
@@ -199,7 +199,7 @@ class RasterChartEditor extends React.Component {
             canShowSaveButton &&
             <button
               type="button"
-              className="c-button -primary"
+              className="c-we-button -primary"
               onClick={this.props.onSave}
             >
               {mode === 'save' ? 'Save widget' : 'Update widget'}

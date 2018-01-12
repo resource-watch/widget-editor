@@ -83,13 +83,13 @@ class EmbedTableModal extends React.Component {
     const url = `${this.props.baseUrl}?queryURL=${this.getQueryUrl()}`;
     const iframeText = `<iframe src="${url}" width="100%" height="474" frameBorder="0"></iframe>`;
     return (
-      <div className="c-embed-table-modal">
+      <div className="c-we-embed-table-modal">
         <h2>Share into my web</h2>
         <p>You may include this content on your webpage. To do this, copy the following html
         code and insert it into the source code of your page:</p>
         <div className="url-container">
           <input ref={(n) => { this.input = n; }} value={iframeText} className="url" readOnly />
-          <button type="button" className="c-btn -primary" onClick={() => this.onCopyClick()}>
+          <button type="button" className="c-we-btn -primary" onClick={() => this.onCopyClick()}>
             Copy
           </button>
         </div>

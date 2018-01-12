@@ -30,7 +30,7 @@ class BasemapControl extends React.Component {
 
   @Autobind
   onClickScreen(e) {
-    const el = document.querySelector('.c-tooltip-editor');
+    const el = document.querySelector('.c-we-tooltip');
     const clickOutside = el && el.contains && !el.contains(e.target);
 
     if (clickOutside) {
@@ -81,7 +81,7 @@ class BasemapControl extends React.Component {
         }]}
         targetOffset="8px 100%"
         classes={{
-          element: 'c-tooltip-editor -arrow-right'
+          element: 'c-we-tooltip -arrow-right'
         }}
       >
         {/* First child: This is what the item will be tethered to */}

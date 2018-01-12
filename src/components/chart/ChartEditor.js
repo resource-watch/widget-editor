@@ -60,11 +60,11 @@ class ChartEditor extends React.Component {
     const canShowEmbedButton = showEmbedButton && canSave && tableViewMode;
 
     return (
-      <div className="c-chart-editor">
+      <div className="c-we-chart-editor">
         <div className="selectors-container">
           {!tableViewMode &&
             <div className="chart-type">
-              <div className="c-field">
+              <div className="c-we-field">
                 <label htmlFor="chart-style-select">
                   Chart style
                 </label>
@@ -103,7 +103,7 @@ class ChartEditor extends React.Component {
         <div className="save-widget-container">
           <button
             type="button"
-            className="c-button -secondary"
+            className="c-we-button -secondary"
             onClick={this.handleNeedHelp}
           >
             Need help?
@@ -112,7 +112,7 @@ class ChartEditor extends React.Component {
             canShowSaveButton &&
             <button
               type="button"
-              className="c-button -primary"
+              className="c-we-button -primary"
               onClick={this.props.onSave}
             >
               {mode === 'save' ? 'Save widget' : 'Update widget'}
@@ -121,7 +121,7 @@ class ChartEditor extends React.Component {
           { canShowEmbedButton &&
             <button
               type="button"
-              className="c-button -primary"
+              className="c-we-button -primary"
               onClick={this.props.onEmbed}
             >
               Embed table

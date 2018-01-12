@@ -378,7 +378,7 @@ export default class SliderSelect extends React.Component {
     } = this.state;
 
     const cNames = classnames({
-      'c-custom-select -search': true,
+      'c-we-custom-select -search': true,
       '-closed': closed
     }, className);
 

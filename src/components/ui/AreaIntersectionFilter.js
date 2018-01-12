@@ -147,7 +147,7 @@ class AreaIntersectionFilter extends React.Component {
 
     return (
       <div className="area-intersection">
-        <div className="c-field" ref={(node) => { this.el = node; }}>
+        <div className="c-we-field" ref={(node) => { this.el = node; }}>
           <label htmlFor="area-intersection-select">
             Area intersection { required ? '*' : '' } { loading && <Spinner isLoading className="-light -small -inline" /> }
           </label>

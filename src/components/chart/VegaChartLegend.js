@@ -174,7 +174,7 @@ class VegaChartLegend extends React.Component {
       || +(new Date());
 
     return (
-      <div className="c-vega-chart-legend" ref={(node) => { this.el = node; }}>
+      <div className="c-we-vega-chart-legend" ref={(node) => { this.el = node; }}>
         <button
           type="button"
           className="toggle-button"

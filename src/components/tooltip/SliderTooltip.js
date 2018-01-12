@@ -43,7 +43,7 @@ class SliderTooltip extends React.Component {
     const updateValue = debounce(value => this.setState({ value }), 0);
 
     return (
-      <div className="c-explore-slider-tooltip" ref={(node) => { this.el = node; }}>
+      <div className="c-we-explore-slider-tooltip" ref={(node) => { this.el = node; }}>
         <Slider
           min={options.min}
           max={options.max}
@@ -54,8 +54,8 @@ class SliderTooltip extends React.Component {
           onAfterChange={this.onChange}
         />
         <div className="actions-container">
-          <button type="button" className="c-button -primary" onClick={this.props.onClose}>Done</button>
-          <button type="button" className="c-button" onClick={() => this.onChange(options.max)}>Reset</button>
+          <button type="button" className="c-we-button -primary" onClick={this.props.onClose}>Done</button>
+          <button type="button" className="c-we-button" onClick={() => this.onChange(options.max)}>Reset</button>
         </div>
       </div>
     );

@@ -5,7 +5,7 @@ import ColumnBox from 'components/ui/ColumnBox';
 const FieldsContainer = (props) => {
   const { dataset, tableName, fields } = props;
   return (
-    <div className="c-fields-container">
+    <div className="c-we-fields-container">
       {
         fields.map(val =>
           (

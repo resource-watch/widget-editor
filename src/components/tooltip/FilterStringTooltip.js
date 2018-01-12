@@ -88,7 +88,7 @@ class FilterStringTooltip extends React.Component {
     const { selected, loading, type } = this.props;
 
     return (
-      <div className="c-filter-string-tooltip">
+      <div className="c-we-filter-string-tooltip">
         <div className="search-input">
           <input
             placeholder="Search"

@@ -31,7 +31,7 @@ class LayersTooltip extends React.Component {
     const activeLayer = this.props.layerGroup.layers.find(l => l.active);
 
     return (
-      <div className="c-explore-layers-tooltip" ref={(node) => { this.el = node; }}>
+      <div className="c-we-explore-layers-tooltip" ref={(node) => { this.el = node; }}>
         <RadioGroup
           name="layers"
           properties={{ default: activeLayer.id }}

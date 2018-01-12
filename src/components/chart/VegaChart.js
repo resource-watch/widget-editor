@@ -398,7 +398,7 @@ class VegaChart extends React.Component {
 
     return (
       <div
-        className="c-chart"
+        className="c-we-chart"
         onMouseOut={() => this.onMouseOut()}
         ref={(el) => { this.chartViewportContainer = el; }}
       >

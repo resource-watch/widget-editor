@@ -1,4 +1,4 @@
-.c-checkbox {
+.c-we-checkbox {
   label {
     display: block;
     padding: 2px 0;
@@ -65,7 +65,7 @@
   }
 }
 
-.c-checkbox-box {
+.c-we-checkbox-box {
   padding: $margin-size-extra-small 0;
   border-bottom: 1px solid $border-color-2;
   // > * {
@@ -89,7 +89,7 @@
     border-bottom: 0;
   }
 
-  .c-checkbox {
+  .c-we-checkbox {
     margin-bottom: $margin-size-extra-small;
 
     &:last-child {

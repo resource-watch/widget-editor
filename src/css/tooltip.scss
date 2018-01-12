@@ -1,4 +1,4 @@
-.c-tooltip-editor {
+.c-we-tooltip {
   position: fixed;
   padding: $margin-size-extra-small;
   background-color: $color-white;
@@ -79,7 +79,7 @@
   }
 }
 
-.c-tooltip-invisible-div {
+.c-we-tooltip-invisible-div {
   position: absolute;
   width: 1px;
   height: 1px;
