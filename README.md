@@ -254,6 +254,9 @@ Steps:
 
 ## Changelog
 
+### v0.0.10 (not released yet)
+- Fix a bug that prevented map widgets from being restored
+
 ### v0.0.9
 - Add the missing type to some buttons
 - Add `rc-slider/assets/index.css` as required dependency

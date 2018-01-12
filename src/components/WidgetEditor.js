@@ -883,7 +883,11 @@ class WidgetEditor extends React.Component {
         this.props.setVisualizationType(visualizationType || 'chart');
 
         if (band) this.props.setBand(band);
-        if (layer) this.props.setLayer(layer);
+        if (layer) {
+          // layer is a string but we need the actual API's object
+          this.datasetService.getLayer(layer)
+            .then(l => this.props.setLayer(Object.assign({}, l, { ...l.attributes })));
+        }
         if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (value) this.props.setValue(value);
         if (size) this.props.setSize(size);
@@ -1161,6 +1165,8 @@ const mapDispatchToProps = dispatch => ({
     dispatch(setZoom(params.zoom));
     dispatch(setLatLng(params.latLng));
   },
+  setZoom: (...params) => dispatch(setZoom(...params)),
+  setLatLng: (...params) => dispatch(setLatLng(...params)),
   setFilters: filter => dispatch(setFilters(filter)),
   setColor: filter => dispatch(setColor(filter)),
   setCategory: filter => dispatch(setCategory(filter)),

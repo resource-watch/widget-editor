@@ -82,6 +82,20 @@ export default class DatasetService {
       .then(jsonData => jsonData.data);
   }
 
+  /**
+   * Get a specific layer
+   * @param {string} layerId Layer ID
+   * @returns {Promise<object>}
+   */
+  getLayer(layerId) {
+    return fetch(`${getConfig().url}/dataset/${this.datasetId}/layer/${layerId}?app=${getConfig().applications}&env=${getConfig().env}`)
+      .then((response) => {
+        if (response.status >= 400) throw new Error(response.statusText);
+        return response.json();
+      })
+      .then(jsonData => jsonData.data);
+  }
+
   getSimilarDatasets() {
     return fetch(`${getConfig().url}/graph/query/similar-dataset/${this.datasetId}`)
       .then((response) => {
