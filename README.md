@@ -254,6 +254,10 @@ Steps:
 
 ## Changelog
 
+### v0.0.9
+- Add the missing type to some buttons
+- Add `rc-slider/assets/index.css` as required dependency
+
 ### v0.0.8
 - Fix an issue that would prevent the update of the config
 - Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
