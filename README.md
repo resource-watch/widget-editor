@@ -258,6 +258,9 @@ Steps:
 
 ## Changelog
 
+### v0.1.1 (not released yet)
+- Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
+
 ### v0.1.0
 - Fix a bug that prevented map widgets from being restored
 - Add the missing Leaflet stylesheet to the testing file
