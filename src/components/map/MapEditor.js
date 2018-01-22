@@ -23,6 +23,8 @@ class MapEditor extends React.Component {
   render() {
     const { widgetEditor, layers, mode, showSaveButton, provider } = this.props;
     const { layer } = widgetEditor;
+    const defaultLayer = layers.find(l => l.default);
+    const defaultLayerId = defaultLayer && defaultLayer.id;
 
     const canSave = canRenderChart(widgetEditor, provider);
     const canShowSaveButton = showSaveButton && canSave;
@@ -36,8 +38,8 @@ class MapEditor extends React.Component {
           <Select
             properties={{
               name: 'layer-selector',
-              value: layer && layer.id,
-              default: layer && layer.id
+              value: layer ? layer.id : defaultLayerId,
+              default: layer ? layer.id : defaultLayerId
             }}
             options={layers.map(val => (
               {
