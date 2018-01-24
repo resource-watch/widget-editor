@@ -367,7 +367,7 @@ class WidgetEditor extends React.Component {
    * @returns {Promise<{ metadata: { [name: string]: { alias?: string, description?: string }}, relevantFields: string[] }>}
    */
   getDatasetInfo() {
-    return this.datasetService.fetchData('metadata')
+    return this.datasetService.fetchData('widget, metadata')
       .then(({ attributes }) => { // eslint-disable-line arrow-body-style
         return new Promise((resolve) => {
           const metadata = ((attributes.metadata.length && attributes.metadata[0]
@@ -403,6 +403,9 @@ class WidgetEditor extends React.Component {
             this.props.setBandsInfo(metadata);
           }
 
+          const defaultWidget = attributes.widget && attributes.widget.length &&
+            attributes.widget.find(w => w.attributes.defaultEditableWidget);
+
           this.props.setTableName(attributes.tableName);
 
           this.setState({
@@ -410,7 +413,8 @@ class WidgetEditor extends React.Component {
             tableName: attributes.tableName,
             hasGeoInfo: attributes.geoInfo,
             datasetType: attributes.type,
-            datasetProvider: attributes.provider
+            datasetProvider: attributes.provider,
+            defaultWidget
           }, () => resolve(fieldsInfo));
         });
       })
@@ -999,7 +1003,8 @@ class WidgetEditor extends React.Component {
       datasetType,
       datasetProvider,
       visualizationOptions,
-      hasGeoInfo
+      hasGeoInfo,
+      defaultWidget
     } = this.state;
 
     const {
@@ -1010,7 +1015,8 @@ class WidgetEditor extends React.Component {
       selectedVisualizationType
     } = this.props;
 
-    const editorMode = !widgetId ? 'save' : 'update';
+    const editorMode = !widgetId ||
+      (defaultWidget && defaultWidget.id === widgetId) ? 'save' : 'update';
     const showSaveButton = saveButtonMode === 'always'
       || (saveButtonMode === 'auto' && !!getConfig().userToken);
     const showEmbedButton = embedButtonMode === 'always'
