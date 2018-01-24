@@ -130,6 +130,7 @@ Name | Default value | Mandatory | Description
 -----|---------------|-----------|------------
 `datasetId: string` | `undefined` | Yes | The ID of the dataset to load the data from
 `widgetId: string` | `undefined` | No | If provided, the ID of the widget to edit
+`widgetTitle: string` | `undefined` | No | If provided, the title of the widget to edit
 `saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(1)**
 `embedButtonMode: string` | `"auto"` | No | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title is only editable if a user token is passed to the configuration. If `"always"`, the title is always editable. If `"never"`, it is always fixed.
@@ -260,6 +261,7 @@ Steps:
 
 ### v0.1.1 (not released yet)
 - Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
+- Show 'save' not 'update' when viewing default widgets in explore
 - Autoselect the default layer, if present, in the `MapEditor` component
 
 ### v0.1.0

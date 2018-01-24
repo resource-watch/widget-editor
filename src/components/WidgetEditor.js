@@ -436,12 +436,13 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType, widgetTitle } = this.props;
     const { chartType, layer, zoom, latLng } = widgetEditor;
+    const title = widgetTitle || widgetEditor.title;
 
     let chartTitle = (
       <div className="chart-title">
-        <span>{widgetEditor.title}</span>
+        <span>{title}</span>
       </div>
     );
     if (this.props.titleMode === 'always'
@@ -450,7 +451,7 @@ class WidgetEditor extends React.Component {
         <div className="chart-title">
           <AutosizeInput
             name="widget-title"
-            value={widgetEditor.title || ''}
+            value={title || ''}
             placeholder="Widget title"
             onChange={this.handleTitleChange}
           />
@@ -1198,6 +1199,10 @@ WidgetEditor.propTypes = {
    * Widget ID (if the editor is used to edit an existing  widget)
    */
   widgetId: PropTypes.string,
+  /**
+   * Widget title (if the editor is used to edit an existing  widget)
+   */
+  widgetTitle: PropTypes.string,
   /**
    * List of visualizations that are available to the widget editor
    */
