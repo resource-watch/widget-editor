@@ -54,6 +54,19 @@ class SaveWidgetModal extends React.Component {
     };
   }
 
+  /**
+   * Event handler executed when the user changes the
+   * title of the widget
+   * @param {string} event
+   */
+  @Autobind
+  onChangeTitle(title) {
+    this.props.setTitle(title);
+    if (this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(title);
+    }
+  }
+
 
   @Autobind
   async onSubmit(event) {
@@ -139,7 +152,7 @@ class SaveWidgetModal extends React.Component {
             <fieldset className="c-we-field-container">
               <Field
                 ref={(c) => { if (c) FORM_ELEMENTS.elements.title = c; }}
-                onChange={value => this.props.setTitle(value)}
+                onChange={this.onChangeTitle}
                 validations={['required']}
                 properties={{
                   title: 'title',
@@ -229,6 +242,11 @@ SaveWidgetModal.propTypes = {
    * button to check their widgets
    */
   onClickCheckWidgets: PropTypes.func,
+  /**
+   * Callback executed when the value of the title is updated
+   * The callback gets passed the new value
+   */
+  onChangeWidgetTitle: PropTypes.func,
 
   // Store
   widgetEditor: PropTypes.object.isRequired,

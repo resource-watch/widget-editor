@@ -66,7 +66,8 @@ class App extends React.Component {
         childrenProps: {
           datasetId: this.state.datasetId,
           getWidgetConfig: this.getWidgetConfig,
-          onClickCheckWidgets: () => alert('Check my widgets')
+          onClickCheckWidgets: () => alert('Check my widgets'),
+          onChangeWidgetTitle: title => this.setState({ widgetTitle: title })
         }
       });
     }
