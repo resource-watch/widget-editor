@@ -264,6 +264,7 @@ Steps:
 - Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
 - Show 'save' not 'update' when viewing default widgets in explore
 - Autoselect the default layer, if present, in the `MapEditor` component
+- Let the title of the widget being controlled from the outside
 
 ### v0.1.0
 - Fix a bug that prevented map widgets from being restored
