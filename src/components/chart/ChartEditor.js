@@ -25,6 +25,14 @@ import { canRenderChart } from 'helpers/WidgetHelper';
 
 @DragDropContext(HTML5Backend)
 class ChartEditor extends React.Component {
+  constructor(props) {
+    super(props);
+
+    if (!props.widgetEditor.chartType && props.chartOptions.length) {
+      props.setChartType(props.chartOptions[0].value);
+    }
+  }
+
   @Autobind
   handleChartTypeChange(val) {
     this.props.setChartType(val);
