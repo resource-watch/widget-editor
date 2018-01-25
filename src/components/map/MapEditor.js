@@ -14,6 +14,17 @@ import Select from 'components/form/SelectInput';
 import { canRenderChart } from 'helpers/WidgetHelper';
 
 class MapEditor extends React.Component {
+  constructor(props) {
+    super(props);
+
+    // If a default layer is present, we'll select
+    // it by default
+    const defaultLayer = props.layers.find(l => l.default);
+    if (defaultLayer) {
+      props.showLayer(defaultLayer);
+    }
+  }
+
   @Autobind
   handleLayerChange(layerID) {
     this.props.showLayer(this.props.layers.find(val => val.id === layerID));
@@ -22,8 +33,6 @@ class MapEditor extends React.Component {
   render() {
     const { widgetEditor, layers, mode, showSaveButton, provider } = this.props;
     const { layer } = widgetEditor;
-    const defaultLayer = layers.find(l => l.default);
-    const defaultLayerId = defaultLayer && defaultLayer.id;
 
     const canSave = canRenderChart(widgetEditor, provider);
     const canShowSaveButton = showSaveButton && canSave;
@@ -37,8 +46,8 @@ class MapEditor extends React.Component {
           <Select
             properties={{
               name: 'layer-selector',
-              value: layer ? layer.id : defaultLayerId,
-              default: layer ? layer.id : defaultLayerId
+              value: layer && layer.id,
+              default: layer && layer.id
             }}
             options={layers.map(val => (
               {
