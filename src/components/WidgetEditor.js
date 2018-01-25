@@ -217,6 +217,13 @@ class WidgetEditor extends React.Component {
           : []
       });
     }
+
+    // If the title is controlled from the outside and
+    // its value is changed, then we update the store
+    if (nextProps.widgetTitle !== undefined
+      && nextProps.widgetTitle !== this.props.widgetEditor.title) {
+      this.props.setTitle(nextProps.widgetTitle);
+    }
   }
 
   componentDidUpdate(previousProps, previousState) {
@@ -436,9 +443,8 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType, widgetTitle } = this.props;
-    const { chartType, layer, zoom, latLng } = widgetEditor;
-    const title = widgetTitle || widgetEditor.title;
+    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
+    const { chartType, layer, zoom, latLng, title } = widgetEditor;
 
     let chartTitle = (
       <div className="chart-title">
