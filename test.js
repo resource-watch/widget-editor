@@ -48,7 +48,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
-      widgetId: undefined
+      widgetId: undefined,
+      widgetTitle: ''
     };
   }
 
@@ -65,7 +66,8 @@ class App extends React.Component {
         childrenProps: {
           datasetId: this.state.datasetId,
           getWidgetConfig: this.getWidgetConfig,
-          onClickCheckWidgets: () => alert('Check my widgets')
+          onClickCheckWidgets: () => alert('Check my widgets'),
+          onChangeWidgetTitle: title => this.setState({ widgetTitle: title })
         }
       });
     }
@@ -105,6 +107,15 @@ class App extends React.Component {
               value={this.state.widgetId}
               onChange={({ target }) => this.setState({ widgetId: target.value })}
             />
+            <br />
+            <label htmlFor="title">Widget title (optional):</label>
+            <input
+              type="text"
+              placeholder="Title of the widget"
+              id="title"
+              value={this.state.widgetTitle}
+              onChange={({ target }) => this.setState({ widgetTitle: target.value })}
+            />
           </p>
         </div>
         <Icons />
@@ -113,10 +124,13 @@ class App extends React.Component {
         <WidgetEditor
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
+          widgetTitle={this.state.widgetTitle}
           saveButtonMode="always"
           embedButtonMode="always"
+          titleMode="always"
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
+          onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
       </div>

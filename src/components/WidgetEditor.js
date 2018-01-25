@@ -217,6 +217,13 @@ class WidgetEditor extends React.Component {
           : []
       });
     }
+
+    // If the title is controlled from the outside and
+    // its value is changed, then we update the store
+    if (nextProps.widgetTitle !== undefined
+      && nextProps.widgetTitle !== this.props.widgetEditor.title) {
+      this.props.setTitle(nextProps.widgetTitle);
+    }
   }
 
   componentDidUpdate(previousProps, previousState) {
@@ -437,11 +444,11 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng } = widgetEditor;
+    const { chartType, layer, zoom, latLng, title } = widgetEditor;
 
     let chartTitle = (
       <div className="chart-title">
-        <span>{widgetEditor.title}</span>
+        <span>{title}</span>
       </div>
     );
     if (this.props.titleMode === 'always'
@@ -450,7 +457,7 @@ class WidgetEditor extends React.Component {
         <div className="chart-title">
           <AutosizeInput
             name="widget-title"
-            value={widgetEditor.title || ''}
+            value={title || ''}
             placeholder="Widget title"
             onChange={this.handleTitleChange}
           />
@@ -958,6 +965,9 @@ class WidgetEditor extends React.Component {
   handleTitleChange(event) {
     const title = event.target.value;
     this.props.setTitle(title);
+    if (this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(title);
+    }
   }
 
   /**
@@ -1199,6 +1209,10 @@ WidgetEditor.propTypes = {
    */
   widgetId: PropTypes.string,
   /**
+   * Widget title (if the editor is used to edit an existing  widget)
+   */
+  widgetTitle: PropTypes.string,
+  /**
    * List of visualizations that are available to the widget editor
    */
   availableVisualizations: PropTypes.arrayOf(
@@ -1247,6 +1261,11 @@ WidgetEditor.propTypes = {
    * to get the widget config
    */
   provideWidgetConfig: PropTypes.func,
+  /**
+   * Callback executed when the value of the title is updated
+   * The callback gets passed the new value
+   */
+  onChangeWidgetTitle: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
