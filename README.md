@@ -265,6 +265,7 @@ Steps:
 - Show 'save' not 'update' when viewing default widgets in explore
 - Autoselect the default layer, if present, in the `MapEditor` component
 - Let the title of the widget being controlled from the outside
+- Fix a bug where the `locale` attribute of the config wouldn't default to `"en"`
 
 ### v0.1.0
 - Fix a bug that prevented map widgets from being restored

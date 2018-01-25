@@ -1,6 +1,9 @@
 import pick from 'lodash/pick';
 
-let config = null;
+/** @type {WidgetEditorConfig} config */
+let config = {
+  locale: 'en'
+};
 
 /**
  * Configuration of the widget editor
