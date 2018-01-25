@@ -49,7 +49,7 @@ class App extends React.Component {
     this.state = {
       datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
       widgetId: undefined,
-      widgetTitle: undefined
+      widgetTitle: ''
     };
   }
 
@@ -129,6 +129,7 @@ class App extends React.Component {
           titleMode="always"
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
+          onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
       </div>

@@ -965,6 +965,9 @@ class WidgetEditor extends React.Component {
   handleTitleChange(event) {
     const title = event.target.value;
     this.props.setTitle(title);
+    if (this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(title);
+    }
   }
 
   /**
@@ -1258,6 +1261,11 @@ WidgetEditor.propTypes = {
    * to get the widget config
    */
   provideWidgetConfig: PropTypes.func,
+  /**
+   * Callback executed when the value of the title is updated
+   * The callback gets passed the new value
+   */
+  onChangeWidgetTitle: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,

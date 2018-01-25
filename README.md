@@ -130,13 +130,14 @@ Name | Default value | Mandatory | Description
 -----|---------------|-----------|------------
 `datasetId: string` | `undefined` | Yes | The ID of the dataset to load the data from
 `widgetId: string` | `undefined` | No | If provided, the ID of the widget to edit
-`widgetTitle: string` | `undefined` | No | If provided, the title of the widget to edit
+`widgetTitle: string` | `undefined` | No | If provided, the title of the widget to edit. Use in conjunction with `onChangeWidgetTitle` to get a controlled input.
 `saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(1)**
 `embedButtonMode: string` | `"auto"` | No | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title is only editable if a user token is passed to the configuration. If `"always"`, the title is always editable. If `"never"`, it is always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
+`onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
 
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
