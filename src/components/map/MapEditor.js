@@ -6,7 +6,6 @@ import Autobind from 'autobind-decorator';
 import { connect } from 'react-redux';
 
 import { showLayer } from 'reducers/widgetEditor';
-import { toggleModal, setModalOptions } from 'reducers/modal';
 
 // Components
 import Select from 'components/form/SelectInput';
@@ -71,10 +70,7 @@ MapEditor.propTypes = {
   /**
    * Dataset ID
    */
-  datasetId: PropTypes.string.isRequired,
-  datasetType: PropTypes.string,
   layers: PropTypes.array.isRequired,
-  tableName: PropTypes.string.isRequired,
   provider: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),
   /**
@@ -90,15 +86,12 @@ MapEditor.propTypes = {
 
   // Store
   showLayer: PropTypes.func.isRequired,
-  widgetEditor: PropTypes.object.isRequired,
-  toggleModal: PropTypes.func.isRequired
+  widgetEditor: PropTypes.object.isRequired
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
-  showLayer: layer => dispatch(showLayer(layer)),
-  toggleModal: (...args) => { dispatch(toggleModal(...args)); },
-  setModalOptions: (...args) => { dispatch(setModalOptions(...args)); }
+  showLayer: layer => dispatch(showLayer(layer))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapEditor);
