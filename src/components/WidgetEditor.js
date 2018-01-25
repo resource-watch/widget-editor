@@ -219,9 +219,8 @@ class WidgetEditor extends React.Component {
     }
 
     // If the title is controlled from the outside and
-    // its value is changed, then we update the store
-    if (nextProps.widgetTitle !== undefined
-      && nextProps.widgetTitle !== this.props.widgetEditor.title) {
+    // its value has changed, then we update the store
+    if (this.props.widgetTitle !== nextProps.widgetTitle) {
       this.props.setTitle(nextProps.widgetTitle);
     }
   }
@@ -911,7 +910,12 @@ class WidgetEditor extends React.Component {
         if (limit) this.props.setLimit(limit);
         if (chartType) this.props.setChartType(chartType);
         if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
-        if (name) this.props.setTitle(name);
+        if (name) {
+          this.props.setTitle(name);
+          if (this.props.onChangeWidgetTitle) {
+            this.props.onChangeWidgetTitle(name);
+          }
+        }
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
       });
