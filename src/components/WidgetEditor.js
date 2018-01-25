@@ -392,10 +392,12 @@ class WidgetEditor extends React.Component {
           // Contains the metadata information associated with
           // the fields, as well as the relevant ones
           const fieldsInfo = {
-            metadata: Object.keys(metadata).map(field => ({
-              alias: getMetadata(field, 'alias'),
-              description: getMetadata(field, 'description')
-            })),
+            metadata: Object.keys(metadata).reduce((res, field) => Object.assign(res, {
+              [field]: {
+                alias: getMetadata(field, 'alias'),
+                description: getMetadata(field, 'description')
+              }
+            }), {}),
             relevantFields: attributes.widgetRelevantProps
           };
 
