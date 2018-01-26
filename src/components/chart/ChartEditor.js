@@ -64,7 +64,7 @@ class ChartEditor extends React.Component {
     const { chartType, fields } = widgetEditor;
 
     const canSave = canRenderChart(widgetEditor, datasetProvider);
-    const canShowSaveButton = showSaveButton && canSave;
+    const canShowSaveButton = showSaveButton && canSave && !tableViewMode;
     const canShowEmbedButton = showEmbedButton && canSave && tableViewMode;
 
     return (

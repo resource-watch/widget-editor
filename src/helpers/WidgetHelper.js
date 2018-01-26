@@ -684,8 +684,11 @@ export async function getWidgetConfig(
 
     let chartConfig = {};
 
-    // If the visualization if a map, we don't have any chartConfig
-    if (visualizationType !== 'map') {
+    if (visualizationType === 'table') {
+      reject('Table widgets are not supported yet.');
+      return;
+    } else if (visualizationType !== 'map') {
+      // If the visualization if a map, we don't have any chartConfig
       const chartInfo = getChartInfo(dataset, datasetType, datasetProvider, widgetEditor);
 
       try {

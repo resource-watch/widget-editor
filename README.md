@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v0.1.2 (not yet released)
+- Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
+
 ### v0.1.1
 - Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
 - Show 'save' not 'update' when viewing default widgets in explore
