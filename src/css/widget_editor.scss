@@ -62,7 +62,7 @@
       align-items: center;
       width: 100%;
       height: 100%;
-      padding-top: 20px; // Space for the legend
+      padding-top: 75px; // Space for the title and caption
 
       .chart {
         // The height will be set either by VegaChart or Vega itself
@@ -79,6 +79,10 @@
       }
     }
 
+    > .c-we-table {
+      padding-top: 75px; // Space for the title and caption
+    }
+
     iframe {
       width: 100%;
       height: 100%;
@@ -92,9 +96,18 @@
       top: 15px;
       left: 15px;
       z-index: 2; // At least 2 to be on top of the map
+      font-family: $body-font-family;
 
       > div { // Override a property of the library
         display: block !important;
+
+        &:first-of-type {
+          font-size: $font-size-big;
+        }
+
+        &:not(:first-of-type) {
+          margin-top: 10px;
+        }
       }
 
       input {

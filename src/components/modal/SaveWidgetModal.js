@@ -67,7 +67,6 @@ class SaveWidgetModal extends React.Component {
     }
   }
 
-
   @Autobind
   async onSubmit(event) {
     event.preventDefault();

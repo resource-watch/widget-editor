@@ -1,6 +1,5 @@
 import 'isomorphic-fetch';
 import { format } from 'd3-format';
-import { toastr } from 'react-redux-toastr';
 
 // Components
 import BarChart from 'helpers/bar';
@@ -408,6 +407,32 @@ export function getTimeFormat(data) {
 }
 
 /**
+ * Return a two-decimal fixed number (as a string) if the number
+ * isn't an integer, if it is, just return the number
+ * For example:
+ *  * 1773.38    => 1,773.38
+ *  *    2.76557 =>     2.76
+ *  *    2.7     =>     2.70
+ *  *    2       =>     2
+ * @export
+ * @param {number} number Number to format
+ * @return {string}
+ */
+export function get2DecimalFixedNumber(number) {
+  return Math.abs(number % 1) > 0 ? format(',.2f')(number) : `${number}`;
+}
+
+/**
+ * Return the number in the SI format
+ * @export
+ * @param {number} number Number to format
+ * @return {string}
+ */
+export function getSINumber(number) {
+  return format('.2s')(number);
+}
+
+/**
  * Parse and return the data of a raster band
  * @export
  * @param {any[]} data - Raw data of the band
@@ -475,10 +500,10 @@ export async function getChartConfig(
   const url = await getDataURL(dataset, datasetType, tableName, band, provider, chartInfo);
 
   // We fetch the data to have clever charts
-  let data
+  let data;
   try {
     data = await fetchData(url);
-  } catch(err) {
+  } catch (err) {
     if (err === 'timeout') {
       throw new Error('This dataset is taking longer than expected to load. Please try again in a few minutes.');
     } else {
@@ -630,7 +655,13 @@ export function checkEditorRestoredState(widgetEditor, attrToSetter) {
  * @param {object} widgetEditor - Store object
  * @returns {Promise<object>}
  */
-export async function getWidgetConfig(dataset, datasetType, datasetProvider, tableName, widgetEditor) {
+export async function getWidgetConfig(
+  dataset,
+  datasetType,
+  datasetProvider,
+  tableName,
+  widgetEditor
+) {
   return new Promise(async (resolve, reject) => {
     const {
       limit,
@@ -646,7 +677,7 @@ export async function getWidgetConfig(dataset, datasetType, datasetProvider, tab
       visualizationType,
       band,
       layer,
-      title,
+      caption,
       zoom,
       latLng
     } = widgetEditor;
@@ -688,6 +719,7 @@ export async function getWidgetConfig(dataset, datasetType, datasetProvider, tab
       {
         paramsConfig: {
           visualizationType,
+          caption,
           limit,
           value,
           category,
@@ -721,32 +753,4 @@ export async function fetchRasterData(url, band, provider) {
   const data = await fetchData(url);
 
   return parseRasterData(data, band, provider);
-}
-
-// TOOLTIP & LEGEND
-
-/**
- * Return a two-decimal fixed number (as a string) if the number
- * isn't an integer, if it is, just return the number
- * For example:
- *  * 1773.38    => 1,773.38
- *  *    2.76557 =>     2.76
- *  *    2.7     =>     2.70
- *  *    2       =>     2
- * @export
- * @param {number} number Number to format
- * @return {string}
- */
-export function get2DecimalFixedNumber(number) {
-  return Math.abs(number % 1) > 0 ? format(',.2f')(number) : `${number}`;
-}
-
-/**
- * Return the number in the SI format
- * @export
- * @param {number} number Number to format
- * @return {string}
- */
-export function getSINumber(number) {
-  return format('.2s')(number);
 }

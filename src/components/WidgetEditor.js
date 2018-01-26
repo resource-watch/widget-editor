@@ -15,6 +15,7 @@ import {
   setBandsInfo,
   setVisualizationType,
   setTitle,
+  setCaption,
   setZoom,
   setLatLng,
   setFilters,
@@ -223,6 +224,12 @@ class WidgetEditor extends React.Component {
     if (this.props.widgetTitle !== nextProps.widgetTitle) {
       this.props.setTitle(nextProps.widgetTitle);
     }
+
+    // If the caption is controlled from the outside and
+    // its value has changed, then we update the store
+    if (this.props.widgetCaption !== nextProps.widgetCaption) {
+      this.props.setCaption(nextProps.widgetCaption);
+    }
   }
 
   componentDidUpdate(previousProps, previousState) {
@@ -233,9 +240,7 @@ class WidgetEditor extends React.Component {
 
     // This is a list of the attributes of the widget editor
     // that don't force a re-rendering of the chart when updated
-    // NOTE: the sorting is mandatory to compute if there's been
-    // a change or not
-    const staticKeys = ['title'].sort();
+    const staticKeys = ['title', 'caption'];
 
     // List of the attribute names of the widget editor
     const widgetEditorKeys = Object.keys(Object.assign(
@@ -245,16 +250,14 @@ class WidgetEditor extends React.Component {
     ));
 
     // List of the attributes that have changed
-    // NOTE: the sorting is mandatory to compute if there's been
-    // a change or not
     const updatedWidgetEditorKeys = widgetEditorKeys.filter((key) => {
       const updated = !isEqual(previousProps.widgetEditor[key], this.props.widgetEditor[key]);
       return updated;
-    }).sort();
+    });
 
     // Indicate whether only the static keys have been updated
-    const onlyStaticKeysUpdated = updatedWidgetEditorKeys.length === staticKeys.length
-      && updatedWidgetEditorKeys.every((k, i) => k === staticKeys[i]);
+    const onlyStaticKeysUpdated = updatedWidgetEditorKeys
+      .every(key => staticKeys.indexOf(key) !== -1);
 
     // Indicate whetger the widgetEditor prop forces a re-render
     const hasChangedWidgetEditor = updatedWidgetEditorKeys.length > 0 && !onlyStaticKeysUpdated;
@@ -445,26 +448,40 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, title } = widgetEditor;
+    const { chartType, layer, zoom, latLng, title, caption } = widgetEditor;
 
-    let chartTitle = (
-      <div className="chart-title">
-        <span>{title}</span>
-      </div>
-    );
+    let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
       || (this.props.titleMode === 'auto' && getConfig().userToken)) {
       chartTitle = (
-        <div className="chart-title">
-          <AutosizeInput
-            name="widget-title"
-            value={title || ''}
-            placeholder="Widget title"
-            onChange={this.handleTitleChange}
-          />
-        </div>
+        <AutosizeInput
+          name="widget-title"
+          value={title || ''}
+          placeholder="Widget title"
+          onChange={this.handleTitleChange}
+        />
       );
     }
+
+    let chartCaption = <div>{caption}</div>;
+    if (this.props.titleMode === 'always'
+      || (this.props.titleMode === 'auto' && getConfig().userToken)) {
+      chartCaption = (
+        <AutosizeInput
+          name="widget-caption"
+          value={caption || ''}
+          placeholder="Caption"
+          onChange={this.handleCaptionChange}
+        />
+      );
+    }
+
+    const titleCaption = (
+      <div className="chart-title">
+        {chartTitle}
+        {chartCaption}
+      </div>
+    );
 
     let visualization = null;
     switch (selectedVisualizationType) {
@@ -474,20 +491,20 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={this.isLoading()} />
-              {chartTitle}
+              {titleCaption}
             </div>
           );
         } else if (this.state.chartConfigLoading) {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading />
-              {chartTitle}
+              {titleCaption}
             </div>
           );
         } else if (this.state.chartConfigError) {
           visualization = (
             <div className="visualization -error">
-              {chartTitle}
+              {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
                 <span>{this.state.chartConfigError}</span>
@@ -497,14 +514,14 @@ class WidgetEditor extends React.Component {
         } else if (!canRenderChart(widgetEditor, datasetProvider) || !this.state.chartConfig) {
           visualization = (
             <div className="visualization -chart">
-              {chartTitle}
+              {titleCaption}
               Select a type of chart and columns
             </div>
           );
         } else if (!getChartType(chartType)) {
           visualization = (
             <div className="visualization -chart">
-              {chartTitle}
+              {titleCaption}
               {'This chart can\'t be previewed'}
             </div>
           );
@@ -512,7 +529,7 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
-              {chartTitle}
+              {titleCaption}
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
@@ -534,7 +551,7 @@ class WidgetEditor extends React.Component {
 
           visualization = (
             <div className="visualization">
-              {chartTitle}
+              {titleCaption}
               <Map
                 basemap={this.state.basemap}
                 labels={this.state.labels}
@@ -570,7 +587,7 @@ class WidgetEditor extends React.Component {
         } else {
           visualization = (
             <div className="visualization">
-              {chartTitle}
+              {titleCaption}
               Select a layer
             </div>
           );
@@ -582,13 +599,13 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading />
-              {chartTitle}
+              {titleCaption}
             </div>
           );
         } else if (this.state.chartConfigError) {
           visualization = (
             <div className="visualization -error">
-              {chartTitle}
+              {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
                 <span>{this.state.chartConfigError}</span>
@@ -598,7 +615,7 @@ class WidgetEditor extends React.Component {
         } else if (!this.state.chartConfig || !this.props.band) {
           visualization = (
             <div className="visualization -chart">
-              {chartTitle}
+              {titleCaption}
               Select a band
             </div>
           );
@@ -606,7 +623,7 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
-              {chartTitle}
+              {titleCaption}
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
@@ -623,14 +640,14 @@ class WidgetEditor extends React.Component {
         if (!canRenderChart(widgetEditor, datasetProvider)) {
           visualization = (
             <div className="visualization">
-              {chartTitle}
+              {titleCaption}
               Select a type of chart and columns
             </div>
           );
         } else {
           visualization = (
             <div className="visualization">
-              {chartTitle}
+              {titleCaption}
               <TableView
                 datasetId={datasetId}
                 tableName={tableName}
@@ -886,7 +903,7 @@ class WidgetEditor extends React.Component {
           chartType,
           layer,
           areaIntersection,
-          embed
+          caption
         } = paramsConfig;
 
         // We restore the type of visualization
@@ -914,6 +931,12 @@ class WidgetEditor extends React.Component {
           this.props.setTitle(name);
           if (this.props.onChangeWidgetTitle) {
             this.props.onChangeWidgetTitle(name);
+          }
+        }
+        if (caption) {
+          this.props.setCaption(caption);
+          if (this.props.onChangeWidgetCaption) {
+            this.props.onChangeWidgetCaption(caption);
           }
         }
         if (zoom) this.props.setZoom(zoom);
@@ -973,6 +996,20 @@ class WidgetEditor extends React.Component {
     this.props.setTitle(title);
     if (this.props.onChangeWidgetTitle) {
       this.props.onChangeWidgetTitle(title);
+    }
+  }
+
+  /**
+   * Event handler executed when the user changes the
+   * caption of the graph
+   * @param {InputEvent} event
+   */
+  @Autobind
+  handleCaptionChange(event) {
+    const caption = event.target.value;
+    this.props.setCaption(caption);
+    if (this.props.onChangeWidgetCaption) {
+      this.props.onChangeWidgetCaption(caption);
     }
   }
 
@@ -1183,6 +1220,7 @@ const mapDispatchToProps = dispatch => ({
   toggleModal: (open, options) => dispatch(toggleModal(open, options)),
   toggleTooltip: (...params) => dispatch(toggleTooltip(...params)),
   setTitle: title => dispatch(setTitle(title)),
+  setCaption: caption => dispatch(setCaption(caption)),
   setMapParams: (params) => {
     dispatch(setZoom(params.zoom));
     dispatch(setLatLng(params.latLng));
@@ -1218,6 +1256,10 @@ WidgetEditor.propTypes = {
    * Widget title (if the editor is used to edit an existing  widget)
    */
   widgetTitle: PropTypes.string,
+  /**
+   * Widget caption (if the editor is used to edit an existing  widget)
+   */
+  widgetCaption: PropTypes.string,
   /**
    * List of visualizations that are available to the widget editor
    */
@@ -1272,6 +1314,11 @@ WidgetEditor.propTypes = {
    * The callback gets passed the new value
    */
   onChangeWidgetTitle: PropTypes.func,
+  /**
+   * Callback executed when the value of the caption is updated
+   * The callback gets passed the new value
+   */
+  onChangeWidgetCaption: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
@@ -1283,6 +1330,7 @@ WidgetEditor.propTypes = {
   toggleTooltip: PropTypes.func,
   setBandsInfo: PropTypes.func,
   setTitle: PropTypes.func,
+  setCaption: PropTypes.func,
   setMapParams: PropTypes.func,
   setZoom: PropTypes.func,
   setLatLng: PropTypes.func,

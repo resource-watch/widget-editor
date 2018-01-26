@@ -49,7 +49,8 @@ class App extends React.Component {
     this.state = {
       datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
       widgetId: undefined,
-      widgetTitle: ''
+      widgetTitle: '',
+      widgetCaption: ''
     };
   }
 
@@ -116,6 +117,15 @@ class App extends React.Component {
               value={this.state.widgetTitle}
               onChange={({ target }) => this.setState({ widgetTitle: target.value })}
             />
+            <br />
+            <label htmlFor="caption">Widget caption (optional):</label>
+            <input
+              type="text"
+              placeholder="Caption of the widget"
+              id="caption"
+              value={this.state.widgetCaption}
+              onChange={({ target }) => this.setState({ widgetCaption: target.value })}
+            />
           </p>
         </div>
         <Icons />
@@ -125,12 +135,14 @@ class App extends React.Component {
           datasetId={this.state.datasetId}
           widgetId={this.state.widgetId}
           widgetTitle={this.state.widgetTitle}
+          widgetCaption={this.state.widgetCaption}
           saveButtonMode="always"
           embedButtonMode="always"
           titleMode="always"
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
           onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
+          onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
       </div>
