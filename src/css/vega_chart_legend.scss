@@ -60,6 +60,20 @@
       content: '';
     }
 
+    .close-button {
+      display: inline-block;
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      margin: 0;
+      padding: 0;
+      width: 11px;
+      height: 11px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+    }
+
     .content {
       padding: 15px 0 0; // The padding bottom won't be applicated anyway..
       max-height: 120px;

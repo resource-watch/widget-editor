@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import uniqBy from 'lodash/uniqBy';
+import { timeFormat as time } from 'd3-time-format';
 
 // Components
 import Title from 'components/ui/Title';
+import Icon from 'components/ui/Icon';
 
 // Helpers
 import { getSINumber, getTimeFormat } from 'helpers/WidgetHelper';
@@ -109,10 +111,8 @@ class VegaChartLegend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      opened: false
+      opened: true
     };
-
-    this.onClick = this.onClick.bind(this);
   }
 
   componentDidUpdate(previousProps, previousState) {
@@ -120,17 +120,7 @@ class VegaChartLegend extends React.Component {
     // opened and we add a listener for the clicks
     if (!previousState.opened && this.state.opened) {
       this.legend.focus();
-      window.addEventListener('click', this.onClick);
-    } else if (previousState.opened && !this.state.opened) {
-      // We remove the listener when the legend is hidden
-      window.removeEventListener('click', this.onClick);
     }
-  }
-
-  componentWillUnmount() {
-    // In case the component is unmounted and the legend
-    // wasn't closed, we still remove the listener
-    window.removeEventListener('click', this.onClick);
   }
 
   /**
@@ -143,25 +133,6 @@ class VegaChartLegend extends React.Component {
 
     // If the user presses the ESC key, we close the legend
     if (code === 27) {
-      e.preventDefault();
-      this.setState({ opened: false });
-    }
-  }
-
-  /**
-   * Event handler executed when the user clicks somewhere
-   * @param {MouseEvent} e Event object
-   */
-  onClick(e) {
-    const target = e.target;
-
-    // If the legend is opened and the user clicks outside
-    // of it then we close it
-    // NOTE: we use as a reference the top level element
-    // because if we use this.legend, the legend will
-    // instantly open and close because the click handler
-    // is executed right before the setState
-    if (this.state.opened && !this.el.contains(target)) {
       e.preventDefault();
       this.setState({ opened: false });
     }
@@ -194,6 +165,17 @@ class VegaChartLegend extends React.Component {
           ref={(node) => { this.legend = node; }}
           onKeyDown={e => this.onKeyDown(e)}
         >
+          <button
+            type="button"
+            className="close-button"
+            onClick={() => this.setState({ opened: false })}
+            aria-label="Close legend"
+          >
+            <Icon
+              name="icon-cross"
+              className="-smaller"
+            />
+          </button>
           <div className="content">
             { this.props.config.map(config => VegaChartLegend.renderLegend(config)) }
           </div>

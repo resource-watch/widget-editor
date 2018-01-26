@@ -271,6 +271,8 @@ Steps:
 - Fix a bug where the columns wouldn't get their alias and description
 - Autoselect the first available chart type when the visualization is "Chart"
 - Add a caption to the editor, controllable from the outside and linked to the `titleMode` prop
+- By default, let the chart's legend opened (if any)
+
 ### v0.1.0
 - Fix a bug that prevented map widgets from being restored
 - Add the missing Leaflet stylesheet to the testing file
