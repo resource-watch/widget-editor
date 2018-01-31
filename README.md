@@ -268,6 +268,7 @@ Steps:
 - Fix a bug that would prevent the tooltip and the legend from displaying dates
 - Remove the code that forced the tooltip to show the column "x" (only for the tooltips opened based on the horizontal position of the cursor)
 - Fix a bug that would prevent `VegaChart` from re-rendering when the data's changed
+- Fix a bug that would force the user to add an optional prop to `VegaChart`
 
 ### v0.1.1
 - Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once

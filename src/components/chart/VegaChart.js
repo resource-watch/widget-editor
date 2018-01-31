@@ -270,7 +270,7 @@ class VegaChart extends React.Component {
   async getVegaConfig() {
     // We toggle on the loading but we don't do it off because
     // it will be done once the parsing of the Vega config is done
-    this.props.toggleLoading(true);
+    this.toggleLoading(true);
 
     return new Promise((resolve, reject) => {
       const padding = this.props.data.padding || 'strict';
