@@ -4,28 +4,6 @@ import { timeFormat } from 'd3-time-format';
 import { format } from 'd3-format';
 
 class VegaChartTooltip extends React.Component {
-  getParsedX() {
-    const { item } = this.props;
-    if (!item) return null;
-
-    const { x } = item;
-
-    if (x.format && x.type === 'number') {
-      return format(x.format)(x.value);
-    } else if (x.type === 'date') {
-      const date = new Date(x.value);
-      // NOTE: it's important to have a default format for
-      // the manually-created widgets, otherwise if x.format
-      // is not defined, timeFormat will return a date
-      // object and the app will crash in dev environment
-      // and the tooltip won't show in prod
-      const f = x.format || '%d %b %Y';
-      return timeFormat(f)(date);
-    }
-
-    return x.value;
-  }
-
   getParsedValue(field) { // eslint-disable-line class-methods-use-this
     if (field.format && field.type === 'number') {
       return format(field.format)(field.value);
@@ -44,23 +22,20 @@ class VegaChartTooltip extends React.Component {
   }
 
   render() {
-    const fieldsName = Object.keys(this.props.item).filter(f => f !== 'x');
+    const fieldsName = Object.keys(this.props.item);
     return (
       <div className="c-we-chart-tooltip">
-        { this.props.item.x.label && (
-          <div className="labels">
-            { fieldsName.length && fieldsName.map(fieldName => (
-              this.props.item[fieldName].label
-                ? (
-                  <span key={this.props.item[fieldName].label}>
-                    {this.props.item[fieldName].label}
-                  </span>
-                )
-                : false
-            ))}
-            <span>{this.props.item.x.label}</span>
-          </div>
-        )}
+        <div className="labels">
+          { fieldsName.length && fieldsName.map(fieldName => (
+            this.props.item[fieldName].label
+              ? (
+                <span key={this.props.item[fieldName].label}>
+                  {this.props.item[fieldName].label}
+                </span>
+              )
+              : false
+          ))}
+        </div>
         <div className="values">
           { fieldsName.length && fieldsName.map(fieldName => (
             this.props.item[fieldName].value
@@ -71,7 +46,6 @@ class VegaChartTooltip extends React.Component {
               )
               : false
           ))}
-          <span>{this.getParsedX()}</span>
         </div>
       </div>
     );

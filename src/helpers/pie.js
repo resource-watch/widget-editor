@@ -123,13 +123,13 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "x",
-            "label": "x"
-          },
-          {
             "key": "y",
             "label": "y",
             "format": ".2s"
+          },
+          {
+            "key": "x",
+            "label": "x"
           }
         ]
       }
@@ -160,8 +160,8 @@ export default function ({ columns, data, url, embedData }) {
 
   // We save the name of the columns for the tooltip
   {
-    const xField = config.interaction_config[0].config.fields[0];
-    const yField = config.interaction_config[0].config.fields[1];
+    const xField = config.interaction_config[0].config.fields[1];
+    const yField = config.interaction_config[0].config.fields[0];
     xField.label = columns.x.alias || columns.x.name;
     yField.label = columns.y.alias || columns.y.name;
   }

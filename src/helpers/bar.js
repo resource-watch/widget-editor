@@ -183,14 +183,14 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "x",
-            "label": "x",
-            "format": ".2f"
-          },
-          {
             "key": "y",
             "label": "y",
             "format": ".2s"
+          },
+          {
+            "key": "x",
+            "label": "x",
+            "format": ".2f"
           }
         ]
       }
@@ -244,8 +244,8 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
 
   // We save the name of the columns for the tooltip
   {
-    const xField = config.interaction_config[0].config.fields[0];
-    const yField = config.interaction_config[0].config.fields[1];
+    const xField = config.interaction_config[0].config.fields[1];
+    const yField = config.interaction_config[0].config.fields[0];
     xField.label = columns.x.alias || columns.x.name;
     yField.label = columns.y.alias || columns.y.name;
   }
@@ -267,7 +267,7 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     if (format) xAxis.format = format;
 
     // We also set the format for the tooltip
-    config.interaction_config[0].config.fields[0].format = format;
+    config.interaction_config[0].config.fields[1].format = format;
 
     // The x axis has a template used to truncate the
     // text. Nevertheless, when using it, a date will
@@ -287,7 +287,7 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
   } else if (columns.x.type === 'number') {
     const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
     if (allIntegers) {
-      const xField = config.interaction_config[0].config.fields[0];
+      const xField = config.interaction_config[0].config.fields[1];
       xField.format = '';
     }
   }

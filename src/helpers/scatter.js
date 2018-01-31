@@ -49,14 +49,14 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "x",
-            "label": "x",
-            "format": ".2f"
-          },
-          {
             "key": "y",
             "label": "y",
             "format": ".2s"
+          },
+          {
+            "key": "x",
+            "label": "x",
+            "format": ".2f"
           }
         ]
       }
@@ -87,8 +87,8 @@ export default function ({ columns, data, url, embedData }) {
 
   // We save the name of the columns for the tooltip
   {
-    const xField = config.interaction_config[0].config.fields[0];
-    const yField = config.interaction_config[0].config.fields[1];
+    const xField = config.interaction_config[0].config.fields[1];
+    const yField = config.interaction_config[0].config.fields[0];
     xField.label = columns.x.alias || columns.x.name;
     yField.label = columns.y.alias || columns.y.name;
   }
@@ -96,7 +96,7 @@ export default function ({ columns, data, url, embedData }) {
   if (columns.x.type === 'number') {
     const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
     if (allIntegers) {
-      const xField = config.interaction_config[0].config.fields[0];
+      const xField = config.interaction_config[0].config.fields[1];
       xField.format = '';
     }
   }

@@ -156,17 +156,17 @@ class VegaChart extends React.Component {
         children: VegaChartTooltip,
         childrenProps: {
           item: {
-            x: {
-              type: getType('x', item.datum.x),
-              label: getLabel('x'),
-              format: getFormat('x'),
-              value: item.datum.x
-            },
             y: {
               type: getType('y', item.datum.y),
               label: getLabel('y'),
               format: getFormat('y'),
               value: item.datum.y
+            },
+            x: {
+              type: getType('x', item.datum.x),
+              label: getLabel('x'),
+              format: getFormat('x'),
+              value: item.datum.x
             }
           }
         }
@@ -226,20 +226,13 @@ class VegaChart extends React.Component {
     }
 
     if (data) {
-      const fields = getTooltipConfigFields().filter(f => f.key !== 'x');
       return this.props.toggleTooltip(true, {
         follow: true,
         direction: 'bottom',
         children: VegaChartTooltip,
         childrenProps: {
           item: {
-            x: {
-              type: getType('x', x), // Don't use data.x here
-              label: getLabel('x'),
-              format: getFormat('x'),
-              value: data.x
-            },
-            ...fields.map(f => ({
+            ...getTooltipConfigFields().map(f => ({
               [f.key]: {
                 type: getType(f.key, data[f.key]),
                 label: getLabel(f.key),
