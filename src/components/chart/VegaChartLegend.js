@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import uniqBy from 'lodash/uniqBy';
-import { timeFormat as time } from 'd3-time-format';
+import { timeFormat as format } from 'd3-time-format';
 
 // Components
 import Title from 'components/ui/Title';
@@ -26,7 +26,7 @@ class VegaChartLegend extends React.Component {
     let timeFormat;
     const formatDateLabel = (values, label) => {
       if (!timeFormat) timeFormat = getTimeFormat(values.map(v => v.label));
-      return time.format(timeFormat)(new Date(label));
+      return format(timeFormat)(new Date(label));
     };
 
     // Format the label according to its type

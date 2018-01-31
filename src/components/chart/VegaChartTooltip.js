@@ -20,7 +20,7 @@ class VegaChartTooltip extends React.Component {
       // object and the app will crash in dev environment
       // and the tooltip won't show in prod
       const f = x.format || '%d %b %Y';
-      return timeFormat.format(f)(date);
+      return timeFormat(f)(date);
     }
 
     return x.value;
@@ -37,7 +37,7 @@ class VegaChartTooltip extends React.Component {
       // object and the app will crash in dev environment
       // and the tooltip won't show in prod
       const f = field.format || '%d %b %Y';
-      return timeFormat.format(f)(date);
+      return timeFormat(f)(date);
     }
 
     return field.value;
@@ -51,7 +51,11 @@ class VegaChartTooltip extends React.Component {
           <div className="labels">
             { fieldsName.length && fieldsName.map(fieldName => (
               this.props.item[fieldName].label
-                ? <span>{this.props.item[fieldName].label}</span>
+                ? (
+                  <span key={this.props.item[fieldName].label}>
+                    {this.props.item[fieldName].label}
+                  </span>
+                )
                 : false
             ))}
             <span>{this.props.item.x.label}</span>
@@ -60,7 +64,11 @@ class VegaChartTooltip extends React.Component {
         <div className="values">
           { fieldsName.length && fieldsName.map(fieldName => (
             this.props.item[fieldName].value
-              ? <span>{this.getParsedValue(this.props.item[fieldName])}</span>
+              ? (
+                <span key={this.props.item[fieldName].label}>
+                  {this.getParsedValue(this.props.item[fieldName])}
+                </span>
+              )
               : false
           ))}
           <span>{this.getParsedX()}</span>

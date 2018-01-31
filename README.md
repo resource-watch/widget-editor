@@ -264,6 +264,8 @@ Steps:
 
 ### v0.1.2 (not yet released)
 - Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
+- Remove React warning in the tooltip
+- Fix a bug that would prevent the tooltip and the legend from displaying dates
 
 ### v0.1.1
 - Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
