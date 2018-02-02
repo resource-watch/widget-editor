@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v0.1.3
+- Remove unused CSS rules that would interfere with the styles of RW or Prep
+
 ### v0.1.2
 - Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
 - Remove React warning in the tooltip
