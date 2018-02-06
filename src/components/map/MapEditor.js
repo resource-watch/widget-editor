@@ -17,11 +17,15 @@ class MapEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    // If a default layer is present, we'll select
-    // it by default
-    const defaultLayer = props.layers.find(l => l.default);
-    if (defaultLayer) {
-      this.setLayer(defaultLayer);
+    // If a widget has been restored, we don't set
+    // the default layer
+    if (!props.widgetId) {
+      // If a default layer is present, we'll select
+      // it by default
+      const defaultLayer = props.layers.find(l => l.default);
+      if (defaultLayer) {
+        this.setLayer(defaultLayer);
+      }
     }
   }
 
@@ -107,8 +111,9 @@ class MapEditor extends React.Component {
 
 MapEditor.propTypes = {
   /**
-   * Dataset ID
+   * ID of the widget, if any
    */
+  widgetId: PropTypes.string,
   layers: PropTypes.array.isRequired,
   provider: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),

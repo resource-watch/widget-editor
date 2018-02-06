@@ -890,7 +890,7 @@ class WidgetEditor extends React.Component {
     widgetService.fetchData()
       .then((data) => {
         const { widgetConfig, name } = data.attributes;
-        const { paramsConfig, zoom, lat, lng } = widgetConfig;
+        const { paramsConfig, zoom, lat, lng, bbox } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -943,6 +943,7 @@ class WidgetEditor extends React.Component {
         }
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
+        if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
       });
   }
 
@@ -1174,6 +1175,7 @@ class WidgetEditor extends React.Component {
               && (
                 <MapEditor
                   datasetId={datasetId}
+                  widgetId={widgetId}
                   tableName={tableName}
                   provider={datasetProvider}
                   datasetType={datasetType}
@@ -1230,6 +1232,7 @@ const mapDispatchToProps = dispatch => ({
   },
   setZoom: (...params) => dispatch(setZoom(...params)),
   setLatLng: (...params) => dispatch(setLatLng(...params)),
+  setBounds: (...params) => dispatch(setBounds(...params)),
   setFilters: filter => dispatch(setFilters(filter)),
   setColor: filter => dispatch(setColor(filter)),
   setCategory: filter => dispatch(setCategory(filter)),
@@ -1337,6 +1340,7 @@ WidgetEditor.propTypes = {
   setMapParams: PropTypes.func,
   setZoom: PropTypes.func,
   setLatLng: PropTypes.func,
+  setBounds: PropTypes.func,
   setFilters: PropTypes.func,
   setColor: PropTypes.func,
   setCategory: PropTypes.func,
