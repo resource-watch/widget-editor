@@ -30,6 +30,7 @@ const SET_CAPTION = 'WIDGET_EDITOR/SET_CAPTION';
 const SET_BANDS_INFO = 'WIDGET_EDITOR/SET_BANDS_INFO';
 const SET_ZOOM = 'WIDGET_EDITOR/SET_ZOOM';
 const SET_LATLNG = 'WIDGET_EDITOR/SET_LATLNG';
+const SET_BOUNDS = 'WIDGET_EDITOR/SET_BOUNDS';
 const SET_DATASET_ID = 'WIDGET_EDITOR/SET_DATASET_ID';
 const SET_TABLENAME = 'WIDGET_EDITOR/SET_TABLENAME';
 
@@ -53,10 +54,12 @@ const initialState = {
   limit: 500,
   areaIntersection: null, // ID of the geostore object
   band: null, // Band of the raster dataset
-  /** @type {{ [name: string]: { type: string, alias: string, description: string } }} */
+  /** @type {{ [name: string]: { type: string, alias: string, description: string } }} bandsInfo */
   bandsInfo: {}, // Information of the raster bands
   zoom: 3,
-  latLng: { lat: 0, lng: 0 }
+  latLng: { lat: 0, lng: 0 },
+  /** @type {number[][]} bounds */
+  bounds: null // Bounds of the map (south west, then north east)
 };
 
 export default function (state = initialState, action) {
@@ -258,6 +261,12 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_BOUNDS: {
+      return Object.assign({}, state, {
+        bounds: action.payload
+      });
+    }
+
     case SET_DATASET_ID: {
       return Object.assign({}, state, {
         datasetId: action.payload
@@ -404,6 +413,10 @@ export function setZoom(zoom) {
 
 export function setLatLng(latLng) {
   return dispatch => dispatch({ type: SET_LATLNG, payload: latLng });
+}
+
+export function setBounds(bounds) {
+  return dispatch => dispatch({ type: SET_BOUNDS, payload: bounds });
 }
 
 export function setDatasetId(datasetId) {

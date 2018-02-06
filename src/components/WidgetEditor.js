@@ -18,6 +18,7 @@ import {
   setCaption,
   setZoom,
   setLatLng,
+  setBounds,
   setFilters,
   setColor,
   setCategory,
@@ -448,7 +449,7 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, title, caption } = widgetEditor;
+    const { chartType, layer, zoom, latLng, bounds, title, caption } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -546,7 +547,8 @@ class WidgetEditor extends React.Component {
         if (layer) {
           const mapConfig = {
             zoom,
-            latLng
+            latLng,
+            bounds
           };
 
           visualization = (
@@ -1221,9 +1223,10 @@ const mapDispatchToProps = dispatch => ({
   toggleTooltip: (...params) => dispatch(toggleTooltip(...params)),
   setTitle: title => dispatch(setTitle(title)),
   setCaption: caption => dispatch(setCaption(caption)),
-  setMapParams: (params) => {
-    dispatch(setZoom(params.zoom));
-    dispatch(setLatLng(params.latLng));
+  setMapParams: ({ zoom, latLng, bounds }) => {
+    dispatch(setZoom(zoom));
+    dispatch(setLatLng(latLng));
+    if (bounds) dispatch(setBounds(bounds));
   },
   setZoom: (...params) => dispatch(setZoom(...params)),
   setLatLng: (...params) => dispatch(setLatLng(...params)),
