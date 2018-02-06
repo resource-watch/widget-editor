@@ -679,7 +679,8 @@ export async function getWidgetConfig(
       layer,
       caption,
       zoom,
-      latLng
+      latLng,
+      bounds
     } = widgetEditor;
 
     let chartConfig = {};
@@ -707,18 +708,29 @@ export async function getWidgetConfig(
       }
     }
 
+    let additionalParams = {};
+    if (visualizationType === 'map') {
+      additionalParams = {
+        type: 'map',
+        layer_id: layer && layer.id,
+        zoom,
+        ...latLng,
+        ...(bounds
+          ? { bbox: [bounds[0][1], bounds[0][0], bounds[1][1], bounds[1][0]] }
+          : {}
+        )
+      };
+    }
+
     resolve(Object.assign(
       {},
-      // If the widget is a map, we want to add some extra info
-      // in widgetConfig so the widget is compatible with other
-      // apps that use the same API
-      // The type and layer_id are not necessary for the editor
-      // because it is already saved in widgetConfig.paramsConfig
-      (
-        visualizationType === 'map'
-          ? { type: 'map', layer_id: layer && layer.id, zoom, ...latLng }
-          : {}
-      ),
+      // Everything that is inside paramsConfig is "private" and
+      // must be *only* accessed by the widget editor.
+      // Sometimes we want some parts of the widget's configuration
+      // to be public. This includes, for example, the map's zoom,
+      // center and bounds.
+      // That's why they are saved outside of paramsConfig.
+      additionalParams,
       {
         paramsConfig: {
           visualizationType,
