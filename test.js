@@ -20,7 +20,7 @@ const store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'rw',
+  applications: 'prep',
   authUrl: 'https://api.resourcewatch.org/auth',
   assetsPath: '/images/'
 });
@@ -47,7 +47,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datasetId: '0b9f0100-ce5b-430f-ad8f-3363efa05481',
+      datasetId: '9cb2c3bc-18af-413c-9f7e-95767b56430d',
       widgetId: undefined,
       widgetTitle: '',
       widgetCaption: ''

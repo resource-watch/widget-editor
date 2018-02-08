@@ -18,6 +18,7 @@ import {
   setCaption,
   setZoom,
   setLatLng,
+  setBounds,
   setFilters,
   setColor,
   setCategory,
@@ -448,7 +449,7 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, title, caption } = widgetEditor;
+    const { chartType, layer, zoom, latLng, bounds, title, caption } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -546,7 +547,8 @@ class WidgetEditor extends React.Component {
         if (layer) {
           const mapConfig = {
             zoom,
-            latLng
+            latLng,
+            bounds
           };
 
           visualization = (
@@ -888,7 +890,7 @@ class WidgetEditor extends React.Component {
     widgetService.fetchData()
       .then((data) => {
         const { widgetConfig, name } = data.attributes;
-        const { paramsConfig, zoom, lat, lng } = widgetConfig;
+        const { paramsConfig, zoom, lat, lng, bbox } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -941,6 +943,7 @@ class WidgetEditor extends React.Component {
         }
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
+        if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
       });
   }
 
@@ -1172,6 +1175,7 @@ class WidgetEditor extends React.Component {
               && (
                 <MapEditor
                   datasetId={datasetId}
+                  widgetId={widgetId}
                   tableName={tableName}
                   provider={datasetProvider}
                   datasetType={datasetType}
@@ -1221,12 +1225,14 @@ const mapDispatchToProps = dispatch => ({
   toggleTooltip: (...params) => dispatch(toggleTooltip(...params)),
   setTitle: title => dispatch(setTitle(title)),
   setCaption: caption => dispatch(setCaption(caption)),
-  setMapParams: (params) => {
-    dispatch(setZoom(params.zoom));
-    dispatch(setLatLng(params.latLng));
+  setMapParams: ({ zoom, latLng, bounds }) => {
+    dispatch(setZoom(zoom));
+    dispatch(setLatLng(latLng));
+    if (bounds) dispatch(setBounds(bounds));
   },
   setZoom: (...params) => dispatch(setZoom(...params)),
   setLatLng: (...params) => dispatch(setLatLng(...params)),
+  setBounds: (...params) => dispatch(setBounds(...params)),
   setFilters: filter => dispatch(setFilters(filter)),
   setColor: filter => dispatch(setColor(filter)),
   setCategory: filter => dispatch(setCategory(filter)),
@@ -1334,6 +1340,7 @@ WidgetEditor.propTypes = {
   setMapParams: PropTypes.func,
   setZoom: PropTypes.func,
   setLatLng: PropTypes.func,
+  setBounds: PropTypes.func,
   setFilters: PropTypes.func,
   setColor: PropTypes.func,
   setCategory: PropTypes.func,

@@ -5,7 +5,7 @@ import Autobind from 'autobind-decorator';
 // Redux
 import { connect } from 'react-redux';
 
-import { showLayer } from 'reducers/widgetEditor';
+import { showLayer, setBounds } from 'reducers/widgetEditor';
 
 // Components
 import Select from 'components/form/SelectInput';
@@ -17,17 +17,51 @@ class MapEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    // If a default layer is present, we'll select
-    // it by default
-    const defaultLayer = props.layers.find(l => l.default);
-    if (defaultLayer) {
-      props.showLayer(defaultLayer);
+    // If a widget has been restored, we don't set
+    // the default layer
+    if (!props.widgetId) {
+      // If a default layer is present, we'll select
+      // it by default
+      const defaultLayer = props.layers.find(l => l.default);
+      if (defaultLayer) {
+        this.setLayer(defaultLayer);
+      }
     }
   }
 
+  /**
+   * Event handler executed when the user
+   * changes the active layer
+   * @param {string} layerID Layer ID
+   */
   @Autobind
-  handleLayerChange(layerID) {
-    this.props.showLayer(this.props.layers.find(val => val.id === layerID));
+  onChangeLayer(layerID) {
+    const layer = this.props.layers.find(val => val.id === layerID);
+    this.setLayer(layer);
+  }
+
+  /**
+   * Set the active layer
+   * @param {object} layer
+   */
+  setLayer(layer) {
+    this.props.showLayer(layer);
+
+    // If the layer has a bounding box defined,
+    // we fit the center the map there
+    const bbox = layer && layer.layerConfig && layer.layerConfig.bbox;
+    if (!bbox) {
+      this.props.setBounds(null);
+    } else if (bbox.length === 4) {
+      // We convert the lng/lat to lat/lng
+      // The first two numbers of bbox corresponds to
+      // the south west point, and the two others to
+      // the north east one
+      this.props.setBounds([
+        [bbox[1], bbox[0]],
+        [bbox[3], bbox[2]]
+      ]);
+    }
   }
 
   render() {
@@ -55,7 +89,7 @@ class MapEditor extends React.Component {
                 value: val.id
               }
             ))}
-            onChange={this.handleLayerChange}
+            onChange={this.onChangeLayer}
           />
         </div>
         <div className="actions-container">
@@ -77,8 +111,9 @@ class MapEditor extends React.Component {
 
 MapEditor.propTypes = {
   /**
-   * Dataset ID
+   * ID of the widget, if any
    */
+  widgetId: PropTypes.string,
   layers: PropTypes.array.isRequired,
   provider: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),
@@ -95,12 +130,14 @@ MapEditor.propTypes = {
 
   // Store
   showLayer: PropTypes.func.isRequired,
+  setBounds: PropTypes.func.isRequired,
   widgetEditor: PropTypes.object.isRequired
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
-  showLayer: layer => dispatch(showLayer(layer))
+  showLayer: layer => dispatch(showLayer(layer)),
+  setBounds: (...params) => dispatch(setBounds(...params))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(MapEditor);

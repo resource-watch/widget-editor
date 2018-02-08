@@ -264,6 +264,8 @@ Steps:
 
 ### v0.1.3
 - Remove unused CSS rules that would interfere with the styles of RW or Prep
+- Auto-pan to the bounding box of a layer, if provided
+- Save and restore the bounding box of the widgets
 
 ### v0.1.2
 - Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
