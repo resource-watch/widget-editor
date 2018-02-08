@@ -715,10 +715,7 @@ export async function getWidgetConfig(
         layer_id: layer && layer.id,
         zoom,
         ...latLng,
-        ...(bounds
-          ? { bbox: [bounds[0][1], bounds[0][0], bounds[1][1], bounds[1][0]] }
-          : {}
-        )
+        ...bounds && { bbox: [bounds[0][1], bounds[0][0], bounds[1][1], bounds[1][0]] }
       };
     }
 
