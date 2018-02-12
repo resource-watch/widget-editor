@@ -262,7 +262,7 @@ Steps:
 
 ## Changelog
 
-### v0.1.3 (not yet released)
+### v0.1.3
 - Remove unused CSS rules that would interfere with the styles of RW or Prep
 - Auto-pan to the bounding box of a layer, if provided
 - Save and restore the bounding box of the widgets
