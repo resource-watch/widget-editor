@@ -6,7 +6,6 @@ import isEmpty from 'lodash/isEmpty';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import isEqual from 'lodash/isEqual';
-import { toastr } from 'react-redux-toastr';
 
 // Redux
 import { connect } from 'react-redux';
@@ -354,41 +353,19 @@ class VegaChart extends React.Component {
     // we display a loader
     this.toggleLoading(true);
 
-    vega.parse.spec(vegaConfig, theme, (err, chart) => {
-      // If there's an error or the component has been unmounted
-      // we don't do anything
-      if (err || !this.mounted) {
-        this.toggleLoading(false);
-        throw Error(err);
-      }
+    try {
+      const runtime = vega.parse(vegaConfig);
+      new vega.View(runtime, theme)
+        .initialize(this.chart)
+        .renderer('canvas')
+        .hover()
+        .run();
+    } catch (err) {
+      console.error(err);
+      if (this.props.onError) this.props.onError();
+    }
 
-      // We render the chart
-      const vis = chart({ el: this.chart, renderer: 'canvas' });
-      try {
-        vis.update();
-      } catch (err) { // eslint-disable-line no-shadow
-        console.error(err);
-        this.toggleLoading(false);
-        if (this.props.onError) this.props.onError();
-        return;
-      }
-
-      // We toggle off the loader once we've rendered the chart
-      this.toggleLoading(false);
-
-      // Data fetched by Vega and used to draw the chart
-      const data = vis.data().table;
-
-      // We display a tooltip at maximum 30 FPS (approximatively)
-      // We save the throttled function in a global variable so
-      // we can eventually cancel pending executions when the
-      // cursor goes out of the chart's container
-      this.throttledMouseMove = throttle((_, { x, item }) => {
-        this.onMousemove(vegaConfig, data, x, item);
-      }, 30);
-
-      vis.onSignal('onMousemove', this.throttledMouseMove);
-    });
+    this.toggleLoading(false);
   }
 
   triggerResize() {
@@ -400,7 +377,7 @@ class VegaChart extends React.Component {
   renderChart() {
     this.setSize();
     this.getVegaConfig()
-      .then(vegaConfig => new Promise((resolve) => this.setState({ vegaConfig }, resolve)))
+      .then(vegaConfig => new Promise(resolve => this.setState({ vegaConfig }, resolve)))
       .then(() => this.parseVega())
       .catch(err => console.error(err));
   }
