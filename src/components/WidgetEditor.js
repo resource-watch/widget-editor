@@ -7,6 +7,8 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 
+import { BASEMAPS } from 'components/map/constants';
+
 // Redux
 import { connect } from 'react-redux';
 import {
@@ -32,7 +34,8 @@ import {
   setChartType,
   setAreaIntersection,
   setDatasetId,
-  setTableName
+  setTableName,
+  setBasemap
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -119,7 +122,6 @@ const DEFAULT_STATE = {
   datasetInfoLoaded: false,
 
   // MAP
-  basemap: undefined, // Which basemap to display
   labels: undefined, // Whether to show the labels
 
   visualizationOptions: [] // Available visualizations
@@ -449,7 +451,7 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, bounds, title, caption } = widgetEditor;
+    const { chartType, layer, zoom, latLng, bounds, title, caption, basemap } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -555,7 +557,7 @@ class WidgetEditor extends React.Component {
             <div className="visualization">
               {titleCaption}
               <Map
-                basemap={this.state.basemap}
+                basemap={BASEMAPS[basemap]}
                 labels={this.state.labels}
                 LayerManager={LayerManager}
                 mapConfig={mapConfig}
@@ -565,9 +567,9 @@ class WidgetEditor extends React.Component {
 
               <MapControls>
                 <BasemapControl
-                  basemap={this.state.basemap}
+                  basemap={BASEMAPS[basemap]}
                   labels={this.state.labels}
-                  onChangeBasemap={basemap => this.setState({ basemap })}
+                  onChangeBasemap={b => this.props.setBasemap(b.id)}
                   onToggleLabels={labels => this.setState({ labels })}
                 />
               </MapControls>
@@ -894,7 +896,7 @@ class WidgetEditor extends React.Component {
     widgetService.fetchData()
       .then((data) => {
         const { widgetConfig, name } = data.attributes;
-        const { paramsConfig, zoom, lat, lng, bbox } = widgetConfig;
+        const { paramsConfig, zoom, lat, lng, bbox, basemap } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -948,6 +950,7 @@ class WidgetEditor extends React.Component {
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+        if (basemap) this.props.setBasemap(basemap);
       });
   }
 
@@ -1249,7 +1252,8 @@ const mapDispatchToProps = dispatch => ({
   setChartType: (...params) => dispatch(setChartType(...params)),
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
   setDatasetId: (...params) => dispatch(setDatasetId(...params)),
-  setTableName: (...params) => dispatch(setTableName(...params))
+  setTableName: (...params) => dispatch(setTableName(...params)),
+  setBasemap: (...params) => dispatch(setBasemap(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1357,7 +1361,8 @@ WidgetEditor.propTypes = {
   setChartType: PropTypes.func,
   setAreaIntersection: PropTypes.func,
   setDatasetId: PropTypes.func,
-  setTableName: PropTypes.func
+  setTableName: PropTypes.func,
+  setBasemap: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {

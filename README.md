@@ -267,6 +267,7 @@ Steps:
 - Auto-pan to the bounding box of a layer, if provided
 - Save and restore the bounding box of the widgets
 - Support for WMS datasets
+- Save and restore the basemap
 
 ### v0.1.2
 - Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
