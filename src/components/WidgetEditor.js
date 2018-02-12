@@ -697,7 +697,11 @@ class WidgetEditor extends React.Component {
     // different from the other one (the user won't have to choose columns but bands)
     if (this.state.datasetType === 'raster') {
       visualizationOptions = visualizationOptions.filter(val => val.value !== 'chart' && val.value !== 'table');
-      visualizationOptions.push(VISUALIZATION_TYPES.find(vis => vis.value === 'raster_chart'));
+      // WMS dataset aren't attached to any table so they can only
+      // be represented as maps
+      if (this.state.datasetProvider !== 'wms') {
+        visualizationOptions.push(VISUALIZATION_TYPES.find(vis => vis.value === 'raster_chart'));
+      }
     }
 
     let defaultVis = null;
@@ -1170,7 +1174,6 @@ class WidgetEditor extends React.Component {
           {
             selectedVisualizationType === 'map'
               && layers && layers.length > 0
-              && tableName
               && datasetProvider
               && (
                 <MapEditor
