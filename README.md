@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v0.2.0 (not yet released)
+- Migrate from Vega 2 to Vega 3 (not backward compatible)
+
 ### v0.1.3
 - Remove unused CSS rules that would interfere with the styles of RW or Prep
 - Auto-pan to the bounding box of a layer, if provided
