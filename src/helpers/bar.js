@@ -113,7 +113,7 @@ const defaultChart = {
       }
     }
   ]
-}
+
 };
 
 /**
