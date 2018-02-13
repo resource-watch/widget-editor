@@ -76,9 +76,6 @@ const defaultChart = {
             "scale": "y",
             "field": "y"
           },
-          "stroke": {
-            "value": "steelblue"
-          },
           "strokeWidth": {
             "value": 2
           }

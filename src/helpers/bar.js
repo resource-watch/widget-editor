@@ -5,197 +5,95 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 
 /* eslint-disable */
 const defaultChart = {
-  width: 1,
-  data: [
+  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+  "width": 300,
+    "height": 300,
+    "autosize": "fit",
+  "data": [
     {
-      name: 'table'
-    },
-    {
-      "name": "layout",
-      "source": "table",
-      "transform": [
-        {
-          "type": "aggregate",
-          "summarize": [{"field": "x","ops": ["distinct"]}]
-        },
-        {
-          "type": "formula",
-          "field": "width",
-          "expr": "(datum[\"distinct_x\"] + 1) * 25"
-        }
-      ]
-    },
-    {
-      "name": "stats",
-      "source": "table",
-      "transform": [
-        {
-          "type": "aggregate",
-          "summarize": [{"field": "y", "ops": ["min"]}]
-        }
-      ]
+      "name": "table",
+
     }
   ],
-  scales: [
-    // This scale is not used by the chart but is needed
-    // for the following x axis
-    {
-      name: 'x',
-      type: 'ordinal',
-      range: 'width',
-      domain: { data: 'table', field: 'x' },
-      real: false
-    },
-    // This scale is used by the chart
-    {
-      name: 'y',
-      type: 'linear',
-      "range": "height",
-      domain: { data: 'table', field: 'y' }
-    }
-  ],
-  // These two following axes are not used by the marks
-  // but are necessary for the tooltip to show
-  axes: [
-    {
-      "type": "x",
-      "scale": "x",
-      "ticks": 0,
-      "tickSize": 0,
-      "properties": {
-        "labels": {
-          "text": {"template": ""},
-        }
-      }
-    },
-    {
-      "type": "y",
-      "scale": "y",
-      "tickSizeEnd": 0,
-      "offset": 5,
-      "properties": {"axis": {"strokeWidth": {"value": 0}}}
-    }
-  ],
-  marks: [
-    {
-      "type": "group",
-      "from": {"data": "layout"},
-      "properties": {
-        "update": {
-          "width": {"field": "width"}
-        }
-      },
-      "marks": [
+
+  "scales": [
         {
-          type: 'rect',
-          from: { data: 'table' },
-          properties: {
-            enter: {
-              xc: { scale: 'x', field: 'x' },
-              width: { scale: 'x', band: true, offset: -15 },
-              y: { scale: 'y', field: 'y' },
-              "y2": {"scale": "y", "value": 0}
+            "name": "x",
+            "type": "band",
+            "range": "width",
+            "ticks": true,
+            "round": true,
+            "domain": {
+                "data": "table",
+                "field": "x"
             }
-          }
-        },
-        // This rule is conditional: when all the values are positive,
-        // it is hidden so we don't have two lines at the bottom of
-        // the chart (the rule + the axis), but when at least one value
-        // is negative, it is displayed to mark the "0"
-        {
-          "type": "rule",
-          "from": {"data": "stats"},
-          "properties": {
-            "enter": {
-              "y": {"scale": "y", "value": "0"},
-              "x": {"value": "0"},
-              "x2": {"field": {"group": "width"}},
-              "stroke": {"value": "#A9ABAD"},
-              "strokeWidth": {"value": 1},
-              "opacity": [
-                {
-                  "test": "datum.min_y < 0",
-                  "value": 1
-                },
-                {"value": 0}
-              ]
-            }
-          }
         },
         {
-          "type": "group",
-          "properties": {
-            "update": {
-              "y": {"signal": "height", "offset": 5}
+            "name": "y",
+            "type": "linear",
+            "range": "height",
+            "nice": true,
+            "zero": true,
+            "domain": {
+                "data": "table",
+                "field": "y"
             }
-          },
-          "axes": [
-            {
-              "type": "x",
-              "scale": "x",
-              "tickSizeEnd": 0,
-              "properties": {
-                "axis": {"strokeWidth": {"value": 0}},
+        }
+    ],
+    "axes": [
+        {
+            "orient": "bottom",
+            "scale": "x",
+            "labelOverlap": "parity",
+            "ticks":false,
+            "encode": {
                 "labels": {
-                  "text": {
-                    "template": "{{ datum[\"data\"] | truncate:25 }}"
-                  },
-                  "angle": {"value": 270},
-                  "align": {"value": "right"},
-                  "baseline": {"value": "middle"}
+                    "update": {
+                        "align": {
+                            "value": "left"
+                        },
+                        "angle": {"value": 90},
+                        "baseline": {
+                            "value": "top"
+                        }
+                    }
                 }
-              }
             }
-          ]
-        }
-      ],
-      // This scale is real and is based on the computed width
-      "scales": [
+        },
         {
-          "name": "x",
-          "type": "ordinal",
-          "range": "width",
-          "domain": {"data": "table","field": "x"},
-          "bandSize": 25,
-          "round": true,
-          "points": true,
-          "padding": 1
+            "orient": "left",
+            "scale": "y",
+            "labelOverlap": "parity"
         }
-      ],
-      // This axis is necessary here because the top level one
-      // doesn't have any width so the horizontal grid doesn't show
-      "axes": [
+    ],
+    "marks": [
         {
-          "type": "y",
-          "scale": "y",
-          "tickSizeEnd": 0,
-          "offset": 5,
-          "properties": {"axis": {"strokeWidth": {"value": 0}}},
-          "name": "Total co2 emmissions",
-          "grid": "true"
+            "type": "rect",
+            "from": {
+                "data": "table"
+            },
+            "encode": {
+                "enter": {
+                    "x": {
+                        "scale": "x",
+                        "field": "x"
+                    },
+                    "width": {
+                        "scale": "x",
+                        "band": 1
+                    },
+                    "y": {
+                        "scale": "y",
+                        "field": "y"
+                    },
+                    "y2": {
+                        "scale": "y",
+                        "value": 0
+                    }
+                }
+            }
         }
-      ]
-    }
-  ],
-  interaction_config: [
-    {
-      "name": "tooltip",
-      "config": {
-        "fields": [
-          {
-            "key": "y",
-            "label": "y",
-            "format": ".2s"
-          },
-          {
-            "key": "x",
-            "label": "x",
-            "format": ".2f"
-          }
-        ]
-      }
-    }
-  ]
+    ]
 };
 
 /**
@@ -218,96 +116,96 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
       "property": "data"
     };
 
-    // If the dataset is a raster one, we save the provider and the
-    // band in the config so we can later re-render the chart
-    // correctly (we need the info to parse the data)
-    if (provider && band) {
-      config.data[0].format = { provider, band };
-    }
+//    // If the dataset is a raster one, we save the provider and the
+//    // band in the config so we can later re-render the chart
+//    // correctly (we need the info to parse the data)
+//    if (provider && band) {
+//      config.data[0].format = { provider, band };
+//    }
   }
-
-  if (columns.color.present) {
-    // We add the color scale
-    config.scales.push({
-      "name": "c",
-      "type": "ordinal",
-      "domain": {"data": "table", "field": "color"},
-      "range": "category10"
-    });
-
-    // We update the marks
-    config.marks[0].marks[0].properties.enter.fill = {
-      "scale": "c",
-      "field": "color"
-    };
-  }
-
-  // We save the name of the columns for the tooltip
-  {
-    const xField = config.interaction_config[0].config.fields[1];
-    const yField = config.interaction_config[0].config.fields[0];
-    xField.label = columns.x.alias || columns.x.name;
-    yField.label = columns.y.alias || columns.y.name;
-  }
-
-  // If the x column is a date, we need to use a
-  // a temporal x axis and parse the x column as a date
-  if (columns.x.type === 'date') {
-    // We update the axis
-    const xAxis = config.marks[0].marks[2].axes[0];
-    xAxis.formatType = 'time';
-
-    // We parse the x column as a date
-    if (!config.data[0].format) config.data[0].format = {};
-    config.data[0].format.parse = { x: 'date' };
-
-    // We compute an optimal format for the ticks
-    const temporalData = data.map(d => d.x);
-    const format = getTimeFormat(temporalData);
-    if (format) xAxis.format = format;
-
-    // We also set the format for the tooltip
-    config.interaction_config[0].config.fields[1].format = format;
-
-    // The x axis has a template used to truncate the
-    // text. Nevertheless, when using it, a date will
-    // be displayed as a timestamp.
-    // One solution is just to remove the template
-    // and Vega will use d3 to determine the best format
-    // or the provided format if we have access to the
-    // data.
-    // In such a case, we don't truncate the tick, but
-    // it shouldn't be necessary because usually the
-    // result is short.
-    // NOTE: actually if we just remove the template,
-    // "text" will be an empty object and Vega won't
-    // display any tick, so we need to remove text
-    // instead
-    delete xAxis.properties.labels.text;
-  } else if (columns.x.type === 'number') {
-    const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
-    if (allIntegers) {
-      const xField = config.interaction_config[0].config.fields[1];
-      xField.format = '';
-    }
-  }
-
-  // In case the dataset contains only one value (thus one)
-  // column, Vega fails to render the chart:
-  // https://github.com/vega/vega/issues/927
-  // The same happens if all the bars have the same height
-  // As a temporary solution, we force domain of the scale
-  // to be around the value
-  const oneYValue = data.length && data.every(d => d.y === data[0].y);
-  if (data.length === 1 || oneYValue) {
-    const yScale = config.scales[1];
-
-    // The step is 20% of the value
-    const step = data[0].y * 0.2;
-
-    // We fix the domain around the value
-    yScale.domain = [data[0].y - step, data[0].y + step];
-  }
+//
+//  if (columns.color.present) {
+//    // We add the color scale
+//    config.scales.push({
+//      "name": "c",
+//      "type": "ordinal",
+//      "domain": {"data": "table", "field": "color"},
+//      "range": "category10"
+//    });
+//
+//    // We update the marks
+//    config.marks[0].marks[0].properties.enter.fill = {
+//      "scale": "c",
+//      "field": "color"
+//    };
+//  }
+//
+//  // We save the name of the columns for the tooltip
+//  {
+//    const xField = config.interaction_config[0].config.fields[1];
+//    const yField = config.interaction_config[0].config.fields[0];
+//    xField.label = columns.x.alias || columns.x.name;
+//    yField.label = columns.y.alias || columns.y.name;
+//  }
+//
+//  // If the x column is a date, we need to use a
+//  // a temporal x axis and parse the x column as a date
+//  if (columns.x.type === 'date') {
+//    // We update the axis
+//    const xAxis = config.marks[0].marks[2].axes[0];
+//    xAxis.formatType = 'time';
+//
+//    // We parse the x column as a date
+//    if (!config.data[0].format) config.data[0].format = {};
+//    config.data[0].format.parse = { x: 'date' };
+//
+//    // We compute an optimal format for the ticks
+//    const temporalData = data.map(d => d.x);
+//    const format = getTimeFormat(temporalData);
+//    if (format) xAxis.format = format;
+//
+//    // We also set the format for the tooltip
+//    config.interaction_config[0].config.fields[1].format = format;
+//
+//    // The x axis has a template used to truncate the
+//    // text. Nevertheless, when using it, a date will
+//    // be displayed as a timestamp.
+//    // One solution is just to remove the template
+//    // and Vega will use d3 to determine the best format
+//    // or the provided format if we have access to the
+//    // data.
+//    // In such a case, we don't truncate the tick, but
+//    // it shouldn't be necessary because usually the
+//    // result is short.
+//    // NOTE: actually if we just remove the template,
+//    // "text" will be an empty object and Vega won't
+//    // display any tick, so we need to remove text
+//    // instead
+//    delete xAxis.properties.labels.text;
+//  } else if (columns.x.type === 'number') {
+//    const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
+//    if (allIntegers) {
+//      const xField = config.interaction_config[0].config.fields[1];
+//      xField.format = '';
+//    }
+//  }
+//
+//  // In case the dataset contains only one value (thus one)
+//  // column, Vega fails to render the chart:
+//  // https://github.com/vega/vega/issues/927
+//  // The same happens if all the bars have the same height
+//  // As a temporary solution, we force domain of the scale
+//  // to be around the value
+//  const oneYValue = data.length && data.every(d => d.y === data[0].y);
+//  if (data.length === 1 || oneYValue) {
+//    const yScale = config.scales[1];
+//
+//    // The step is 20% of the value
+//    const step = data[0].y * 0.2;
+//
+//    // We fix the domain around the value
+//    yScale.domain = [data[0].y - step, data[0].y + step];
+//  }
 
   return config;
 };
