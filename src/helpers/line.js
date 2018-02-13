@@ -35,7 +35,7 @@ const defaultChart = {
       "interpolate": { "value": "linear" },
       "encode": {
         "labels": {
-          "enter": {
+          "update": {
             "align": { "value": "left" },
             "baseline": { "value": "middle"}
           }
