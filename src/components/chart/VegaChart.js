@@ -255,8 +255,18 @@ class VegaChart extends React.Component {
 
   setSize() {
     if (this.chartViewportContainer) {
-      this.width = this.props.width || this.chartViewportContainer.offsetWidth;
-      this.height = this.props.height || this.chartViewportContainer.offsetHeight;
+      const computedStyles = getComputedStyle(this.chartViewportContainer);
+      const padding = {
+        top: +computedStyles.paddingTop.replace('px', ''),
+        right: +computedStyles.paddingRight.replace('px', ''),
+        bottom: +computedStyles.paddingBottom.replace('px', ''),
+        left: +computedStyles.paddingLeft.replace('px', '')
+      };
+
+      this.width = (this.props.width || this.chartViewportContainer.offsetWidth)
+        - (padding.left + padding.right);
+      this.height = (this.props.height || this.chartViewportContainer.offsetHeight)
+        - (padding.top + padding.bottom);
     }
   }
 
@@ -272,15 +282,14 @@ class VegaChart extends React.Component {
     this.toggleLoading(true);
 
     return new Promise((resolve, reject) => {
-      const padding = this.props.data.padding || 'strict';
+      const autosize = {
+        type: 'fit',
+        contains: 'padding'
+      };
+
       const size = {
-        // Please don't change these conditions, the bar chart
-        // needs its height and width to not be overriden to display
-        // properly
-        width: this.props.data.width
-          || this.width - (padding.left && padding.right ? (padding.left + padding.right) : 0),
-        height: this.props.data.height
-          || this.height - (padding.top && padding.bottom ? (padding.top + padding.bottom) : 0)
+        width: this.props.data.width || this.width,
+        height: this.props.data.height || this.height
       };
 
       // This signal is used for the tooltip
@@ -294,7 +303,7 @@ class VegaChart extends React.Component {
         /* eslint-enable */
       };
 
-      const config = Object.assign({}, this.props.data, size, { padding });
+      const config = Object.assign({}, this.props.data, size, { autosize });
 
       // If the configuration already has signals, we don't override it
       // but push a new one instead
