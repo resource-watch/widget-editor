@@ -93,7 +93,27 @@ const defaultChart = {
                 }
             }
         }
-    ]
+    ],
+    "interaction_config": [
+    {
+      "name": "tooltip",
+      "config": {
+        "fields": [
+          {
+            "key": "y",
+            "label": "y",
+            "format": ".2s"
+          },
+          {
+            "key": "x",
+            "label": "x",
+            "format": ".2f"
+          }
+        ]
+      }
+    }
+  ]
+}
 };
 
 /**
