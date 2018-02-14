@@ -6,13 +6,14 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 /* eslint-disable */
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  "width": 300,
-    "height": 300,
     "autosize": "fit",
   "data": [
     {
       "name": "table",
 
+    },
+    {
+      "name": "stats",
     }
   ],
 
@@ -21,8 +22,6 @@ const defaultChart = {
             "name": "x",
             "type": "band",
             "range": "width",
-            "ticks": true,
-            "round": true,
             "domain": {
                 "data": "table",
                 "field": "x"
@@ -52,7 +51,7 @@ const defaultChart = {
                         "align": {
                             "value": "left"
                         },
-                        "angle": {"value": 90},
+                        "angle": {"signal": "width < 100 ? 90 : 0"},
                         "baseline": {
                             "value": "top"
                         }
