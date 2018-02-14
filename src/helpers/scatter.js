@@ -3,82 +3,63 @@ import deepClone from 'lodash/cloneDeep';
 /* eslint-disable */
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  "autosize": "fit",
-  "data": [{
-    "name": "table"
-  }],
+  "data": [
+    { "name": "table" }
+  ],
   "scales": [
-        {
-            "name": "x",
-            "type": "linear",
-            "round": true,
-            "nice": true,
-            "zero": true,
-            "domain": {
-                "data": "table",
-                "field": "x"
-            },
-            "range": "width"
-        },
-        {
-            "name": "y",
-            "type": "linear",
-            "round": true,
-            "nice": true,
-            "zero": true,
-            "domain": {
-                "data": "table",
-                "field": "y"
-            },
-            "range": "height"
+    {
+      "name": "x",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": false,
+      "domain": { "data": "table", "field": "x" },
+      "range": "width"
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "round": true,
+      "nice": true,
+      "zero": false,
+      "domain": { "data": "table", "field": "y" },
+      "range": "height"
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "labelOverlap": "parity",
+      "orient": "bottom",
+      "encode": {
+        "labels": {
+          "update": {
+            "align": { "value": "center" },
+            "baseline": { "value": "top" }
+          }
         }
-    ],
-    "axes": [
-        {
-            "scale": "x",
-            "labelOverlap": "parity",
-            "orient": "bottom",
-            "encode": {
-                "labels": {
-                    "update": {
-                        "align": {
-                            "value": "center"
-                        },
-                        "baseline": {
-                            "value": "top"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "scale": "y",
-            "labelOverlap": "parity",
-            "orient": "left"
+      }
+    },
+    {
+      "scale": "y",
+      "labelOverlap": "parity",
+      "orient": "left"
+    }
+  ],
+  "marks": [
+    {
+      "name": "marks",
+      "type": "symbol",
+      "from": { "data": "table" },
+      "encode": {
+        "update": {
+          "x": { "scale": "x", "field": "x" },
+          "y": { "scale": "y", "field": "y" }
         }
-    ],
-    "marks": [
-        {
-            "name": "marks",
-            "type": "symbol",
-            "from": {
-                "data": "table"
-            },
-            "encode": {
-                "update": {
-                    "x": {
-                        "scale": "x",
-                        "field": "x"
-                    },
-                    "y": {
-                        "scale": "y",
-                        "field": "y"
-                    }
-                }
-            }
-        }
-    ],
-  interaction_config: [
+      }
+    }
+  ],
+  "interaction_config": [
     {
       "name": "tooltip",
       "config": {
@@ -121,28 +102,28 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   // We save the name of the columns for the tooltip
-//  {
-//    const xField = config.interaction_config[0].config.fields[1];
-//    const yField = config.interaction_config[0].config.fields[0];
-//    xField.label = columns.x.alias || columns.x.name;
-//    yField.label = columns.y.alias || columns.y.name;
-//  }
-//
-//  if (columns.x.type === 'number') {
-//    const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
-//    if (allIntegers) {
-//      const xField = config.interaction_config[0].config.fields[1];
-//      xField.format = '';
-//    }
-//  }
-//
+  {
+    const xField = config.interaction_config[0].config.fields[1];
+    const yField = config.interaction_config[0].config.fields[0];
+    xField.label = columns.x.alias || columns.x.name;
+    yField.label = columns.y.alias || columns.y.name;
+  }
+
+  if (columns.x.type === 'number') {
+    const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
+    if (allIntegers) {
+      const xField = config.interaction_config[0].config.fields[1];
+      xField.format = '';
+    }
+  }
+
   if (columns.color.present) {
     // We add the color scale
     config.scales.push({
       "name": "c",
       "type": "ordinal",
-      "domain": {"data": "table", "field": "color"},
-      "range": "category"
+      "domain": { "data": "table", "field": "color" },
+      "range": { "scheme": "category20" }
     });
 
     // We update the marks
@@ -163,7 +144,7 @@ export default function ({ columns, data, url, embedData }) {
     config.scales.push({
       "name": "s",
       "type": sizeScaleType,
-      "domain": {"data": "table", "field": "size"},
+      "domain": { "data": "table", "field": "size" },
       "range": sizeScaleRange,
       "zero": false
     });
@@ -173,44 +154,44 @@ export default function ({ columns, data, url, embedData }) {
       "scale": "s",
       "field": "size"
     };
-//
-//    // We add a legend to explain what the size
-//    // variation means
-   const sizeDate = data.map(d => d.size);
-   config.legend = [
-     {
-       type: 'size',
-       label: columns.size.alias || columns.size.name,
-       shape: 'circle',
-       scale: sizeScaleType,
-       values: [
-         {
-           label: Math.max(...sizeDate),
-           value: getCircleRadius(sizeScaleRange[1])
-         },
-         {
-           label: Math.min(...sizeDate),
-           value: getCircleRadius(sizeScaleRange[0])
-         }
-       ]
-     }
-   ];
+
+    // We add a legend to explain what the size
+    // variation means
+    const sizeDate = data.map(d => d.size);
+    config.legend = [
+      {
+        type: 'size',
+        label: columns.size.alias || columns.size.name,
+        shape: 'circle',
+        scale: sizeScaleType,
+        values: [
+          {
+            label: Math.max(...sizeDate),
+            value: getCircleRadius(sizeScaleRange[1])
+          },
+          {
+            label: Math.min(...sizeDate),
+            value: getCircleRadius(sizeScaleRange[0])
+          }
+        ]
+      }
+    ];
   }
-//
-//  // If all the dots have the exact same y position,
-//  // the chart won't have any height
-//  // To fix that, we force the domain of the y scale
-//  // to be around the value
-//  const oneYValue = data.length && data.every(d => d.y === data[0].y);
-//  if (data.length === 1 || oneYValue) {
-//    const yScale = config.scales.find(scale => scale.name === 'y');
-//
-//    // The step is 20% of the value
-//    const step = data[0].y * 0.2;
-//
-//    // We fix the domain around the value
-//    yScale.domain = [data[0].y - step, data[0].y + step];
-//  }
+
+  // If all the dots have the exact same y position,
+  // the chart won't have any height
+  // To fix that, we force the domain of the y scale
+  // to be around the value
+  const oneYValue = data.length && data.every(d => d.y === data[0].y);
+  if (data.length === 1 || oneYValue) {
+    const yScale = config.scales.find(scale => scale.name === 'y');
+
+    // The step is 20% of the value
+    const step = data[0].y * 0.2;
+
+    // We fix the domain around the value
+    yScale.domain = [data[0].y - step, data[0].y + step];
+  }
 
   return config;
 };
