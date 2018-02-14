@@ -63,13 +63,7 @@ const defaultChart = {
             "scale": "y",
             "labelOverlap": "parity"
         }
-      }
-    },
-    {
-      "orient": "left",
-      "scale": "y",
-      "labelOverlap": "parity"
-    }
+      
   ],
   "marks": [
     {
