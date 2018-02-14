@@ -7,38 +7,61 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
-    { "name": "table" }
-  ],
-  "scales": [
     {
-      "name": "x",
-      "type": "band",
-      "range": "width",
-      "round": true,
-      "padding": 0.05,
-      "domain": { "data": "table", "field": "x" }
+      "name": "table",
+
     },
     {
-      "name": "y",
-      "type": "linear",
-      "range": "height",
-      "nice": true,
-      "domain": { "data": "table", "field": "y" }
+      "name": "stats",
     }
   ],
-  "axes": [
-    {
-      "orient": "bottom",
-      "scale": "x",
-      "ticks": false,
-      "labelOverlap": "parity",
-      "encode": {
-        "labels": {
-          "update": {
-            "align": { "value": "right" },
-            "angle": { "value": -90 },
-            "baseline": { "value": "top" }
-          }
+
+  "scales": [
+        {
+            "name": "x",
+            "type": "band",
+            "range": "width",
+            "domain": {
+                "data": "table",
+                "field": "x"
+            }
+        },
+        {
+            "name": "y",
+            "type": "linear",
+            "range": "height",
+            "nice": true,
+            "zero": true,
+            "domain": {
+                "data": "table",
+                "field": "y"
+            }
+        }
+    ],
+    "axes": [
+        {
+            "orient": "bottom",
+            "scale": "x",
+            "labelOverlap": "parity",
+            "ticks":false,
+            "encode": {
+                "labels": {
+                    "update": {
+                        "align": {
+                            "value": "left"
+                        },
+                        "angle": {"signal": "width < 100 ? 90 : 0"},
+                        "baseline": {
+                            "value": "top"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "orient": "left",
+            "scale": "y",
+            "labelOverlap": "parity"
         }
       }
     },
