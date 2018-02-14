@@ -38,9 +38,10 @@ const defaultChart = {
             "align": { "value": "right" },
             "angle": { "value": -90 },
             "baseline": { "value": "top" }
+            }
           }
         }
-      
+      }
   ],
   "marks": [
     {
