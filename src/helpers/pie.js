@@ -1,16 +1,15 @@
 import deepClone from 'lodash/cloneDeep';
-import { schemeCategory20 } from 'd3-scale';
+import { schemeCategory10 } from 'd3-scale';
 
 /* eslint-disable */
 const defaultChart = {
-  "autosize": "fit",
+  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
     {
       "name": "table",
       "transform": [
         {
           "type": "window",
-          "sort": {"field": "y", "order": "descending"},
           "ops": ["row_number"], "as": ["rank"]
         },
         {
@@ -25,12 +24,11 @@ const defaultChart = {
           "fields": ["y"],
           "as": ["value"]
         },
-         {
+        {
           "type": "pie",
           "field": "value",
           "startAngle":  0,
-          "endAngle":  6.29,
-          "sort": true
+          "endAngle":  6.29
         }
       ]
     }
@@ -39,31 +37,30 @@ const defaultChart = {
     {
       "name": "c",
       "type": "ordinal",
-      "range": {"scheme": "category10"},
-      "domain":{"data": "table", "field": "category"}
+      "range": { "scheme": "category10" },
+      "domain": { "data": "table", "field": "category" }
     }
   ],
-
   "marks": [
     {
       "type": "arc",
-      "from": {"data": "table"},
+      "from": { "data": "table" },
       "encode": {
         "enter": {
-          "fill": {"scale": "c", "field": "category"},
-          "x": {"signal": "width / 2"},
-          "y": {"signal": "height / 2"}
+          "fill": { "scale": "c", "field": "category" },
+          "x": { "signal": "width / 2" },
+          "y": { "signal": "height / 2" }
         },
         "update": {
-          "startAngle": {"field": "startAngle"},
-          "endAngle": {"field": "endAngle"},
-          "innerRadius": {"signal": "width>height ? height / 4: width / 4"},
-          "outerRadius": {"signal": "width>height ? height / 2: width / 2"}
+          "startAngle": { "field": "startAngle" },
+          "endAngle": { "field": "endAngle" },
+          "innerRadius": { "signal": "width > height ? height / 4 : width / 4" },
+          "outerRadius": { "signal": "width > height ? height / 2 : width / 2" }
         }
       }
     }
   ],
-  interaction_config: [
+  "interaction_config": [
     {
       "name": "tooltip",
       "config": {
@@ -105,56 +102,32 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   // We save the name of the columns for the tooltip
-//  {
-//    const xField = config.interaction_config[0].config.fields[1];
-//    const yField = config.interaction_config[0].config.fields[0];
-//    xField.label = columns.x.alias || columns.x.name;
-//    yField.label = columns.y.alias || columns.y.name;
-//  }
-//
-//  if (columns.color.present) {
-//    const colorScale = config.scales.find(scale => scale.name === 'c');
-//    colorScale.domain.field = 'color';
-//  }
-//
-//  if (columns.size.present) {
-//    // We add the scale
-//    config.scales.push({
-//      "name": "s",
-//      "type": "sqrt",
-//      "domain": {"data": "table", "field": "size"},
-//      "range": [10, 150],
-//      "zero": false
-//    });
-//
-//    const arcMark = config.marks.find(mark => mark.type === 'arc');
-//    arcMark.properties.enter.outerRadius = {
-//      "scale": "s",
-//      "field": "size"
-//    };
-//
-//    const textMark = config.marks.find(mark => mark.type === 'text');
-//    textMark.properties.enter.radius = {
-//      "scale": "s",
-//      "field": "size",
-//      "offset": 10
-//    }
-//  }
-//
-//  // We add a default legend to the chart
-//  // In the default template above, category20 is used
-//  const colorRange = schemeCategory20;
-//  const values = data.slice(0, 20)
-//    .map((d, i) => ({ label: i === 19 ? 'Others' : d.x, value: colorRange[i % 20], type: columns.x.type }));
-//
-//  config.legend = [
-//    {
-//      type: 'color',
-//      label: null,
-//      shape: 'square',
-//      values
-//    }
-//  ];
+  {
+    const xField = config.interaction_config[0].config.fields[1];
+    const yField = config.interaction_config[0].config.fields[0];
+    xField.label = columns.x.alias || columns.x.name;
+    yField.label = columns.y.alias || columns.y.name;
+  }
+
+ if (columns.color.present) {
+   const colorScale = config.scales.find(scale => scale.name === 'c');
+   colorScale.domain.field = 'color';
+ }
+
+  // We add a default legend to the chart
+  // In the default template above, category20 is used
+  const colorRange = schemeCategory10;
+  const values = data.slice(0, 10)
+    .map((d, i) => ({ label: i === 9 ? 'Others' : d.x, value: colorRange[i % 10], type: columns.x.type }));
+
+  config.legend = [
+    {
+      type: 'color',
+      label: null,
+      shape: 'square',
+      values
+    }
+  ];
 
   return config;
 };
