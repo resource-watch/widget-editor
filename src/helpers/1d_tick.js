@@ -31,7 +31,7 @@ const defaultChart = {
         "data": "table"
       },
       "encode": {
-        "enter": {
+        "update": {
           "x": {
             "scale": "x",
             "field": "x"
@@ -43,7 +43,12 @@ const defaultChart = {
             "signal": "height"
           },
           "fillOpacity": {
-            "value": 0.2
+            "value": 0.4
+          }
+        },
+        "hover": {
+           "fillOpacity": {
+            "value": 0.1
           }
         }
       }

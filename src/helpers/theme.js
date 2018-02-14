@@ -1,37 +1,86 @@
 import deepClone from 'lodash/cloneDeep';
 
+// color schemes and sizes as global variables for easy mainteinance
+
+
 const defaultTheme = {
-  height: 0, // Don't touch this without testing all the charts
+  //height: 0, // Don't touch this without testing all the charts
   // and particularly the bar chart with or without
   // scrolling and its vertical alignment
-  padding: 'auto', // Do not set something different than 'auto'
+  //padding: 'auto', // Do not set something different than 'auto'
   // because it will break several graphs
   // (primarly the bar and pie ones)
-  render: {
-    retina: true
+  //render: {
+  //  retina: true
+  //},
+  // Color scheme for categories 6 / 15 colors. also added a gradient for ordinal ramps.
+  range: {
+    category: [
+      '#3BB2D0',
+      '#2C75B0',
+      '#FAB72E',
+      '#EF4848',
+      '#65B60D',
+      '#717171'
+    ],
+    category20: [
+      '#3BB2D0',
+      '#2C75B0',
+      '#FAB72E',
+      '#EF4848',
+      '#65B60D',
+      '#C32D7B',
+      '#F577B9',
+      '#5FD2B8',
+      '#F1800F',
+      '#9F1C00',
+      '#A5E9E3',
+      '#B9D765',
+      '#393F44',
+      '#CACCD0',
+      '#717171'
+    ],
+    ordinal: {scheme: 'greens'},
+    ramp: {scheme: 'purples'}
   },
-  marks: {
-    color: '#1f77b4'
-  },
-  axis_x: {
-    axisColor: '#A9ABAD',
+  axis: {
+    labelFontSize: 13,
+    labelFont: 'Lato',
+    labelColor: '#717171',
+    labelPadding: 5,
+    ticks: true,
     tickSize: 8,
-    ticks: 8,
     tickColor: '#A9ABAD',
-    tickLabelColor: '#717171',
-    tickLabelFont: 'Lato',
-    tickLabelFontSize: 13
+    tickOpacity: 0.5,
+    tickExtra: false
   },
-  axis_y: {
-    axisWidth: 0,
-    tickSize: 0,
-    ticks: 5,
-    tickLabelColor: '#717171',
-    tickLabelFont: 'Lato',
-    tickLabelFontSize: 13,
+  axisX: {
+    bandPosition: 0.5,
+    domainWidth: 1.2,
+    domainColor: '#A9ABAD',
+    labelAlign: 'center',
+    labelBaseline: 'top'
+  },
+  axisY: {
+    domain: false,
+    labelAlign: 'left',
+    labelBaseline: 'bottom',
+    tickOpacity: 0.5,
     grid: true,
     gridColor: '#A9ABAD',
-    gridOpacity: 1
+    gridOpacity: 0.5
+  },
+  marks: {
+    color: '#3BB2D0'
+  },
+  symbol: {
+    stroke: '#fff'
+  },
+  rect: {
+    cornerRadius: 3
+  },
+  line: {
+    interpolate: 'monotone'
   }
 };
 

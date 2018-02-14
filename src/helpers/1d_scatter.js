@@ -41,7 +41,16 @@ const defaultChart = {
           },
           "fillOpacity": {
             "value": 0.2
-          }
+          },
+          "zindex":{"value":0},
+          "strokeOpacity": { "value": 0 }
+        },
+        "hover":{
+          "opacity": {
+            "value": 0.5
+          },
+          "zindex":{"value":1},
+          "strokeOpacity": { "value": 1 }
         }
       }
     }

@@ -363,8 +363,8 @@ class VegaChart extends React.Component {
     this.toggleLoading(true);
 
     try {
-      const runtime = vega.parse(vegaConfig);
-      new vega.View(runtime, theme)
+      const runtime = vega.parse(vegaConfig, theme);
+      new vega.View(runtime)
         .initialize(this.chart)
         .renderer('canvas')
         .hover()

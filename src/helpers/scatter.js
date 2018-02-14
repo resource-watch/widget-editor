@@ -54,7 +54,14 @@ const defaultChart = {
       "encode": {
         "update": {
           "x": { "scale": "x", "field": "x" },
-          "y": { "scale": "y", "field": "y" }
+          "y": { "scale": "y", "field": "y" },
+           "strokeOpacity": { "value": 0 },
+           "zindex":{"value":0},
+           "opacity":{"value":0.5}
+        },
+        "hover": {
+          "strokeOpacity": { "value": 1 },
+          "zindex":{"value":1}
         }
       }
     }
@@ -134,7 +141,7 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   if (columns.size.present) {
-    const sizeScaleType = 'linear';
+    const sizeScaleType = "linear";
     const sizeScaleRange = [10, 150];
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10

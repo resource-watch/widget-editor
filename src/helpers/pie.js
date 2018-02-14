@@ -1,5 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
-import { schemeCategory10 } from 'd3-scale';
+import { schemeCategory20 } from 'd3-scale';
 
 /* eslint-disable */
 const defaultChart = {
@@ -15,7 +15,7 @@ const defaultChart = {
         {
           "type": "formula",
           "as": "category",
-          "expr": "datum.rank < 10 ? datum.x : 'Others'"
+          "expr": "datum.rank < 6 ? datum.x : 'Others'"
         },
         {
           "type": "aggregate",
@@ -37,7 +37,7 @@ const defaultChart = {
     {
       "name": "c",
       "type": "ordinal",
-      "range": { "scheme": "category10" },
+      "range": "category",
       "domain": { "data": "table", "field": "category" }
     }
   ],
@@ -52,10 +52,14 @@ const defaultChart = {
           "y": { "signal": "height / 2" }
         },
         "update": {
+          "opacity":{"value":1},
           "startAngle": { "field": "startAngle" },
           "endAngle": { "field": "endAngle" },
-          "innerRadius": { "signal": "width > height ? height / 4 : width / 4" },
+          "innerRadius": { "signal": "width > height ? height / 3 : width / 3" },
           "outerRadius": { "signal": "width > height ? height / 2 : width / 2" }
+        },
+        "hover":{
+          "opacity":{"value":0.8}
         }
       }
     }
@@ -116,7 +120,7 @@ export default function ({ columns, data, url, embedData }) {
 
   // We add a default legend to the chart
   // In the default template above, category20 is used
-  const colorRange = schemeCategory10;
+  const colorRange = schemeCategory20;
   const values = data.slice(0, 10)
     .map((d, i) => ({ label: i === 9 ? 'Others' : d.x, value: colorRange[i % 10], type: columns.x.type }));
 

@@ -30,34 +30,46 @@ const defaultChart = {
     {
       "orient": "bottom",
       "scale": "x",
-      "ticks": false,
       "labelOverlap": "parity",
+      "ticks":false,
       "encode": {
         "labels": {
           "update": {
             "align": { "value": "right" },
             "angle": { "value": -90 },
-            "baseline": { "value": "top" }
+            "baseline": { "value": "middle" }
             }
           }
         }
-      },
-      {
+    },
+    {
       "orient": "left",
       "scale": "y",
       "labelOverlap": "parity",
+      "encode": {
+        "labels": {
+          "update": {
+            "align": { "value": "right" },
+            "baseline": { "value": "bottom" }
+          }
+        }
       }
+    }
   ],
   "marks": [
     {
       "type": "rect",
       "from": { "data": "table" },
       "encode": {
-        "enter": {
+        "update": {
+          "opacity":{"value":1},
           "x": { "scale": "x", "field": "x" },
           "width": { "scale": "x", "band": 1 },
           "y": { "scale": "y", "field": "y" },
           "y2": { "scale": "y", "value": 0 }
+        },
+        "hover":{
+          "opacity":{"value":0.8}
         }
       }
     }
