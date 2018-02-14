@@ -36,7 +36,7 @@ const defaultChart = {
         "labels": {
           "update": {
             "align": { "value": "right" },
-            "angle": { "value": -90 },
+            "angle": { "signal": "width < 100 ? -90 :0 " },
             "baseline": { "value": "middle" }
             }
           }

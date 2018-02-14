@@ -70,17 +70,20 @@ const defaultTheme = {
     gridColor: '#A9ABAD',
     gridOpacity: 0.5
   },
-  marks: {
-    color: '#3BB2D0'
+  mark: {
+    fill: '#3BB2D0'
   },
   symbol: {
     stroke: '#fff'
   },
   rect: {
-    cornerRadius: 3
+    cornerRadius: 3,
+    fill: '#3BB2D0'
   },
   line: {
-    interpolate: 'monotone'
+    interpolate: 'monotone',
+    stroke: '#3BB2D0',
+    fillOpacity: 0
   }
 };
 
