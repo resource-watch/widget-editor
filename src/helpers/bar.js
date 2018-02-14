@@ -142,13 +142,15 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     const xAxis = config.axes.find(a => a.scale === 'x');
 
     // We parse the x column as a date
-    // if (!config.data[0].format) config.data[0].format = {};
-    // config.data[0].format.parse = { x: 'date' };
+    if (!config.data[0].format) config.data[0].format = {};
+    config.data[0].format.parse = { x: 'date' };
 
     // We compute an optimal format for the ticks
     const temporalData = data.map(d => d.x);
     const format = getTimeFormat(temporalData);
-    // if (format) xAxis.format = format;
+    if (format) {
+      xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
+    }
 
     // We also set the format for the tooltip
     config.interaction_config[0].config.fields[1].format = format;
