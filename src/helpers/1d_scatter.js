@@ -2,40 +2,46 @@ import deepClone from 'lodash/cloneDeep';
 
 /* eslint-disable */
 const defaultChart = {
+  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [{
     "name": "table"
   }],
-
   "scales": [
     {
       "name": "x",
       "type": "linear",
-      "domain": {"data": "table", "field": "x"},
       "range": "width",
-      "zero": false
-    },
-    {
-      "name": "y",
-      "type": "linear",
-      "domain": [0, 2],
-      "range": "height"
+      "domain": {
+        "data": "table",
+        "field": "x"
+      }
     }
   ],
-
   "axes": [
-    {"type": "x", "scale": "x"}
+    {
+      "orient": "bottom",
+      "scale": "x",
+      "zindex": 1
+    }
   ],
-
   "marks": [
     {
       "type": "symbol",
-      "from": {"data": "table"},
-      "properties": {
-        "enter": {
-          "x": {"scale": "x", "field": "x"},
-          "y": {"scale": "y", "value": 1},
-          "fillOpacity": {"value": 0.5},
-          "size": {"value": 60}
+      "from": {
+        "data": "table"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "signal": "height/2"
+          },
+          "fillOpacity": {
+            "value": 0.2
+          }
         }
       }
     }
@@ -118,7 +124,7 @@ export default function ({ columns, data, url, embedData }) {
     });
 
     // We update the marks
-    config.marks[0].properties.enter.size = {
+    config.marks[0].encode.update.size = {
       "scale": "s",
       "field": "size"
     };
