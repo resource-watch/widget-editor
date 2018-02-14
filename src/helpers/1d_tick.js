@@ -3,53 +3,39 @@ import deepClone from 'lodash/cloneDeep';
 /* eslint-disable */
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  "data": [{
-    "name": "table"
-  }],
+  "data": [
+    { "name": "table" }
+  ],
   "scales": [
     {
       "name": "x",
       "type": "linear",
       "range": "width",
-      "domain": {
-        "data": "table",
-        "field": "x"
-      }
+      "zero": false,
+      "domain": { "data": "table", "field": "x" }
     }
   ],
   "axes": [
     {
       "orient": "bottom",
-      "scale": "x",
-      "zindex": 1
+      "scale": "x"
     }
   ],
   "marks": [
     {
       "type": "rect",
-      "from": {
-        "data": "table"
-      },
+      "from": { "data": "table" },
       "encode": {
         "enter": {
-          "x": {
-            "scale": "x",
-            "field": "x"
-          },
-          "width": {
-            "value": 1
-          },
-          "height": {
-            "signal": "height"
-          },
-          "fillOpacity": {
-            "value": 0.2
-          }
+          "xc": { "scale": "x", "field": "x" },
+          "width": { "value": 1 },
+          "height": { "signal": "height" },
+          "fillOpacity": { "value": 0.5 }
         }
       }
     }
   ],
-  interaction_config: [
+  "interaction_config": [
     {
       "name": "tooltip",
       "config": {
@@ -100,38 +86,38 @@ export default function ({ columns, data, url, embedData }) {
     }
   }
 
-//  if (columns.color.present) {
-//    // We add the color scale
-//    config.scales.push({
-//      "name": "c",
-//      "type": "ordinal",
-//      "domain": {"data": "table", "field": "color"},
-//      "range": "category10"
-//    });
-//
-//    // We update the marks
-//    config.marks[0].properties.enter.stroke = {
-//      "scale": "c",
-//      "field": "color"
-//    };
-//  }
-//
-//  if (columns.size.present) {
-//    // We add the scale
-//    config.scales.push({
-//      "name": "s",
-//      "type": "linear",
-//      "domain": {"data": "table", "field": "size"},
-//      "range": [1, 5],
-//      "zero": false
-//    });
-//
-//    // We update the marks
-//    config.marks[0].properties.enter.strokeWidth = {
-//      "scale": "s",
-//      "field": "size"
-//    };
-//  }
+ if (columns.color.present) {
+   // We add the color scale
+   config.scales.push({
+     "name": "c",
+     "type": "ordinal",
+     "domain": { "data": "table", "field": "color" },
+     "range": { "scheme": "category10" }
+   });
+
+   // We update the marks
+   config.marks[0].encode.enter.fill = {
+     "scale": "c",
+     "field": "color"
+   };
+ }
+
+ if (columns.size.present) {
+   // We add the scale
+   config.scales.push({
+     "name": "s",
+     "type": "linear",
+     "domain": { "data": "table", "field": "size" },
+     "range": [1, 5],
+     "zero": false
+   });
+
+   // We update the marks
+   config.marks[0].encode.enter.width = {
+     "scale": "s",
+     "field": "size"
+   };
+ }
 
   return config;
 };
