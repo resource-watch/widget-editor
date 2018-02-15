@@ -262,7 +262,7 @@ Steps:
 
 ## Changelog
 
-### v0.2.0 (not yet released)
+### v1.0.0 (not yet released)
 - Migrate from Vega 2 to Vega 3 (not backward compatible)
 
 ### v0.1.3
