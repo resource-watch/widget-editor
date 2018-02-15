@@ -1,6 +1,6 @@
 import deepClone from 'lodash/cloneDeep';
 
-const defaultTheme = {
+export const defaultTheme = {
   range: {
     dotSize: [20, 250],
     category: [

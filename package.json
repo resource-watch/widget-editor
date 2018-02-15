@@ -79,7 +79,6 @@
     "classnames": "^2.2.5",
     "d3-array": "^1.2.1",
     "d3-format": "^1.2.1",
-    "d3-scale": "^1.0.7",
     "d3-time-format": "^2.1.1",
     "esri-leaflet": "^2.1.1",
     "lodash": "^4.17.4",

@@ -1,5 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
-import { schemeCategory20 } from 'd3-scale';
+import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
 const defaultChart = {
@@ -52,7 +52,7 @@ const defaultChart = {
           "y": { "signal": "height / 2" }
         },
         "update": {
-          "opacity":{"value":1},
+          "opacity": { "value": 1 },
           "startAngle": { "field": "startAngle" },
           "endAngle": { "field": "endAngle" },
           "innerRadius": { "signal": "width > height ? height / 3 : width / 3" },
@@ -119,10 +119,9 @@ export default function ({ columns, data, url, embedData }) {
  }
 
   // We add a default legend to the chart
-  // In the default template above, category20 is used
-  const colorRange = schemeCategory20;
-  const values = data.slice(0, 10)
-    .map((d, i) => ({ label: i === 9 ? 'Others' : d.x, value: colorRange[i % 10], type: columns.x.type }));
+  const colorRange = defaultTheme.range.category;
+  const values = data.slice(0, 6)
+    .map((d, i) => ({ label: i === 5 ? 'Others' : d.x, value: colorRange[i % 6], type: columns.x.type }));
 
   config.legend = [
     {
