@@ -22,7 +22,7 @@ const defaultChart = {
       "type": "linear",
       "round": true,
       "nice": true,
-      "zero": false,
+      "zero": true,
       "domain": { "data": "table", "field": "y" },
       "range": "height"
     }

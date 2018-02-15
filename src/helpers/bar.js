@@ -36,6 +36,7 @@ const defaultChart = {
       "type": "linear",
       "range": "height",
       "nice": true,
+      "zero": true,
       "domain": { "data": "table", "field": "y" }
     }
   ],
