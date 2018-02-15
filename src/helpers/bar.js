@@ -7,20 +7,19 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
-    { "name": "table",
-    },
+    { "name": "table" },
     {
       "name":"stats",
       "source":"table",
       "transform": [
-      {
-        "type": "aggregate",
-        "fields": ["x"],
-        "ops": ["distinct"],
-        "as": ["value"]
-    },
-    {"type": "extent", "field": "value", "signal": "extent"}
-    ] 
+        {
+          "type": "aggregate",
+          "fields": ["x"],
+          "ops": ["distinct"],
+          "as": ["value"]
+        },
+        { "type": "extent", "field": "value", "signal": "extent" }
+      ]
     }
   ],
   "scales": [
