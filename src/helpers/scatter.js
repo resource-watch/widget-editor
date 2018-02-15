@@ -142,7 +142,7 @@ export default function ({ columns, data, url, embedData }) {
 
   if (columns.size.present) {
     const sizeScaleType = "linear";
-    const sizeScaleRange = [10, 150];
+
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10
     const getCircleRadius = (d) => Math.sqrt(d) / 2;
@@ -152,7 +152,7 @@ export default function ({ columns, data, url, embedData }) {
       "name": "s",
       "type": sizeScaleType,
       "domain": { "data": "table", "field": "size" },
-      "range": sizeScaleRange,
+      "range": "dotSize",
       "zero": false
     });
 

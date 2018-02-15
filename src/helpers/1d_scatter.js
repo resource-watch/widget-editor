@@ -128,7 +128,7 @@ export default function ({ columns, data, url, embedData }) {
       "name": "s",
       "type": "linear",
       "domain": {"data": "table", "field": "size"},
-      "range": [10, 150],
+      "range": "dotSize",
       "zero": false
     });
 

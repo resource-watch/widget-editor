@@ -15,6 +15,7 @@ const defaultTheme = {
   //},
   // Color scheme for categories 6 / 15 colors. also added a gradient for ordinal ramps.
   range: {
+    dotSize: [20, 250],
     category: [
       '#3BB2D0',
       '#2C75B0',
@@ -47,7 +48,7 @@ const defaultTheme = {
     labelFontSize: 13,
     labelFont: 'Lato',
     labelColor: '#717171',
-    labelPadding: 5,
+    labelPadding: 10,
     ticks: true,
     tickSize: 8,
     tickColor: '#A9ABAD',
@@ -100,7 +101,7 @@ export default function (thumbnail = false) {
     // the axes
     delete theme.axis_x;
     delete theme.axis_y;
-
+    theme.rage.dotSize = [10, 150];
     // We hide the axes and their ticks and
     // labels
     theme.axis = {

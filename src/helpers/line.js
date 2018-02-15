@@ -42,6 +42,7 @@ const defaultChart = {
       "type": "linear",
       "range": "width",
       "nice": true,
+      "round":true,
       "zero": false,
       "domain": { "data": "table", "field": "x" }
     },
@@ -94,6 +95,7 @@ const defaultChart = {
     },
     {
       "name": "points",
+      "interactive": false,
       "type": "symbol",
       "from": {"data": "dots"},
       "encode": {
@@ -191,6 +193,7 @@ export default function ({ columns, data, url, embedData }) {
     // We update the scale
     const xScale = config.scales.find(scale => scale.name === 'x');
     xScale.type = 'utc';
+    xScale.domain.sort =  true;
 
     // We parse the x column as a date
     if (!config.data[0].format) config.data[0].format = {};

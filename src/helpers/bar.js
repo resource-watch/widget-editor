@@ -7,7 +7,21 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
-    { "name": "table" }
+    { "name": "table",
+    },
+    {
+      "name":"stats",
+      "source":"table",
+      "transform": [
+      {
+        "type": "aggregate",
+        "fields": ["x"],
+        "ops": ["distinct"],
+        "as": ["value"]
+    },
+    {"type": "extent", "field": "value", "signal": "extent"}
+    ] 
+    }
   ],
   "scales": [
     {
@@ -35,9 +49,9 @@ const defaultChart = {
       "encode": {
         "labels": {
           "update": {
-            "align": { "value": "right" },
-            "angle": { "signal": "width < 100 ? -90 :0 " },
-            "baseline": { "value": "middle" }
+             "align": { "signal": "width < 300 || extent[1] > 10 ? 'right' : 'center'"},
+            "baseline": {"signal": "width < 300 || extent[1] > 10 ? 'middle' : 'top'" },
+            "angle": { "signal": "width < 300 || extent[1] > 10 ? -90 :0 " }
             }
           }
         }
