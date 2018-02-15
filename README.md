@@ -264,6 +264,7 @@ Steps:
 
 ### v1.0.0 (not yet released)
 - Migrate from Vega 2 to Vega 3 (not backward compatible)
+- Increase the timeout for the data fetching to 30s (due to Carto's latency in some cases)
 
 ### v0.1.3
 - Remove unused CSS rules that would interfere with the styles of RW or Prep

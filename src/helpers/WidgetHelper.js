@@ -347,14 +347,14 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
 
 /**
  * Fetch the data of the chart
- * NOTE: by default, a timeout of 15s is applied and the
+ * NOTE: by default, a timeout of 30s is applied and the
  * function will reject with the string "timeout"
  * @export
  * @param {string} url URL of the data
  * @param {number} [timeout=15] Timeout in seconds
  * @returns {Promise<object[]>}
  */
-export function fetchData(url, timeout = 15) { // eslint-disable-line no-unused-vars
+export function fetchData(url, timeout = 30) { // eslint-disable-line no-unused-vars
   return new Promise((resolve, reject) => {
     setTimeout(() => reject('timeout'), 1000 * timeout);
 
