@@ -89,7 +89,10 @@ export default function (thumbnail = false) {
     // the axes
     delete theme.axis_x;
     delete theme.axis_y;
-    theme.rage.dotSize = [10, 150];
+
+    // We reduce the size of the dots
+    theme.range.dotSize = [10, 150];
+
     // We hide the axes and their ticks and
     // labels
     theme.axis = {

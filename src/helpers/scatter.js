@@ -1,4 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
+import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
 const defaultChart = {
@@ -141,7 +142,8 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   if (columns.size.present) {
-    const sizeScaleType = "linear";
+    const sizeScaleType = 'linear';
+    const sizeScaleRange = defaultTheme.range.dotSize;
 
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10
