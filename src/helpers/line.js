@@ -60,7 +60,6 @@ const defaultChart = {
       "orient": "bottom",
       "scale": "x",
       "labelOverlap": "parity",
-      "interpolate": { "value": "linear" },
       "encode": {
         "labels": {
           "update": {
@@ -81,13 +80,12 @@ const defaultChart = {
       "name": "lines",
       "interactive": false,
       "type": "line",
-      "from": {
-        "data": "table"
-      },
+      "from": { "data": "table" },
       "encode": {
         "enter": {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
+          "interpolate": { "value": "linear" },
           "strokeCap": { "value": "round" },
           "strokeWidth": { "value": 2 }
         }
