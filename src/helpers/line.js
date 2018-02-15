@@ -85,7 +85,6 @@ const defaultChart = {
         "enter": {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
-          "interpolate": { "value": "linear" },
           "strokeCap": { "value": "round" },
           "strokeWidth": { "value": 2 }
         }

@@ -71,7 +71,7 @@ export const defaultTheme = {
     fill: '#3BB2D0'
   },
   line: {
-    interpolate: 'monotone',
+    interpolate: 'linear',
     stroke: '#3BB2D0',
     fillOpacity: 0
   }
