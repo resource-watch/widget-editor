@@ -55,6 +55,7 @@ export const defaultTheme = {
     labelBaseline: 'bottom',
     tickOpacity: 0.5,
     grid: true,
+    ticks: false,
     gridColor: '#A9ABAD',
     gridOpacity: 0.5
   },
