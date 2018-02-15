@@ -6,7 +6,7 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 /* eslint-disable */
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
-  
+
    "signals": [
     {
       "name": "hover",
@@ -31,7 +31,7 @@ const defaultChart = {
         {
           "type": "filter",
           "expr": "hover && hover.datum.x === datum.x"
-        
+
         }
       ]
     }
@@ -203,6 +203,13 @@ export default function ({ columns, data, url, embedData }) {
     const temporalData = data.map(d => d.x);
     const format = getTimeFormat(temporalData);
     config.interaction_config[0].config.fields[1].format = format;
+
+    // And the same for the ticks
+    if (format) {
+      const xAxis = config.axes.find(a => a.scale === 'x');
+      xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
+    }
+
   } else if (columns.x.type === 'number') {
     const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
     if (allIntegers) {
