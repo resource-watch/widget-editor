@@ -26,11 +26,14 @@ const defaultChart = {
       "type": "rect",
       "from": { "data": "table" },
       "encode": {
-        "enter": {
+        "update": {
           "xc": { "scale": "x", "field": "x" },
           "width": { "value": 1 },
           "height": { "signal": "height" },
-          "fillOpacity": { "value": 0.5 }
+          "fillOpacity": { "value": 0.4 }
+        },
+        "hover": {
+          "fillOpacity": { "value": 0.1 }
         }
       }
     }

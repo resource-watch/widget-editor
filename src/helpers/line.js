@@ -6,8 +6,35 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 /* eslint-disable */
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+  
+   "signals": [
+    {
+      "name": "hover",
+      "value": null,
+      "on": [
+        {
+          "events": "@cell:mouseover",
+          "update": "datum"
+        },
+        {
+          "events": "@cell:mouseout",
+          "update": "null"
+        }
+      ]
+    }],
   "data": [
-    { "name": "table" }
+    { "name": "table" },
+    {
+      "name":"dots",
+      "source":"table",
+      "transform":[
+        {
+          "type": "filter",
+          "expr": "hover && hover.datum.x === datum.x"
+        
+        }
+      ]
+    }
   ],
   "scales": [
     {
@@ -15,6 +42,7 @@ const defaultChart = {
       "type": "linear",
       "range": "width",
       "nice": true,
+      "round":true,
       "zero": false,
       "domain": { "data": "table", "field": "x" }
     },
@@ -23,7 +51,7 @@ const defaultChart = {
       "type": "linear",
       "range": "height",
       "nice": true,
-      "zero": false,
+      "zero": true,
       "domain": { "data": "table", "field": "y" }
     }
   ],
@@ -36,8 +64,8 @@ const defaultChart = {
       "encode": {
         "labels": {
           "update": {
-            "align": { "value": "left" },
-            "baseline": { "value": "middle"}
+            "align": { "value": "center" },
+            "baseline": { "value": "top"}
           }
         }
       }
@@ -45,8 +73,7 @@ const defaultChart = {
     {
       "orient": "left",
       "scale": "y",
-      "labelOverlap": "parity",
-      "encode": {}
+      "labelOverlap": "parity"
     }
   ],
   "marks": [
@@ -61,17 +88,40 @@ const defaultChart = {
         "enter": {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
-          "strokeWidth": { "value": 2 },
-          "strokeCap": { "value": "round" }
+          "strokeCap": { "value": "round" },
+          "strokeWidth": { "value": 2 }
         }
       }
     },
     {
+      "name": "points",
+      "interactive": false,
+      "type": "symbol",
+      "from": {"data": "dots"},
+      "encode": {
+        "enter": {
+          "x": { "scale": "x", "field": "x" },
+          "y": { "scale": "y", "field": "y" }
+        },
+        "update": {
+          "opacity": { "value": 1 }
+        }
+      }
+    },
+    { "name": "cell",
       "type": "path",
       "from": { "data": "lines" },
       "encode": {
-        "enter": {
-          "opacity": { "value": 0 }
+        "update": {
+          "path": {
+            "field": "path"
+          },
+          "fill": {
+            "value": "red"
+          },
+          "opacity": {
+            "value": 0
+          }
         }
       },
       "transform": [
@@ -143,6 +193,7 @@ export default function ({ columns, data, url, embedData }) {
     // We update the scale
     const xScale = config.scales.find(scale => scale.name === 'x');
     xScale.type = 'utc';
+    xScale.domain.sort =  true;
 
     // We parse the x column as a date
     if (!config.data[0].format) config.data[0].format = {};

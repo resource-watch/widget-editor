@@ -54,7 +54,14 @@ const defaultChart = {
       "encode": {
         "update": {
           "x": { "scale": "x", "field": "x" },
-          "y": { "scale": "y", "field": "y" }
+          "y": { "scale": "y", "field": "y" },
+           "strokeOpacity": { "value": 0 },
+           "zindex":{"value":0},
+           "opacity":{"value":0.5}
+        },
+        "hover": {
+          "strokeOpacity": { "value": 1 },
+          "zindex":{"value":1}
         }
       }
     }
@@ -134,8 +141,8 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   if (columns.size.present) {
-    const sizeScaleType = 'linear';
-    const sizeScaleRange = [10, 150];
+    const sizeScaleType = "linear";
+
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10
     const getCircleRadius = (d) => Math.sqrt(d) / 2;
@@ -145,7 +152,7 @@ export default function ({ columns, data, url, embedData }) {
       "name": "s",
       "type": sizeScaleType,
       "domain": { "data": "table", "field": "size" },
-      "range": sizeScaleRange,
+      "range": "dotSize",
       "zero": false
     });
 
