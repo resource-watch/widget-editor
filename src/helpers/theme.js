@@ -75,6 +75,7 @@ const defaultTheme = {
     fill: '#3BB2D0'
   },
   symbol: {
+    fill: '#3BB2D0',
     stroke: '#fff'
   },
   rect: {
