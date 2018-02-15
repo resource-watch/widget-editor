@@ -110,13 +110,8 @@ export default function ({ columns, data, url, embedData }) {
     config.scales.push({
       "name": "s",
       "type": "linear",
-<<<<<<< HEAD
       "domain": { "data": "table", "field": "size" },
-      "range": [10, 150],
-=======
-      "domain": {"data": "table", "field": "size"},
       "range": "dotSize",
->>>>>>> 854a9bf6d29094a378bcc2231585b3005d2a3a07
       "zero": false
     });
 
