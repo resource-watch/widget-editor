@@ -1,19 +1,6 @@
 import deepClone from 'lodash/cloneDeep';
 
-// color schemes and sizes as global variables for easy mainteinance
-
-
 const defaultTheme = {
-  //height: 0, // Don't touch this without testing all the charts
-  // and particularly the bar chart with or without
-  // scrolling and its vertical alignment
-  //padding: 'auto', // Do not set something different than 'auto'
-  // because it will break several graphs
-  // (primarly the bar and pie ones)
-  //render: {
-  //  retina: true
-  //},
-  // Color scheme for categories 6 / 15 colors. also added a gradient for ordinal ramps.
   range: {
     dotSize: [20, 250],
     category: [
@@ -41,8 +28,8 @@ const defaultTheme = {
       '#CACCD0',
       '#717171'
     ],
-    ordinal: {scheme: 'greens'},
-    ramp: {scheme: 'purples'}
+    ordinal: { scheme: 'greens' },
+    ramp: { scheme: 'purples' }
   },
   axis: {
     labelFontSize: 13,
