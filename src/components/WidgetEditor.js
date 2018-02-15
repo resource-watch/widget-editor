@@ -778,10 +778,26 @@ class WidgetEditor extends React.Component {
    * the state
    * NOTE: the vega chart *will* contain the whole dataset
    * inside and not the URL of the data
+   * NOTE 2: only update the state with the result of the
+   * latest query
    */
   fetchChartConfig() {
     const { tableName, datasetType, datasetProvider } = this.state;
     const { widgetEditor, datasetId, band } = this.props;
+
+    // We store in the instance the ID of the last time
+    // this method has been called
+    if (!this.lastRequestId) {
+      this.lastRequestId = 0;
+    }
+
+    // Each time the method gets called, we increment the
+    // ID and save it locally so if getChartConfig resolves
+    // after this method has been called once again, we will
+    // discard the result
+    // The aim is to consistently show the result of the user's
+    // last interaction
+    const requestId = ++this.lastRequestId;
 
     this.setState({ chartConfigLoading: true, chartConfigError: null });
 
@@ -796,9 +812,21 @@ class WidgetEditor extends React.Component {
       chartInfo,
       true
     )
-      .then(chartConfig => this.setState({ chartConfig }))
+      .then(chartConfig => new Promise((resolve) => {
+        // If the ID of the last request is different than the
+        // current one, then we discard the result
+        if (requestId === this.lastRequestId) {
+          this.setState({ chartConfig }, resolve);
+        } else {
+          resolve();
+        }
+      }))
       .catch(({ message }) => this.setState({ chartConfig: null, chartConfigError: message }))
-      .then(() => this.setState({ chartConfigLoading: false }));
+      .then(() => {
+        if (requestId === this.lastRequestId) {
+          this.setState({ chartConfigLoading: false });
+        }
+      });
   }
 
   /**
