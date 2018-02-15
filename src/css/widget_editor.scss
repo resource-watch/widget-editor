@@ -90,8 +90,7 @@
     }
 
     .chart-title {
-      width: 100%;
-      max-width: calc(100% - 150px); // Avoid the title to overlap the legend (when collapsed)
+      max-width: calc(100% - 250px); // Avoid the title to overlap the legend (when collapsed)
       position: absolute;
       top: 15px;
       left: 15px;
@@ -111,6 +110,7 @@
       }
 
       input {
+        box-sizing: border-box !important;
         min-width: 340px;
         max-width: 100%; // Make the input respect its container width
         padding: 10px 15px;

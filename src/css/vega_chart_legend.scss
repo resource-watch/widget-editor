@@ -2,6 +2,7 @@
   position: absolute;
   top: 25px; // Aligned with the title
   right: 20px;
+  z-index: 3; // To be on top of title/caption
 
   .toggle-button {
     display: flex;
