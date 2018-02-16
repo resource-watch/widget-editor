@@ -1,19 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { bisector } from 'd3-array';
 import vega from 'vega';
-import isEmpty from 'lodash/isEmpty';
+import vegaTooltip from 'vega-tooltip';
 import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
 import isEqual from 'lodash/isEqual';
 
-// Redux
-import { connect } from 'react-redux';
-
-import { toggleTooltip } from 'reducers/tooltip';
-
 // Components
-import VegaChartTooltip from 'components/chart/VegaChartTooltip';
 import VegaChartLegend from 'components/chart/VegaChartLegend';
 
 // Utils
@@ -65,194 +57,6 @@ class VegaChart extends React.Component {
     window.removeEventListener('resize', this.triggerResize);
   }
 
-  /**
-   * Event handler executed when the mouse goes out of the chart
-   */
-  onMouseOut() {
-    // Right after this instruction, we hide the tooltip
-    // Nevertheless, because the onMouseMove is throttled, an
-    // execution might be delayed causing the tooltip from
-    // leaking out of the chart container
-    // The solution is to cancel any further executions at
-    // this point
-    if (this.throttledMouseMove) this.throttledMouseMove.cancel();
-
-    // We hide the tooltip
-    this.props.toggleTooltip(false);
-  }
-
-  /**
-   * Event handler for the mouse move events on the chart
-   * @param {object} vegaConfig Vega configuration of the chart
-   * @param {object[]} visData Data fetched by Vega and used to draw the chart
-   * @param {string|number} x x value associated with the position of the cursor
-   * @param {object} item Data associated with the hovered mark, if exist
-   */
-  onMousemove(vegaConfig, visData, x, item) {
-    // Regarding the Vega configuration, check if a column is a date
-    const isDate = (columnName) => { // eslint-disable-line arrow-body-style
-      return vegaConfig
-        && vegaConfig.data[0].format
-        && vegaConfig.data[0].format.parse
-        && vegaConfig.data[0].format.parse[columnName] === 'date';
-    };
-
-    // Return the type of the data passed as argument
-    const getType = (columnName, val) => {
-      // We need to check the type date before the number one
-      // because a date could be a timestamp
-      if (val instanceof Date || isDate(columnName)) return 'date';
-      if (typeof val === 'number') return 'number';
-      return 'string';
-    };
-
-    // Return the fields of the tooltip config within the interaction config
-    // of the vega config
-    const getTooltipConfigFields = () => {
-      // We don't have the interaction config object defined
-      if (!vegaConfig || !vegaConfig.interaction_config || !vegaConfig.interaction_config.length) {
-        return null;
-      }
-
-      const tooltipConfig = vegaConfig.interaction_config.find(c => c.name === 'tooltip');
-
-      // We don't have the tooltip config defined
-      if (!tooltipConfig || !tooltipConfig.config || !tooltipConfig.config.fields
-          || !tooltipConfig.config.fields.length) {
-        return null;
-      }
-
-      return tooltipConfig.config.fields;
-    };
-
-    // Return the d3-format of the specified column
-    const getFormat = (columnName) => {
-      const fields = getTooltipConfigFields();
-      if (!fields) return null;
-
-      const config = fields.find(f => f.key === columnName);
-      if (!config) return null;
-
-      return config.format;
-    };
-
-    // Return the label of the specified column
-    const getLabel = (columnName) => {
-      const fields = getTooltipConfigFields();
-      if (!fields) return null;
-
-      const config = fields.find(f => f.key === columnName);
-      if (!config) return null;
-
-      return config.label;
-    };
-
-
-    // If the cursor is on top of a mark, we display the data
-    // associated to that mark
-    // The only exception is for the lines, areas and text because the
-    // data they own is always the first one (first point)
-    if (!isEmpty(item) && item.datum.x && item.mark.marktype !== 'line'
-      && item.mark.marktype !== 'area'
-      && item.mark.marktype !== 'text') {
-      return this.props.toggleTooltip(true, {
-        follow: true,
-        direction: 'bottom',
-        children: VegaChartTooltip,
-        childrenProps: {
-          item: {
-            y: {
-              type: getType('y', item.datum.y),
-              label: getLabel('y'),
-              format: getFormat('y'),
-              value: item.datum.y
-            },
-            x: {
-              type: getType('x', item.datum.x),
-              label: getLabel('x'),
-              format: getFormat('x'),
-              value: item.datum.x
-            }
-          }
-        }
-      });
-    }
-
-    // If the chart doesn't have an x axis, if the data is undefined,
-    // if the x value is null [1] or if the chart is a scatter plot [2],
-    // if the interaction_config object is not defined [3], if the data
-    // doesn't have "x" values [4], we don't determine the data to show
-    // in the tooltip depending on the x position of the cursor (based
-    // on the x scale)
-    // We actually hide the tooltip
-    //
-    // [1] Null or undefined values can arise from the padding of
-    //     the charts
-    // [2] As the scatter plot can have several points at the same
-    //     x position, we want to avoid showing the data of a
-    //     random point when not hovering a dot
-    // [3] Widgets created outside from the widget editor don't have
-    //     an interaction_config object
-    // [4] Same as [3]. We need an x value to be able to sort the data
-    //     for the bisect later on.
-    const xAxis = vegaConfig.axes && vegaConfig.axes.find(axis => axis.type === 'x');
-    const hasXAxis = !!(xAxis && (xAxis.real === undefined || xAxis.real));
-    const isScatter = vegaConfig.marks.length === 1 && vegaConfig.marks[0].type === 'symbol';
-    if (!hasXAxis || !visData || getTooltipConfigFields() === null
-      || (visData.length && visData[0].x === undefined)
-      || x === undefined || x === null || isScatter) {
-      return this.props.toggleTooltip(false);
-    }
-
-    // d3's bisector function needs sorted data because it
-    // determines the closest index using with a log2(n)
-    // complexity (i.e. splitting the array in two in each
-    // iteration)
-    const sortedVisData = visData.sort((d1, d2) => d1.x - d2.x);
-
-    // If not, then we retrieve the x position of the cursor,
-    // and display the data of the closest point/line/bar
-    let data; // eslint-disable-line no-shadow
-    if (getType('x', x) === 'string') data = visData.find(d => d.x === x);
-    if (getType('x', x) === 'number') {
-      const bisectDate = bisector(d => d.x).left;
-      const i = bisectDate(sortedVisData, x, 1);
-      const d0 = visData[i - 1];
-      const d1 = visData[i];
-      data = (d0 && d1 && (x - d0.x > d1.x - x)) ? d1 : d0;
-    }
-    if (getType('x', x) === 'date') {
-      const timestamp = x.getTime ? x.getTime() : x;
-      const bisectDate = bisector(d => d.x).left;
-      const i = bisectDate(sortedVisData, timestamp, 1);
-      const d0 = visData[i - 1];
-      const d1 = visData[i];
-      data = (d0 && d1 && (timestamp - d0.x > d1.x - timestamp)) ? d1 : d0;
-    }
-
-    if (data) {
-      return this.props.toggleTooltip(true, {
-        follow: true,
-        direction: 'bottom',
-        children: VegaChartTooltip,
-        childrenProps: {
-          item: {
-            ...getTooltipConfigFields().map(f => ({
-              [f.key]: {
-                type: getType(f.key, data[f.key]),
-                label: getLabel(f.key),
-                format: getFormat(f.key),
-                value: data[f.key]
-              }
-            })).reduce((res, field) => Object.assign({}, res, field), {})
-          }
-        }
-      });
-    }
-
-    return null;
-  }
-
   setSize() {
     if (this.chartViewportContainer) {
       const computedStyles = getComputedStyle(this.chartViewportContainer);
@@ -292,26 +96,7 @@ class VegaChart extends React.Component {
         height: this.props.data.height || this.height
       };
 
-      // This signal is used for the tooltip
-      const signal = {
-        /* eslint-disable */
-        "name": "onMousemove",
-        "streams": [{
-          "type": "mousemove",
-          "expr": "{ x: iscale('x', eventX()), item: eventItem() }"
-        }]
-        /* eslint-enable */
-      };
-
       const config = Object.assign({}, this.props.data, size, { autosize });
-
-      // If the configuration already has signals, we don't override it
-      // but push a new one instead
-      if (config.signals) {
-        config.signals.push(signal);
-      } else {
-        config.signals = [signal];
-      }
 
       // If the widget represents a raster dataset, we need to fetch
       // and parse the data
@@ -344,6 +129,30 @@ class VegaChart extends React.Component {
   }
 
   /**
+   * Return the fields of the tooltip config within the interaction config
+   * of the vega config
+   * @returns {{ key: string, label: string, format: string }[]}
+  */
+  getTooltipConfigFields() {
+    const vegaConfig = this.state.vegaConfig;
+
+    // We don't have the interaction config object defined
+    if (!vegaConfig || !vegaConfig.interaction_config || !vegaConfig.interaction_config.length) {
+      return [];
+    }
+
+    const tooltipConfig = vegaConfig.interaction_config.find(c => c.name === 'tooltip');
+
+    // We don't have the tooltip config defined
+    if (!tooltipConfig || !tooltipConfig.config || !tooltipConfig.config.fields
+        || !tooltipConfig.config.fields.length) {
+      return [];
+    }
+
+    return tooltipConfig.config.fields;
+  }
+
+  /**
    * Toggle the visibility of the loader depending of the
    * passed value
    * @param {boolean} isLoading
@@ -364,17 +173,41 @@ class VegaChart extends React.Component {
 
     try {
       const runtime = vega.parse(vegaConfig, theme);
-      new vega.View(runtime)
+      const view = new vega.View(runtime)
         .initialize(this.chart)
         .renderer('canvas')
         .hover()
         .run();
+
+      // We only show the tooltip if the interaction_config
+      // object is defined
+      if (vegaConfig.interaction_config && vegaConfig.interaction_config.length) {
+        this.instantiateTooltip(view);
+      }
     } catch (err) {
       console.error(err);
       if (this.props.onError) this.props.onError();
     }
 
     this.toggleLoading(false);
+  }
+
+  /**
+   * Instantiate the tooltip for the chart
+   * @param {any} view Vega view object
+   */
+  instantiateTooltip(view) {
+    const fields = this.getTooltipConfigFields();
+
+    vegaTooltip.vega(view, {
+      showAllFields: false,
+      fields: fields.map(({ column, property, type, format }) => ({
+        field: column,
+        title: property,
+        formatType: type === 'date' ? 'time' : type,
+        format
+      }))
+    });
   }
 
   triggerResize() {
@@ -397,7 +230,6 @@ class VegaChart extends React.Component {
     return (
       <div
         className="c-we-chart"
-        onMouseOut={() => this.onMouseOut()}
         ref={(el) => { this.chartViewportContainer = el; }}
       >
         <div ref={(c) => { this.chart = c; }} className="chart" />
@@ -419,7 +251,6 @@ VegaChart.propTypes = {
   theme: PropTypes.object,
   // Callbacks
   toggleLoading: PropTypes.func,
-  toggleTooltip: PropTypes.func,
   onError: PropTypes.func,
   // This callback should be passed the function
   // to force the re-render of the chart
@@ -432,12 +263,4 @@ VegaChart.defaultProps = {
   showLegend: true
 };
 
-const mapStateToProps = ({ widgetEditorTooltip }) => ({
-  tooltip: widgetEditorTooltip
-});
-
-const mapDispatchToProps = dispatch => ({
-  toggleTooltip: (visibility, options) => dispatch(toggleTooltip(visibility, options))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(VegaChart);
+export default VegaChart;

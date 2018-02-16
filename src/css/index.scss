@@ -144,11 +144,11 @@ $margin-size-big: 100px;
 
 @import
   "node_modules/rc-slider/dist/rc-slider",
+  "node_modules/vega-tooltip/build/vega-tooltip",
   "add_widget_to_collection_tooltip",
   "aggregate_function_tooltip",
   "button",
   "chart_editor",
-  "chart_tooltip",
   "checkbox",
   "column_container",
   "column_details",

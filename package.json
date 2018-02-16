@@ -77,7 +77,6 @@
     "autobind-decorator": "^2.1.0",
     "babel-runtime": "^6.26.0",
     "classnames": "^2.2.5",
-    "d3-array": "^1.2.1",
     "d3-format": "^1.2.1",
     "d3-time-format": "^2.1.1",
     "esri-leaflet": "^2.1.1",
@@ -95,7 +94,8 @@
     "react-select": "^1.0.0-rc.10",
     "react-sortable-hoc": "^0.6.8",
     "react-tether": "^0.6.0",
-    "toastr": "^2.1.2"
+    "toastr": "^2.1.2",
+    "vega-tooltip": "^0.5.1"
   },
   "peerDependencies": {
     "leaflet": "^1.2.0",
