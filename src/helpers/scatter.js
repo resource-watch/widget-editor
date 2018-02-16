@@ -62,7 +62,8 @@ const defaultChart = {
         },
         "hover": {
           "strokeOpacity": { "value": 1 },
-          "zindex":{"value":1}
+          "zindex":{"value":1},
+           "opacity":{"value":1}
         }
       }
     }
