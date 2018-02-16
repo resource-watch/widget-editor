@@ -70,13 +70,15 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "y",
-            "label": "y",
+            "column": "value",
+            "property": "value",
+            "type": "number",
             "format": ".2s"
           },
           {
-            "key": "category",
-            "label": "x"
+            "column": "category",
+            "property": "category",
+            "type": "string"
           }
         ]
       }
@@ -109,8 +111,8 @@ export default function ({ columns, data, url, embedData }) {
   {
     const xField = config.interaction_config[0].config.fields[1];
     const yField = config.interaction_config[0].config.fields[0];
-    xField.label = columns.x.alias || columns.x.name;
-    yField.label = columns.y.alias || columns.y.name;
+    xField.property = columns.x.alias || columns.x.name;
+    yField.property = columns.y.alias || columns.y.name;
   }
 
  if (columns.color.present) {

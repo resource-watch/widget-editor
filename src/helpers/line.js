@@ -7,7 +7,7 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 const defaultChart = {
   "$schema": "https://vega.github.io/schema/vega/v3.0.json",
 
-   "signals": [
+  "signals": [
     {
       "name": "hover",
       "value": null,
@@ -21,7 +21,8 @@ const defaultChart = {
           "update": "null"
         }
       ]
-    }],
+    }
+  ],
   "data": [
     { "name": "table" },
     {
@@ -42,7 +43,7 @@ const defaultChart = {
       "type": "linear",
       "range": "width",
       "nice": true,
-      "round":true,
+      "round": true,
       "zero": false,
       "domain": { "data": "table", "field": "x" }
     },
@@ -105,22 +106,10 @@ const defaultChart = {
         }
       }
     },
-    { "name": "cell",
+    {
+      "name": "cell",
       "type": "path",
       "from": { "data": "lines" },
-      "encode": {
-        "update": {
-          "path": {
-            "field": "path"
-          },
-          "fill": {
-            "value": "red"
-          },
-          "opacity": {
-            "value": 0
-          }
-        }
-      },
       "transform": [
         {
           "type": "voronoi",
@@ -131,7 +120,13 @@ const defaultChart = {
             { "signal": "height" }
           ]
         }
-      ]
+      ],
+      "encode": {
+        "update": {
+          "path": { "field": "path" },
+          "opacity": { "value": 0 }
+        }
+      }
     }
   ],
   "interaction_config": [
@@ -140,13 +135,15 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "y",
-            "label": "y",
+            "column": "datum.y",
+            "property": "y",
+            "type": "number",
             "format": ".2s"
           },
           {
-            "key": "x",
-            "label": "x",
+            "column": "datum.x",
+            "property": "x",
+            "type": "number",
             "format": ".2f"
           }
         ]
@@ -177,11 +174,11 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   // We save the name of the columns for the tooltip
+  const xField = config.interaction_config[0].config.fields[1];
   {
-    const xField = config.interaction_config[0].config.fields[1];
     const yField = config.interaction_config[0].config.fields[0];
-    xField.label = columns.x.alias || columns.x.name;
-    yField.label = columns.y.alias || columns.y.name;
+    xField.property = columns.x.alias || columns.x.name;
+    yField.property = columns.y.alias || columns.y.name;
   }
 
   // If the x column is a date, we need to use a
@@ -192,6 +189,10 @@ export default function ({ columns, data, url, embedData }) {
     xScale.type = 'utc';
     xScale.domain.sort =  true;
 
+    // We update the tooltip
+    xField.type = 'date';
+    xField.format = '';
+
     // We parse the x column as a date
     if (!config.data[0].format) config.data[0].format = {};
     config.data[0].format.parse = { x: 'date' };
@@ -199,19 +200,20 @@ export default function ({ columns, data, url, embedData }) {
     // We compute an optimal format for the tooltip
     const temporalData = data.map(d => d.x);
     const format = getTimeFormat(temporalData);
-    config.interaction_config[0].config.fields[1].format = format;
 
-    // And the same for the ticks
     if (format) {
       const xAxis = config.axes.find(a => a.scale === 'x');
       xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
+      xField.format = format;
     }
 
   } else if (columns.x.type === 'number') {
     const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
     if (allIntegers) {
-      const xField = config.interaction_config[0].config.fields[1];
-      xField.format = '';
+      xField.format = 'd';
+
+      const xAxis = config.axes.find(a => a.scale === 'x');
+      xAxis.encode.labels.update.text = { "signal": "format(datum.value, 'd')" };
     }
   }
 

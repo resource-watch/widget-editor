@@ -94,13 +94,15 @@ const defaultChart = {
       "config": {
         "fields": [
           {
-            "key": "y",
-            "label": "y",
+            "column": "y",
+            "property": "y",
+            "type": "number",
             "format": ".2s"
           },
           {
-            "key": "x",
-            "label": "x",
+            "column": "x",
+            "property": "x",
+            "type": "string",
             "format": ".2f"
           }
         ]
@@ -154,18 +156,20 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
   }
 
   // We save the name of the columns for the tooltip
+  const xField = config.interaction_config[0].config.fields[1];
   {
-    const xField = config.interaction_config[0].config.fields[1];
     const yField = config.interaction_config[0].config.fields[0];
-    xField.label = columns.x.alias || columns.x.name;
-    yField.label = columns.y.alias || columns.y.name;
+    xField.property = columns.x.alias || columns.x.name;
+    yField.property = columns.y.alias || columns.y.name;
   }
 
   // If the x column is a date, we need to use a
   // a temporal x axis and parse the x column as a date
   if (columns.x.type === 'date') {
-    // We update the axis
+    // We update the axis and tooltip
     const xAxis = config.axes.find(a => a.scale === 'x');
+    xField.type = 'date';
+    xField.format = '';
 
     // We parse the x column as a date
     if (!config.data[0].format) config.data[0].format = {};
@@ -175,16 +179,21 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     const temporalData = data.map(d => d.x);
     const format = getTimeFormat(temporalData);
     if (format) {
+      xField.format = format;
       xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
     }
 
     // We also set the format for the tooltip
     config.interaction_config[0].config.fields[1].format = format;
   } else if (columns.x.type === 'number') {
+    xField.type = 'number';
+
     const allIntegers = data.length && data.every(d => parseInt(d.x, 10) === d.x);
     if (allIntegers) {
-      const xField = config.interaction_config[0].config.fields[1];
-      xField.format = '';
+      xField.format = 'd';
+
+      const xAxis = config.axes.find(a => a.scale === 'x');
+      xAxis.encode.labels.update.text = { "signal": "format(datum.value, 'd')" };
     }
   }
 
