@@ -26,7 +26,7 @@ const defaultChart = {
         "update": {
           "x": { "scale": "x", "field": "x" },
           "y": { "signal": "height / 2" },
-          "fillOpacity": { "value": 0.2 },
+          "fillOpacity": { "value": 0.5 },
           "zindex": { "value":0 },
           "strokeOpacity": { "value": 0 }
         },
