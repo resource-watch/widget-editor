@@ -26,7 +26,6 @@ const defaultChart = {
       "name": "x",
       "type": "band",
       "range": "width",
-      "round": true,
       "padding": 0.05,
       "domain": { "data": "table", "field": "x" }
     },
