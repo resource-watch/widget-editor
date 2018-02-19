@@ -5,7 +5,6 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 
 /* eslint-disable */
 const defaultChart = {
-  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
     { "name": "table" },
     {

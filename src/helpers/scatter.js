@@ -3,7 +3,6 @@ import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
 const defaultChart = {
-  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
     { "name": "table" }
   ],

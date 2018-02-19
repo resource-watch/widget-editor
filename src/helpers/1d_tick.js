@@ -2,7 +2,6 @@ import deepClone from 'lodash/cloneDeep';
 
 /* eslint-disable */
 const defaultChart = {
-  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
   "data": [
     { "name": "table" }
   ],
