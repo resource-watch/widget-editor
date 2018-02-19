@@ -88,8 +88,8 @@ export default function (thumbnail = false) {
   if (thumbnail) {
     // We remove the configuration of each of
     // the axes
-    delete theme.axis_x;
-    delete theme.axis_y;
+    delete theme.axisX;
+    delete theme.axisY;
 
     // We reduce the size of the dots
     theme.range.dotSize = [10, 150];
@@ -97,11 +97,14 @@ export default function (thumbnail = false) {
     // We hide the axes and their ticks and
     // labels
     theme.axis = {
-      ticks: 0,
-      tickSize: 0,
-      axisWidth: 0,
-      tickLabelFontSize: 0
+      ticks: false,
+      labels: false,
+      grid: false,
+      domainWidth: 0
     };
+
+    // We simplify the rect marks
+    theme.rect.cornerRadius = 0;
   }
 
   return theme;
