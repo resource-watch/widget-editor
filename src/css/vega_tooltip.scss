@@ -1,0 +1,30 @@
+.vg-tooltip {
+  &.light-theme {
+    padding: $margin-size-extra-small;
+    background-color: $color-white;
+    border-radius: 4px;
+    border: 1px solid $border-color-1;
+    box-shadow: 0 20px 30px 0 rgba(0, 0, 0, .1);
+    font-size: $font-size-normal;
+    font-family: $body-font-family;
+    color: $base-font-color;
+
+    tr {
+      td.key {
+        padding-right: 20px;
+        text-align: left;
+        color: $color-text-3;
+      }
+
+      td.value {
+        font-weight: $font-weight-bold;
+      }
+
+      &:first-of-type {
+        td.value {
+          font-size: $font-size-extra-big;
+        }
+      }
+    }
+  }
+}
