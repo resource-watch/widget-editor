@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions, VegaChart, WidgetService, getVegaTheme } from 'dist/bundle';
 import 'leaflet/dist/leaflet.css';
 import 'dist/styles.css';
 
@@ -50,6 +50,8 @@ class App extends React.Component {
       // datasetId: '20cc5eca-8c63-4c41-8e8e-134dcf1e6d76',
       datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
       widgetId: undefined,
+      previewWidgetId: undefined,
+      previewConfig: undefined,
       widgetTitle: '',
       widgetCaption: ''
     };
@@ -82,6 +84,14 @@ class App extends React.Component {
       children: EmbedTableModal,
       childrenProps: { baseUrl }
     });
+  }
+
+  onChangePreviewWidgetId(previewWidgetId) {
+    this.setState({ previewWidgetId });
+
+    new WidgetService(previewWidgetId)
+      .fetchData()
+      .then(data => this.setState({ previewConfig: data.attributes.widgetConfig }));
   }
 
   render() {
@@ -146,6 +156,30 @@ class App extends React.Component {
           onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
         />
+        <div style={{ border: '1px solid black', margin: '40px 0', padding: '0 10px' }}>
+          <p>
+            Change here the params of the VegaChart component:
+          </p>
+          <p>
+            <label htmlFor="preview_widget">Widget ID:</label>
+            <input
+              type="text"
+              placeholder="Widget to preview"
+              id="preview_widget"
+              value={this.state.previewWidgetId}
+              onChange={({ target }) => this.onChangePreviewWidgetId(target.value)}
+            />
+          </p>
+        </div>
+        { this.state.previewWidgetId && this.state.previewConfig && (
+          <VegaChart
+            width={250}
+            height={180}
+            data={this.state.previewConfig}
+            theme={getVegaTheme(true)}
+            reloadOnResize
+          />
+        )}
       </div>
     );
   }
