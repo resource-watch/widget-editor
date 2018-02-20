@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, getConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
 import 'leaflet/dist/leaflet.css';
 import 'dist/styles.css';
 
@@ -20,7 +20,7 @@ const store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'prep',
+  applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
   assetsPath: '/images/',
   userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
@@ -48,11 +48,9 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      widgets: [],
-      currentDataset: undefined,
       currentWidget: undefined,
 
-      app: 'prep',
+      app: getConfig().applications,
       unmigratedWidgets: [],
       manualWidgets: [],
       erroredWidgets: [],
@@ -137,8 +135,13 @@ class App extends React.Component {
       }
     })
       .then(() => new Promise((resolve, reject) => {
-        setTimeout(Math.random() < 0.5 ? resolve : reject, Math.random() * 5000);
+        this.promise = {
+          reject,
+          resolve
+        };
+        this.setState({ currentWidget: widget });
       }))
+      .then(widgetConfig => console.log(widgetConfig))
       .then(() => new Promise((resolve) => {
         widget.migrated = true;
         this.setState({ migrated: this.state.migrated + 1 }, resolve);
@@ -180,7 +183,7 @@ class App extends React.Component {
             { !!this.state.unmigratedWidgets.length && <li>Widgets to migrate: <strong>{this.state.unmigratedWidgets.length}</strong></li> }
             { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && this.state.started && <li>Migrating: <strong>{this.state.migrated} / {this.state.unmigratedWidgets.length}</strong></li> }
             { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => this.migrateWidgets()}>Start migration</button></li>}
-            { !!this.state.errors.length && this.state.errors.map(e => <li style={{ color: 'red' }}>{e}</li>)}
+            { !!this.state.errors.length && this.state.errors.map(e => <li key={e} style={{ color: 'red' }}>{e}</li>)}
             { this.state.finished && <li>Migration done</li> }
           </ul>
         </div>
@@ -204,15 +207,16 @@ class App extends React.Component {
             </div>
           )}
         </div>
-        { this.state.currentDataset && this.state.currentWidget && (
+        { this.state.currentWidget && (
           <WidgetEditor
-            datasetId={this.state.currentDataset}
-            widgetId={this.state.currentWidget}
+            datasetId={this.state.currentWidget.attributes.dataset}
+            widgetId={this.state.currentWidget.id}
             saveButtonMode="always"
             embedButtonMode="never"
             titleMode="always"
             onSave={() => this.onSave()}
             provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
+            onMigrate={widgetConfig => (widgetConfig === null ? this.promise.reject() : this.promise.resolve(widgetConfig))}
           />
         )}
       </div>

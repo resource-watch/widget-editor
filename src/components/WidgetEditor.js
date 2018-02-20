@@ -264,13 +264,20 @@ class WidgetEditor extends React.Component {
     const hasChangedWidgetEditor = updatedWidgetEditorKeys.length > 0 && !onlyStaticKeysUpdated;
 
     if (this.state.datasetInfoLoaded
-      && canRenderChart(this.props.widgetEditor, this.state.datasetProvider)
       && this.props.widgetEditor.visualizationType !== 'table'
       && this.props.widgetEditor.visualizationType !== 'map'
       && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName
         || previousState.initializing !== this.state.initializing)
       && !this.state.initializing) {
-      this.fetchChartConfig();
+
+      if (canRenderChart(this.props.widgetEditor, this.state.datasetProvider)) {
+        this.fetchChartConfig()
+          .then(() => this.getWidgetConfig())
+          .then(widgetConfig => this.props.onMigrate(widgetConfig))
+          .catch(() => this.props.onMigrate(null));
+      } else {
+        this.props.onMigrate(null);
+      }
     }
   }
 
@@ -432,8 +439,9 @@ class WidgetEditor extends React.Component {
       })
       // TODO: handle the error case in the UI
       .catch((err) => {
-        console.error(err);
-        toastr.error('Error', 'Unable to load the information about the dataset.');
+        this.props.onMigrate(null);
+        // console.error(err);
+        // toastr.error('Error', 'Unable to load the information about the dataset.');
       });
   }
 
@@ -803,7 +811,7 @@ class WidgetEditor extends React.Component {
 
     const chartInfo = getChartInfo(datasetId, datasetType, datasetProvider, widgetEditor);
 
-    getChartConfig(
+    return getChartConfig(
       datasetId,
       datasetType,
       tableName,
@@ -1110,7 +1118,7 @@ class WidgetEditor extends React.Component {
     const showEmbedButton = embedButtonMode === 'always'
       || (embedButtonMode === 'auto' && !!getConfig().userToken);
 
-    const visualization = this.getVisualization();
+    // const visualization = this.getVisualization();
 
     // TODO: instead of hiding the whole UI, let's show an error message or
     // some kind of feedback for the user
@@ -1122,13 +1130,6 @@ class WidgetEditor extends React.Component {
 
     if (componentShouldNotShow) {
       return <div className="c-we-widget-editor" />;
-    }
-
-    // TODO: could be saved in the state instead of computing it
-    // each time
-    let chartOptions = CHART_TYPES;
-    if (!jiminyError && jiminyLoaded && datasetType !== 'raster') {
-      chartOptions = jiminy.general.map(val => ({ label: val, value: val }));
     }
 
     return (
@@ -1157,85 +1158,7 @@ class WidgetEditor extends React.Component {
               />
             </div>
           </div>
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider !== 'nexgddp'
-              && (
-                <ChartEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider === 'nexgddp'
-              && (
-                <NEXGDDPEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'map'
-              && layers && layers.length > 0
-              && datasetProvider
-              && (
-                <MapEditor
-                  datasetId={datasetId}
-                  widgetId={widgetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  datasetType={datasetType}
-                  layerGroups={this.state.layerGroups}
-                  layers={layers}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'raster_chart'
-              && tableName
-              && datasetProvider
-              && (
-                <RasterChartEditor
-                  datasetId={datasetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  mode={editorMode}
-                  hasGeoInfo={hasGeoInfo}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
         </div>
-        {visualization}
       </div>
     );
   }
