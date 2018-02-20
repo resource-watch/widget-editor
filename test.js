@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions, VegaChart, WidgetService, getVegaTheme } from 'dist/bundle';
+import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
 import 'leaflet/dist/leaflet.css';
 import 'dist/styles.css';
 
@@ -22,7 +22,8 @@ setConfig({
   env: 'production,preproduction',
   applications: 'prep',
   authUrl: 'https://api.resourcewatch.org/auth',
-  assetsPath: '/images/'
+  assetsPath: '/images/',
+  userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
 });
 
 class App extends React.Component {
@@ -47,13 +48,18 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // datasetId: '20cc5eca-8c63-4c41-8e8e-134dcf1e6d76',
-      datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
-      widgetId: undefined,
-      previewWidgetId: undefined,
-      previewConfig: undefined,
-      widgetTitle: '',
-      widgetCaption: ''
+      widgets: [],
+      currentDataset: undefined,
+      currentWidget: undefined,
+
+      app: 'prep',
+      unmigratedWidgets: [],
+      manualWidgets: [],
+      erroredWidgets: [],
+      errors: [],
+      migrated: 0,
+      started: false,
+      finished: false
     };
   }
 
@@ -61,6 +67,12 @@ class App extends React.Component {
     // We inject basic styles so the test page
     // renders correctly
     App.injectStyles();
+  }
+
+  componentDidMount() {
+    this.getWidgetsList(this.state.app)
+      .then(widgets => this.getUnmigratedWidgets(widgets))
+      .then(([unmigratedWidgets, manualWidgets]) => new Promise(resolve => this.setState({ unmigratedWidgets, manualWidgets }, resolve)));
   }
 
   async onSave() {
@@ -77,107 +89,130 @@ class App extends React.Component {
     }
   }
 
-  async onEmbed() {
-    const { protocol, hostname, port } = location;
-    const baseUrl = `${protocol}//${hostname}${port !== '' ? `:${port}` : port}`;
-    this.props.toggleModal(true, {
-      children: EmbedTableModal,
-      childrenProps: { baseUrl }
-    });
+  getWidgetsList(app) { // eslint-disable-line class-methods-use-this
+    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction,production`)
+      .then(res => res.json())
+      .then(({ data: widgets }) => widgets)
+      .catch(() => {
+        this.setState({ errors: [...this.state.errors, `Unable to get the list of widgets for ${app}`] });
+        throw new Error();
+      });
   }
 
-  onChangePreviewWidgetId(previewWidgetId) {
-    this.setState({ previewWidgetId });
+  getUnmigratedWidgets(widgetsList) { // eslint-disable-line class-methods-use-this
+    const unmigrated = [];
+    const manual = [];
+    widgetsList.forEach((widget) => {
+      const widgetConfig = widget.attributes.widgetConfig;
+      if (!widgetConfig) return false;
 
-    new WidgetService(previewWidgetId)
-      .fetchData()
-      .then(data => this.setState({ previewConfig: data.attributes.widgetConfig }));
+      const type = widgetConfig.type;
+      if (type === 'map' || type === 'embed') {
+        return false;
+      }
+
+      const name = widget.attributes.name;
+      if (name.indexOf('[Vega 3]') !== -1) return false;
+
+      const paramsConfig = widgetConfig.paramsConfig;
+      if (!paramsConfig) {
+        manual.push(widget);
+        return false;
+      }
+
+      unmigrated.push(widget);
+    });
+
+    return [unmigrated, manual];
+  }
+
+  migrateWidgets(i = 0) { // eslint-disable-line class-methods-use-this
+    const widget = this.state.unmigratedWidgets[i];
+
+    return new Promise((resolve) => {
+      if (i === 0) {
+        this.setState({ started: true }, resolve);
+      } else {
+        resolve();
+      }
+    })
+      .then(() => new Promise((resolve, reject) => {
+        setTimeout(Math.random() < 0.5 ? resolve : reject, Math.random() * 5000);
+      }))
+      .then(() => new Promise((resolve) => {
+        widget.migrated = true;
+        this.setState({ migrated: this.state.migrated + 1 }, resolve);
+      }))
+      .catch(() => new Promise((resolve) => {
+        this.setState({
+          errors: [...this.state.errors, `Unable to migrate ${widget.id}`],
+          erroredWidgets: [...this.state.erroredWidgets, widget]
+        }, resolve);
+      }))
+      .then(() => (this.state.unmigratedWidgets.length - 1 >= i + 1) && this.migrateWidgets(i + 1))
+      .then(() => new Promise((resolve) => {
+        if (i === 0) {
+          this.setState({ finished: true }, resolve);
+        } else {
+          resolve();
+        }
+      }))
+      .catch(() => new Promise((_, reject) => {
+        if (i === 0) {
+          this.setState({ errors: [...this.state.errors, 'Migration aborted'] }, reject);
+        } else {
+          reject();
+        }
+      }));
   }
 
   render() {
     return (
       <div>
-        <h1>Test WidgetEditor</h1>
-        <div style={{ border: '1px solid black', margin: '20px 0 40px', padding: '0 10px' }}>
-          <p>
-            Change here the params of the editor:
-          </p>
-          <p>
-            <label htmlFor="dataset">Dataset ID:</label>
-            <input
-              type="text"
-              id="dataset"
-              value={this.state.datasetId}
-              onChange={({ target }) => this.setState({ datasetId: target.value })}
-            />
-            <br />
-            <label htmlFor="widget">Widget ID (optional):</label>
-            <input
-              type="text"
-              placeholder="Widget to restore"
-              id="widget"
-              value={this.state.widgetId}
-              onChange={({ target }) => this.setState({ widgetId: target.value })}
-            />
-            <br />
-            <label htmlFor="title">Widget title (optional):</label>
-            <input
-              type="text"
-              placeholder="Title of the widget"
-              id="title"
-              value={this.state.widgetTitle}
-              onChange={({ target }) => this.setState({ widgetTitle: target.value })}
-            />
-            <br />
-            <label htmlFor="caption">Widget caption (optional):</label>
-            <input
-              type="text"
-              placeholder="Caption of the widget"
-              id="caption"
-              value={this.state.widgetCaption}
-              onChange={({ target }) => this.setState({ widgetCaption: target.value })}
-            />
-          </p>
-        </div>
+        <h1>Migration</h1>
         <Icons />
         <Tooltip />
         <Modal />
-        <WidgetEditor
-          datasetId={this.state.datasetId}
-          widgetId={this.state.widgetId}
-          widgetTitle={this.state.widgetTitle}
-          widgetCaption={this.state.widgetCaption}
-          saveButtonMode="always"
-          embedButtonMode="always"
-          titleMode="always"
-          onSave={() => this.onSave()}
-          onEmbed={() => this.onEmbed()}
-          onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
-          onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
-          provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
-        />
         <div style={{ border: '1px solid black', margin: '40px 0', padding: '0 10px' }}>
-          <p>
-            Change here the params of the VegaChart component:
-          </p>
-          <p>
-            <label htmlFor="preview_widget">Widget ID:</label>
-            <input
-              type="text"
-              placeholder="Widget to preview"
-              id="preview_widget"
-              value={this.state.previewWidgetId}
-              onChange={({ target }) => this.onChangePreviewWidgetId(target.value)}
-            />
-          </p>
+          <ul>
+            <li>Retrieving the list of widgets for {this.state.app}...</li>
+            { !!this.state.manualWidgets.length && <li>Widgets to manually migrate: <strong>{this.state.manualWidgets.length}</strong></li> }
+            { !!this.state.unmigratedWidgets.length && <li>Widgets to migrate: <strong>{this.state.unmigratedWidgets.length}</strong></li> }
+            { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && this.state.started && <li>Migrating: <strong>{this.state.migrated} / {this.state.unmigratedWidgets.length}</strong></li> }
+            { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => this.migrateWidgets()}>Start migration</button></li>}
+            { !!this.state.errors.length && this.state.errors.map(e => <li style={{ color: 'red' }}>{e}</li>)}
+            { this.state.finished && <li>Migration done</li> }
+          </ul>
         </div>
-        { this.state.previewWidgetId && this.state.previewConfig && (
-          <VegaChart
-            width={250}
-            height={180}
-            data={this.state.previewConfig}
-            theme={getVegaTheme(true)}
-            reloadOnResize
+        <div style={{ border: '1px solid black', margin: '40px 0', padding: '20px 10px' }}>
+          { !!this.state.manualWidgets.length && (
+            <div>
+              <label htmlFor="manual">Widgets to manually migrate</label>
+              <textarea id="manual" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.manualWidgets.map(w => w.id).join('\n')} readOnly />
+            </div>
+          )}
+          { !!this.state.unmigratedWidgets.length && (
+            <div>
+              <label htmlFor="unmigrated">Widgets to migrate</label>
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.unmigratedWidgets.map(w => `${w.id}${w.migrated ? ' - MIGRATED' : ''}`).join('\n')} readOnly />
+            </div>
+          )}
+          { !!this.state.erroredWidgets.length && (
+            <div>
+              <label htmlFor="unmigrated" style={{ color: 'red' }}>Widgets with error</label>
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => w.id).join('\n')} readOnly />
+            </div>
+          )}
+        </div>
+        { this.state.currentDataset && this.state.currentWidget && (
+          <WidgetEditor
+            datasetId={this.state.currentDataset}
+            widgetId={this.state.currentWidget}
+            saveButtonMode="always"
+            embedButtonMode="never"
+            titleMode="always"
+            onSave={() => this.onSave()}
+            provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
           />
         )}
       </div>
