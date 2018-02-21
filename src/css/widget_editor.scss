@@ -69,6 +69,12 @@
         height: auto;
         overflow-x: auto;
 
+        // Prevent the widgets from ever-growing after
+        // some resizes
+        canvas {
+          display: block;
+        }
+
         .vega {
           // We can't use display: flex; here otherwise
           // the user won't be able to see all of the

@@ -267,6 +267,7 @@ Steps:
 - Increase the timeout for the data fetching to 30s (due to Carto's latency in some cases)
 - Prevent the title and caption from overlapping the legend, if any
 - Fix a bug where the user's last interaction wouldn't be necessarily the one reflected by the visualization
+- Fix a bug where the height of the chart would grow in the editor after a resize
 
 ### v0.1.3
 - Remove unused CSS rules that would interfere with the styles of RW or Prep

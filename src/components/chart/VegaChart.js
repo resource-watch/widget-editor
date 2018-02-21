@@ -55,6 +55,9 @@ class VegaChart extends React.Component {
   componentWillUnmount() {
     this.mounted = false;
     window.removeEventListener('resize', this.triggerResize);
+    if (this.view) {
+      this.view.finalize();
+    }
   }
 
   setSize() {
@@ -173,7 +176,7 @@ class VegaChart extends React.Component {
 
     try {
       const runtime = vega.parse(vegaConfig, theme);
-      const view = new vega.View(runtime)
+      this.view = new vega.View(runtime)
         .initialize(this.chart)
         .renderer('canvas')
         .hover()
@@ -182,7 +185,7 @@ class VegaChart extends React.Component {
       // We only show the tooltip if the interaction_config
       // object is defined
       if (vegaConfig.interaction_config && vegaConfig.interaction_config.length) {
-        this.instantiateTooltip(view);
+        this.instantiateTooltip(this.view);
       }
     } catch (err) {
       console.error(err);
@@ -212,7 +215,16 @@ class VegaChart extends React.Component {
 
   triggerResize() {
     if (this.props.reloadOnResize) {
-      this.renderChart();
+      if (this.view) {
+        this.setSize();
+        this.view = this.view
+          .width(this.width)
+          .height(this.height)
+          .run();
+        this.instantiateTooltip(this.view);
+      } else {
+        this.renderChart();
+      }
     }
   }
 
