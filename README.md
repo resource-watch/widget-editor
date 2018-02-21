@@ -8,7 +8,7 @@ Initially developped for RW, the editor was then needed for PREP so it has been 
 
 The widget editor needs a [React](https://reactjs.org) environment with [Redux](https://redux.js.org), as well as needs some peer dependencies to be installed:
 ```bash
-$ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega@^2.6.5
+$ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega@^3.1.0
 $ yarn add widget-editor
 ```
 
