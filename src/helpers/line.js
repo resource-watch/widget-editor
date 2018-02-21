@@ -85,7 +85,8 @@ const defaultChart = {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
           "strokeCap": { "value": "round" },
-          "strokeWidth": { "value": 2 }
+          "strokeWidth": { "value": 2 },
+          "strokeJoin":{"value":"round"}
         }
       }
     },
@@ -122,6 +123,7 @@ const defaultChart = {
       "encode": {
         "update": {
           "path": { "field": "path" },
+          "fill":{"value":"red"},
           "opacity": { "value": 0 }
         }
       }
