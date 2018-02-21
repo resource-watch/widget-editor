@@ -262,7 +262,7 @@ Steps:
 
 ## Changelog
 
-### v1.0.0 (not yet released)
+### v1.0.0
 - Migrate from Vega 2 to Vega 3 (not backward compatible)
 - Increase the timeout for the data fetching to 30s (due to Carto's latency in some cases)
 - Prevent the title and caption from overlapping the legend, if any
