@@ -144,7 +144,11 @@ class App extends React.Component {
           reject,
           resolve
         };
-        this.setState({ currentWidget: widget });
+        if (widget.nexgddp) {
+          resolve();
+        } else {
+          this.setState({ currentWidget: widget });
+        }
       }))
       .then(() => new Promise((resolve) => {
         widget.migrated = true;
@@ -201,13 +205,13 @@ class App extends React.Component {
           { !!this.state.unmigratedWidgets.length && (
             <div>
               <label htmlFor="unmigrated">Widgets to migrate</label>
-              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.unmigratedWidgets.map(w => `${w.id}${w.migrated ? ` (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : '-         '} - MIGRATED` : `${w.nexgddp ? ' - NEXGDDP' : '-         '} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})`}`).join('\n')} readOnly />
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.unmigratedWidgets.map(w => `${w.id}${w.migrated ? `${w.nexgddp ? ' - NEXGDDP' : ' -        '} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'}) - MIGRATED` : `${w.nexgddp ? ' - NEXGDDP' : ' -        '} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})`}`).join('\n')} readOnly />
             </div>
           )}
           { !!this.state.erroredWidgets.length && (
             <div>
               <label htmlFor="unmigrated" style={{ color: 'red' }}>Widgets with error</label>
-              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => `w.id (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : ''}`).join('\n')} readOnly />
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => `${w.id} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : ''}`).join('\n')} readOnly />
             </div>
           )}
         </div>
