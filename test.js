@@ -20,7 +20,7 @@ const store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'rw',
+  applications: 'prep',
   authUrl: 'https://api.resourcewatch.org/auth',
   assetsPath: '/images/',
   userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
@@ -88,7 +88,7 @@ class App extends React.Component {
   }
 
   getWidgetsList(app) { // eslint-disable-line class-methods-use-this
-    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction,production`)
+    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction,production&includes=user`)
       .then(res => res.json())
       .then(({ data: widgets }) => widgets)
       .catch(() => {
@@ -113,9 +113,14 @@ class App extends React.Component {
       if (name.indexOf('[Vega 3]') !== -1) return false;
 
       const paramsConfig = widgetConfig.paramsConfig;
-      if (!paramsConfig) {
+      const nexgddp = widgetConfig.signals && widgetConfig.signals.length && widgetConfig.signals.find(s => s.name === 'range1Middle');
+      if (!paramsConfig && !nexgddp) {
         manual.push(widget);
         return false;
+      }
+
+      if (nexgddp) {
+        widget.nexgddp = true;
       }
 
       unmigrated.push(widget);
@@ -141,7 +146,6 @@ class App extends React.Component {
         };
         this.setState({ currentWidget: widget });
       }))
-      .then(widgetConfig => console.log(widgetConfig))
       .then(() => new Promise((resolve) => {
         widget.migrated = true;
         this.setState({ migrated: this.state.migrated + 1 }, resolve);
@@ -191,19 +195,19 @@ class App extends React.Component {
           { !!this.state.manualWidgets.length && (
             <div>
               <label htmlFor="manual">Widgets to manually migrate</label>
-              <textarea id="manual" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.manualWidgets.map(w => w.id).join('\n')} readOnly />
+              <textarea id="manual" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.manualWidgets.map(w => `${w.id} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})`).join('\n')} readOnly />
             </div>
           )}
           { !!this.state.unmigratedWidgets.length && (
             <div>
               <label htmlFor="unmigrated">Widgets to migrate</label>
-              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.unmigratedWidgets.map(w => `${w.id}${w.migrated ? ' - MIGRATED' : ''}`).join('\n')} readOnly />
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.unmigratedWidgets.map(w => `${w.id}${w.migrated ? ` (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : '-         '} - MIGRATED` : `${w.nexgddp ? ' - NEXGDDP' : '-         '} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})`}`).join('\n')} readOnly />
             </div>
           )}
           { !!this.state.erroredWidgets.length && (
             <div>
               <label htmlFor="unmigrated" style={{ color: 'red' }}>Widgets with error</label>
-              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => w.id).join('\n')} readOnly />
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => `w.id (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : ''}`).join('\n')} readOnly />
             </div>
           )}
         </div>
