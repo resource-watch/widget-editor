@@ -154,9 +154,10 @@ class App extends React.Component {
         widget.migrated = true;
         this.setState({ migrated: this.state.migrated + 1 }, resolve);
       }))
-      .catch(() => new Promise((resolve) => {
+      .catch(err => new Promise((resolve) => {
+        widget.error = err;
         this.setState({
-          errors: [...this.state.errors, `Unable to migrate ${widget.id}`],
+          errors: [...this.state.errors, `Unable to migrate ${widget.id} – ${err}`],
           erroredWidgets: [...this.state.erroredWidgets, widget]
         }, resolve);
       }))
@@ -211,7 +212,7 @@ class App extends React.Component {
           { !!this.state.erroredWidgets.length && (
             <div>
               <label htmlFor="unmigrated" style={{ color: 'red' }}>Widgets with error</label>
-              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => `${w.id} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : ''}`).join('\n')} readOnly />
+              <textarea id="unmigrated" style={{ display: 'block', margin: '5px 0 20px', width: '100%', height: '250px' }} value={this.state.erroredWidgets.map(w => `${w.id} (${w.attributes.user ? w.attributes.user.name || w.attributes.user.email : 'Unknown'})${w.nexgddp ? ' - NEXGDDP' : ''}${w.error ? ` - ${w.error}` : ''}`).join('\n')} readOnly />
             </div>
           )}
         </div>
@@ -224,7 +225,7 @@ class App extends React.Component {
             titleMode="always"
             onSave={() => this.onSave()}
             provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
-            onMigrate={widgetConfig => (widgetConfig === null ? this.promise.reject() : this.promise.resolve(widgetConfig))}
+            onMigrate={widgetConfig => (widgetConfig.error ? this.promise.reject(widgetConfig.error) : this.promise.resolve(widgetConfig))}
           />
         )}
       </div>

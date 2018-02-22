@@ -274,9 +274,11 @@ class WidgetEditor extends React.Component {
         this.fetchChartConfig()
           .then(() => this.getWidgetConfig())
           .then(widgetConfig => this.props.onMigrate(widgetConfig))
-          .catch(() => this.props.onMigrate(null));
+          .catch(() => this.props.onMigrate({ error: 'Unable to generate widgetConfig' }));
       } else {
-        this.props.onMigrate(null);
+        this.props.onMigrate({
+          error: 'Can\'t render chart'
+        });
       }
     }
   }
@@ -439,7 +441,9 @@ class WidgetEditor extends React.Component {
       })
       // TODO: handle the error case in the UI
       .catch((err) => {
-        this.props.onMigrate(null);
+        this.props.onMigrate({
+          error: 'Non existing dataset'
+        });
         // console.error(err);
         // toastr.error('Error', 'Unable to load the information about the dataset.');
       });
