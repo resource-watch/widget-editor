@@ -26,6 +26,694 @@ setConfig({
   userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
 });
 
+/* eslint-disable */
+const chartSpec = {
+  "data": [
+    {
+      "name": "table",
+      "format": {"parse": {"x": "date"}},
+      "values": [],
+      "transform": [
+        {
+          "type": "formula",
+          "as": "q25",
+          "expr": "units.type =='factor' ? round(units.value*datum.q25,2) : ( datum.q25-units.value)"
+        },
+        {
+          "type": "formula",
+          "as": "q50",
+          "expr": "units.type =='factor' ? round(units.value*datum.q50,2) : (datum.q50-units.value)"
+        },
+        {
+          "type": "formula",
+          "as": "q75",
+          "expr": "units.type =='factor' ? round(units.value*datum.q75,2) : (datum.q75-units.value)"
+        }
+      ]
+    },
+    {
+      "name": "range1Data",
+      "source": "table",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "year(datum.x) >= utcyear(range1.start) && year(datum.x) <= utcyear(range1.end)"
+        },
+        {
+          "type": "formula",
+          "as": "date_end",
+          "expr": "range1.end"
+        },
+        {
+          "type": "formula",
+          "as": "date_start",
+          "expr": "range1.start"
+        },
+        {
+          "type": "aggregate",
+          "fields": [
+            "q25",
+            "q75",
+            "x",
+            "date_end",
+            "date_start"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "min",
+            "min",
+            "min"
+          ],
+          "as": [
+            "q25",
+            "q75",
+            "x",
+            "date_end",
+            "date_start"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "range2Data",
+      "source": "table",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "year(datum.x) >= utcyear(range2.start) && year(datum.x) <= utcyear(range2.end)"
+        },
+        {
+          "type": "formula",
+          "as": "date_end",
+          "expr": "range2.end"
+        },
+        {
+          "type": "formula",
+          "as": "date_start",
+          "expr": "range2.start"
+        },
+        {
+          "type": "aggregate",
+          "fields": [
+            "q25",
+            "q75",
+            "x",
+            "date_end",
+            "date_start"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "min",
+            "min",
+            "min"
+          ],
+          "as": [
+            "q25",
+            "q75",
+            "x",
+            "date_end",
+            "date_start"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "legend",
+      "values": [
+        {"cat": "Models average"},
+        {"cat": "Models amplitude between 25th and 75th percentile"},
+        {"cat": "Selected period(s)"}
+      ]
+    },
+    {
+      "name": "dots",
+      "source": "table",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "hover && hover.datum.x === datum.x"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "name": "range1Middle",
+      "update": "(+range1.start + +range1.end) / 2"
+    },
+    {
+      "name": "range1Label",
+      "update": "utcyear(range1.start) + '-' + utcyear(range1.end)"
+    },
+    {
+      "name": "range2Middle",
+      "update": "range2 ? (+range2.start + +range2.end) / 2 : 0"
+    },
+    {
+      "name": "range2Label",
+      "update": "range2 ? utcyear(range2.start) + '-' + utcyear(range2.end) : ''"
+    },
+    {
+      "name": "hover",
+      "value": null,
+      "on": [
+        {
+          "events": "@cell:mouseover",
+          "update": "datum"
+        },
+        {
+          "events": "@cell:mouseout",
+          "update": "null"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "utc",
+      "range": "width",
+      "zero": false,
+      "domain": {
+        "data": "table",
+        "field": "x"
+      }
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "range": "height",
+      "zero": false,
+      "nice": true,
+      "domain": {
+        "fields": [
+          {
+            "data": "table",
+            "field": "q75"
+          },
+          {
+            "data": "table",
+            "field": "q25"
+          }
+        ]
+      }
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "zero": false,
+      "points": true,
+      "range": [
+        "#E9ECEE",
+        "#263e57",
+        "#efa600"
+      ],
+      "domain": {
+        "fields": [
+          {
+            "data": "legend",
+            "field": "cat"
+          }
+        ],
+        "sort": true
+      }
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "labelOverlap": "parity",
+      "orient": "bottom",
+      "encode": {
+        "labels": {
+          "update": {
+            "font": {
+              "value": "Open Sans"
+            },
+            "fontSize": {
+              "value": 10
+            },
+            "fill": {
+              "value": "#3B4F63"
+            },
+            "opacity": {
+              "value": 0.7
+            }
+          }
+        },
+        "axis": {
+          "update": {
+            "stroke": {
+              "value": "#393F44"
+            },
+            "opacity": {
+              "value": 0.3
+            }
+          }
+        },
+        "ticks": {
+          "update": {
+            "stroke": {
+              "value": "#393F44"
+            },
+            "opacity": {
+              "value": 0.3
+            }
+          }
+        }
+      }
+    },
+    {
+      "scale": "y",
+      "zindex": 1,
+      "labelOverlap": "parity",
+      "orient": "left",
+      "encode": {
+        "labels": {
+          "update": {
+            "font": {
+              "value": "Open Sans"
+            },
+            "fontSize": {
+              "value": 10
+            },
+            "fill": {
+              "value": "#3B4F63"
+            },
+            "opacity": {
+              "value": 0.7
+            }
+          }
+        },
+        "axis": {
+          "update": {
+            "stroke": {
+              "value": "#393F44"
+            },
+            "opacity": {
+              "value": 0.3
+            }
+          }
+        },
+        "ticks": {
+          "update": {
+            "stroke": {
+              "value": "#393F44"
+            },
+            "opacity": {
+              "value": 0.3
+            }
+          }
+        },
+        "title": {
+          "update": {
+            "font": {
+              "value": "Open Sans"
+            },
+            "fontSize": {
+              "value": 10
+            },
+            "fill": {
+              "value": "#3B4F63"
+            },
+            "opacity": {
+              "value": 0.7
+            }
+          }
+        }
+      }
+    }
+  ],
+  "marks": [
+    {
+      "type": "area",
+      "interactive": false,
+      "from": {
+        "data": "table"
+      },
+      "encode": {
+        "enter": {
+          "interpolate": {
+            "value": "monotone"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q75"
+          },
+          "y2": {
+            "scale": "y",
+            "field": "q25"
+          },
+          "fill": {
+            "value": "#E9ECEE"
+          }
+        }
+      }
+    },
+    {
+      "name": "lines",
+      "interactive": false,
+      "type": "line",
+      "from": {
+        "data": "table"
+      },
+      "encode": {
+        "enter": {
+          "interpolate": {
+            "value": "monotone"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q50"
+          },
+          "stroke": {
+            "value": "#263e57"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "strokeDash": {
+            "value": [
+              8,
+              8
+            ]
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "interactive": false,
+      "from": {
+        "data": "range1Data"
+      },
+      "encode": {
+        "enter": {
+          "interpolate": {
+            "value": "monotone"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q75"
+          },
+          "y2": {
+            "scale": "y",
+            "field": "q25"
+          },
+          "fillOpacity": {
+            "value": 0
+          },
+          "strokeOpacity": {
+            "value": 1
+          },
+          "stroke": {
+            "value": "#EFA600"
+          },
+          "strokeWidth": {
+            "value": 2
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "range1Data"
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "signal": "range1Middle"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q75"
+          },
+          "dy": {
+            "value": -10
+          },
+          "align": {
+            "value": "center"
+          },
+          "text": {
+            "signal": "range1Label"
+          },
+          "font": {
+            "value": "Open Sans"
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#EFA600"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "interactive": false,
+      "from": {
+        "data": "range2Data"
+      },
+      "encode": {
+        "enter": {
+          "interpolate": {
+            "value": "monotone"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q75"
+          },
+          "y2": {
+            "scale": "y",
+            "field": "q25"
+          },
+          "fillOpacity": {
+            "value": 0
+          },
+          "strokeOpacity": {
+            "value": 1
+          },
+          "stroke": {
+            "value": "#EFA600"
+          },
+          "strokeWidth": {
+            "value": 2
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "from": {
+        "data": "range2Data"
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "x",
+            "signal": "range2Middle"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q75"
+          },
+          "dy": {
+            "value": -10
+          },
+          "align": {
+            "value": "center"
+          },
+          "text": {
+            "signal": "range2Label"
+          },
+          "font": {
+            "value": "Open Sans"
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#EFA600"
+          }
+        }
+      }
+    },
+    {
+      "name": "points",
+      "interactive": false,
+      "type": "symbol",
+      "from": {
+        "data": "dots"
+      },
+      "encode": {
+        "enter": {
+          "fill": {
+            "value": "#263e57"
+          },
+          "stroke": {
+            "value": "#fff"
+          },
+          "x": {
+            "scale": "x",
+            "field": "x"
+          },
+          "y": {
+            "scale": "y",
+            "field": "q50"
+          }
+        },
+        "update": {
+          "zindex": {
+            "value": 10
+          },
+          "opacity": {
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "cell",
+      "type": "path",
+      "from": {
+        "data": "lines"
+      },
+      "transform": [
+        {
+          "type": "voronoi",
+          "x": "datum.x",
+          "y": "datum.y",
+          "size": [
+            {
+              "signal": "width"
+            },
+            {
+              "signal": "height"
+            }
+          ]
+        }
+      ],
+      "encode": {
+        "update": {
+          "fill": {
+            "value": "red"
+          },
+          "path": {
+            "field": "path"
+          },
+          "opacity": {
+            "value": 0
+          }
+        }
+      }
+    }
+  ],
+  "legends": [
+    {
+      "fill": "color",
+      "orient": "bottom",
+      "encode": {
+        "title": {
+          "enter": {
+            "fontSize": {
+              "value": 12
+            }
+          }
+        },
+        "labels": {
+          "enter": {
+            "limit": {
+              "signal": "(width*0.9)"
+            },
+            "fontSize": {
+              "value": 12
+            },
+            "fill": {
+              "value": "#3B4F63"
+            },
+            "opacity": {
+              "value": 0.7
+            }
+          }
+        },
+        "symbols": {
+          "enter": {
+            "shape": {
+              "value": "square"
+            },
+            "size": {
+              "value": 50
+            }
+          }
+        }
+      }
+    }
+  ],
+  "interaction_config": [
+    {
+      "name": "tooltip",
+      "config": {
+        "fields": [
+          {
+            "column": "datum.q50",
+            "property": "Average",
+            "type": "number",
+            "format": ".2f"
+          },
+          {
+            "column": "datum.q25",
+            "property": "25th percentile",
+            "type": "number",
+            "format": ".2f"
+          },
+          {
+            "column": "datum.q75",
+            "property": "75th percentile",
+            "type": "number",
+            "format": ".2f"
+          },
+          {
+            "column": "datum.range",
+            "property": "Date range",
+            "type": "string",
+            "format": null
+          }
+        ]
+      }
+    }
+  ]
+};
+/* eslint-enable */
+
 class App extends React.Component {
   static injectStyles() {
     const styles = `
@@ -129,6 +817,96 @@ class App extends React.Component {
     return [unmigrated, manual];
   }
 
+  generateNexGDDP(data, range1, range2, units) { // eslint-disable-line class-methods-use-this
+    const range1Signal = {
+      name: 'range1',
+      update: `{ start: utc(${range1[0]}, 0, 1), end: utc(${range1[1]}, 0, 1) }`
+    };
+
+    const range2Signal = { name: 'range2', update: 'false' };
+    if (range2) {
+      range2Signal.update = `{ start: utc(${range2[0]}, 0, 1), end: utc(${range2[1]}, 0, 1) }`;
+    }
+
+    const unitsSignal = units
+      ? { name: 'units', update: JSON.stringify(units) }
+      : null;
+
+    const signals = [range1Signal, range2Signal, unitsSignal, ...chartSpec.signals]
+      .filter(signal => signal !== null);
+
+    // We create a new spec each time so the Vega component renders again
+    // WARNING: it needs immutable data to detect the changes
+    const spec = Object.assign({}, chartSpec, { signals });
+    spec.data = [...spec.data];
+
+    // We add a new column to the data "range" so we can display the
+    // date range in the tooltip
+    const resolution = data.length >= 2
+      ? new Date(data[1].x).getUTCFullYear() - new Date(data[0].x).getUTCFullYear()
+      : null;
+    spec.data[0] = Object.assign({}, spec.data[0]);
+    spec.data[0].values = data.map((d) => {
+      if (!resolution) return d;
+      const start = new Date(d.x).getUTCFullYear();
+      const end = (start + resolution) - 1;
+      return Object.assign({}, d, { range: `${start}-${end}` });
+    });
+
+    // We add the unit to the y axis
+    if (units) {
+      const yAxis = Object.assign({}, spec.axes.find(axis => axis.scale === 'y'), { title: units.to });
+      spec.axes = [...spec.axes];
+      for (let i = 0, j = spec.axes.length; i < j; i++) {
+        if (spec.axes[i].scale === 'y') {
+          spec.axes[i] = yAxis;
+          break;
+        }
+      }
+    }
+
+    return spec;
+  }
+
+  migrateNexGDDP(widget) {
+    const widgetConfig = widget.attributes.widgetConfig;
+    if (!widgetConfig) {
+      this.promise.reject({ error: 'NexGDDP chart without widgetConfig' });
+      return;
+    }
+
+    const signals = widgetConfig.signals;
+    const range1Signal = signals.find(s => s.name === 'range1');
+    const range2Signal = signals.find(s => s.name === 'range2');
+    const unitsSignal = signals.find(s => s.name === 'units');
+
+    if (!range1Signal) {
+      this.promise.reject({
+        error: 'NexGDDP chart without range1 signal'
+      });
+      return;
+    }
+
+    const range1 = range1Signal.init.expr.match(/utc\(((\d+)), \d, \d\)/g)
+      .map(m => +m.match(/utc\((\d+), \d, \d\)/)[1]);
+    let range2 = [];
+    if (range2Signal && range2Signal.init.expr) {
+      range2 = range2Signal.init.expr.match(/utc\(((\d+)), \d, \d\)/g)
+        .map(m => +m.match(/utc\((\d+), \d, \d\)/)[1]);
+    }
+
+    let units = null;
+    if (unitsSignal) {
+      units = JSON.parse(unitsSignal.init.expr);
+    }
+
+    const data = widgetConfig.data[0].values;
+
+    const spec = this.generateNexGDDP(data, range1, range2, units);
+
+    this.promise.resolve(spec);
+  }
+
   migrateWidgets(i = 0) { // eslint-disable-line class-methods-use-this
     const widget = this.state.unmigratedWidgets[i];
 
@@ -145,7 +923,7 @@ class App extends React.Component {
           resolve
         };
         if (widget.nexgddp) {
-          resolve();
+          this.migrateNexGDDP(widget);
         } else {
           this.setState({ currentWidget: widget });
         }
@@ -194,6 +972,7 @@ class App extends React.Component {
             { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => this.migrateWidgets()}>Start migration</button></li>}
             { !!this.state.errors.length && this.state.errors.map(e => <li key={e} style={{ color: 'red' }}>{e}</li>)}
             { this.state.finished && <li>Migration done</li> }
+            { this.state.finished && <img src="https://media.giphy.com/media/l3q2Z6S6n38zjPswo/giphy.gif" />}
           </ul>
         </div>
         <div style={{ border: '1px solid black', margin: '40px 0', padding: '20px 10px' }}>
