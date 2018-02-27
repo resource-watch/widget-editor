@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.1
+- Fix a bug where the date filters wouldn't work
+
 ### v1.0.0
 - Migrate from Vega 2 to Vega 3 (not backward compatible)
 - Increase the timeout for the data fetching to 30s (due to Carto's latency in some cases)
