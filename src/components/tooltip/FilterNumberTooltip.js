@@ -28,18 +28,32 @@ class FilterNumberTooltip extends React.Component {
     this.datasetService = new DatasetService(props.datasetID);
 
     this.updateRange = debounce(this.updateRange.bind(this), 10);
+    this.onChangeRangeMin = this.onChangeRangeMin.bind(this);
+    this.onChangeRangeMax = this.onChangeRangeMax.bind(this);
   }
 
   componentDidMount() {
     this.getFilter();
   }
 
-  onClearAll() {
-    this.props.onChange([]);
+  /**
+   * Event handler executed when the user changes the minimum
+   * value of the selected range
+   * @param {InputEvent} e Event
+   */
+  onChangeRangeMin(e) {
+    const newValue = +e.target.value;
+    this.props.onChange([newValue, this.props.selected[1]]);
   }
 
-  onSelectAll() {
-    this.props.onChange(this.state.values.map(value => value.value));
+  /**
+   * Event handler executed when the user changes the maximum
+   * value of the selected range
+   * @param {InputEvent} e Event
+   */
+  onChangeRangeMax(e) {
+    const newValue = +e.target.value;
+    this.props.onChange([this.props.selected[0], newValue]);
   }
 
   /**
@@ -77,27 +91,18 @@ class FilterNumberTooltip extends React.Component {
         this.props.onToggleLoading(false);
 
         try {
-          errors.forEach(er =>
-            toastr.error('Error', er.detail)
-          );
+          errors.forEach(er => toastr.error('Error', er.detail));
         } catch (e) {
           toastr.error('Error', 'Oops');
         }
       });
   }
 
-  handleMinChange(event) {
-    const newValue = event.target.value;
-    this.props.onChange([newValue, this.props.selected[1]]);
-  }
-
-  handleMaxChange(event) {
-    const newValue = event.target.value;
-    this.props.onChange([this.props.selected[0], newValue]);
-  }
-
-  // We debounce the method to avoid having to update the state
-  // to often (around 60 FPS)
+  /**
+   * Update the range
+   * Note: the function is debounced in the constructor
+   * @param {number[]} range Range of values
+   */
   updateRange(range) {
     this.props.onChange(range);
   }
@@ -110,9 +115,9 @@ class FilterNumberTooltip extends React.Component {
     return (
       <div className="c-we-filter-string-tooltip">
 
-        {!loading &&
-          !isNaN(min) && min !== null && typeof min !== 'undefined' &&
-          !isNaN(max) && max !== null && typeof max !== 'undefined' &&
+        {!loading
+          && min !== null && typeof min !== 'undefined'
+          && max !== null && typeof max !== 'undefined' &&
           <div className="range">
             <Range
               allowCross={false}
@@ -126,9 +131,9 @@ class FilterNumberTooltip extends React.Component {
 
         {!loading && !!selected.length &&
           <div className="text-inputs-container">
-            <input className="-first" type="number" value={selected[0]} onChange={this.handleMinChange} />
+            <input className="-first" type="number" min={min} max={selected[1]} value={selected[0]} onChange={this.onChangeRangeMin} />
             -
-            <input className="-last" type="number" value={selected[1]} onChange={this.handleMaxChange} />
+            <input className="-last" type="number" min={selected[0]} max={max} value={selected[1]} onChange={this.onChangeRangeMax} />
           </div>
         }
 
@@ -149,27 +154,20 @@ class FilterNumberTooltip extends React.Component {
 }
 
 FilterNumberTooltip.propTypes = {
-  tableName: PropTypes.string.isRequired,
   datasetID: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
   selected: PropTypes.array,
-  loading: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
   /**
    * Get the filter value or min/max values
    */
   getFilter: PropTypes.func.isRequired,
-  onResize: PropTypes.func, // Passed from the tooltip component
-  onChange: PropTypes.func,
-  onToggleLoading: PropTypes.func,
-  onApply: PropTypes.func,
-  // store
-  widgetEditor: PropTypes.object.isRequired
+  onResize: PropTypes.func.isRequired, // Passed from the tooltip component
+  onChange: PropTypes.func.isRequired,
+  onToggleLoading: PropTypes.func.isRequired,
+  onApply: PropTypes.func.isRequired
 };
 
-FilterNumberTooltip.defaultProps = {
-  selected: []
-};
+FilterNumberTooltip.defaultProps = { selected: [] };
 
 const mapDispatchToProps = dispatch => ({
   toggleTooltip: (opened, opts) => {
@@ -177,8 +175,6 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
-});
+const mapStateToProps = () => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilterNumberTooltip);
