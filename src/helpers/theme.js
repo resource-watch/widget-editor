@@ -67,7 +67,7 @@ export const defaultTheme = {
     stroke: '#fff'
   },
   rect: {
-    cornerRadius: 3,
+    cornerRadius: 0.03,
     fill: '#3BB2D0'
   },
   line: {
