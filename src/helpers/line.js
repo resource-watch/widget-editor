@@ -59,6 +59,7 @@ const defaultChart = {
       "orient": "bottom",
       "scale": "x",
       "labelOverlap": "parity",
+      "zindex":1,
       "encode": {
         "labels": {
           "update": {

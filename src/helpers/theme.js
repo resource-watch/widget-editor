@@ -44,7 +44,7 @@ export const defaultTheme = {
   },
   axisX: {
     bandPosition: 0.5,
-    domainWidth: 1.2,
+    domainWidth: 2,
     domainColor: '#A9ABAD',
     labelAlign: 'center',
     labelBaseline: 'top'
@@ -99,8 +99,17 @@ export default function (thumbnail = false) {
     theme.axis = {
       ticks: false,
       labels: false,
-      grid: false,
-      domainWidth: 0
+      grid: false
+    };
+    
+    theme.axisX = {
+      domain: true,
+      domainWidth: 3,
+      domainColor: '#A9ABAD'
+    };
+    
+    theme.axisY = {
+      domain: false
     };
 
     // We simplify the rect marks

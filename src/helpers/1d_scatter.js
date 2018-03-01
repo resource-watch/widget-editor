@@ -15,7 +15,8 @@ const defaultChart = {
     }
   ],
   "axes": [
-    { "orient": "bottom", "scale": "x" }
+    { "orient": "bottom", "labelOverlap": "parity",
+      "zindex":1, "scale": "x" }
   ],
   "marks": [
     {
