@@ -15,7 +15,7 @@ export default class UserService {
     return new Promise((resolve) => {
       fetch(`${getConfig().authUrl}/check-logged`, {
         headers: {
-          Authorization: this.token
+          Authorization: `Bearer ${this.token}`
         }
       })
         .then(response => response.json())
@@ -40,7 +40,7 @@ export default class UserService {
     return new Promise((resolve) => {
       fetch(`${getConfig().url}/favourite?include=${include}${resourceTypeSt}`, {
         headers: {
-          Authorization: this.token
+          Authorization: `Bearer ${this.token}`
         }
       })
         .then(response => response.json())
@@ -55,7 +55,7 @@ export default class UserService {
   deleteFavourite(resourceId) {
     return fetch(`${getConfig().url}/favourite/${resourceId}`, {
       method: 'DELETE',
-      headers: { Authorization: this.token }
+      headers: { Authorization: `Bearer ${this.token}` }
     }).then(response => response.json());
   }
 
@@ -82,7 +82,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -111,7 +111,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -132,7 +132,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -145,7 +145,7 @@ export default class UserService {
     return new Promise((resolve) => {
       fetch(`${getConfig().url}/subscriptions?${[getConfig().applications].join(',')}`, {
         headers: {
-          Authorization: this.token
+          Authorization: `Bearer ${this.token}`
         }
       })
         .then(response => response.json())
@@ -162,7 +162,7 @@ export default class UserService {
     return fetch(`${getConfig().url}/subscriptions/${subscriptionId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -175,7 +175,7 @@ export default class UserService {
     return new Promise((resolve, reject) => {
       fetch(`${getConfig().url}/area?${[getConfig().applications].join(',')}`, {
         headers: {
-          Authorization: this.token
+          Authorization: `Bearer ${this.token}`
         }
       })
         .then((response) => {
@@ -202,7 +202,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -222,7 +222,7 @@ export default class UserService {
       body: JSON.stringify(bodyObj),
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -237,7 +237,7 @@ export default class UserService {
     return fetch(`${getConfig().url}/area/${areaId}`, {
       method: 'DELETE',
       headers: {
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());
@@ -251,7 +251,7 @@ export default class UserService {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: this.token
+        Authorization: `Bearer ${this.token}`
       }
     })
       .then(response => response.json());

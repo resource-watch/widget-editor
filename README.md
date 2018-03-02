@@ -264,6 +264,7 @@ Steps:
 
 ### v1.0.1
 - Fix a bug where the date filters wouldn't work
+- Fix an issue where the UserService would send a wrong "Authorization" header
 
 ### v1.0.0
 - Migrate from Vega 2 to Vega 3 (not backward compatible)
