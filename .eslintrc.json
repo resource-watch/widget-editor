@@ -21,7 +21,8 @@
       "ignoreRegExpLiterals": true,
       "ignoreStrings": true,
       "ignoreTemplateLiterals": true
-    }]
+    }],
+    "object-curly-newline": 0
   },
   "parser": "babel-eslint",
   "parserOptions": {
