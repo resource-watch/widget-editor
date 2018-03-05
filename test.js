@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import WidgetEditor, { reducers, setConfig, getConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
+import WidgetEditor, { WidgetService, reducers, setConfig, getConfig, Tooltip, Modal, Icons, SaveWidgetModal, modalActions } from 'dist/bundle';
 import 'leaflet/dist/leaflet.css';
 import 'dist/styles.css';
 
@@ -19,11 +19,10 @@ const store = createStore(combineReducers(reducers), enhancer);
 // We set the config of the library
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
-  env: 'production,preproduction',
+  env: 'preproduction',
   applications: 'prep',
   authUrl: 'https://api.resourcewatch.org/auth',
-  assetsPath: '/images/',
-  userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
+  assetsPath: '/images/'
 });
 
 /* eslint-disable */
@@ -776,7 +775,7 @@ class App extends React.Component {
   }
 
   getWidgetsList(app) { // eslint-disable-line class-methods-use-this
-    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction,production&includes=user`)
+    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction&includes=user`)
       .then(res => res.json())
       .then(({ data: widgets }) => widgets)
       .catch(() => {
@@ -904,7 +903,7 @@ class App extends React.Component {
 
     const spec = this.generateNexGDDP(data, range1, range2, units);
 
-    this.promise.resolve(spec);
+    this.promise.resolve([spec, widget]);
   }
 
   migrateWidgets(i = 0) { // eslint-disable-line class-methods-use-this
@@ -928,6 +927,14 @@ class App extends React.Component {
           this.setState({ currentWidget: widget });
         }
       }))
+      .then(([widgetConfig, w]) => {
+        if (this.realMigration) {
+          return WidgetService.saveUserWidget({ widgetConfig, name: w.attributes.name }, w.attributes.dataset, getConfig().userToken)
+            .then((response) => {
+              if (response.errors) throw new Error('Unable to save widget');
+            });
+        }
+      })
       .then(() => new Promise((resolve) => {
         widget.migrated = true;
         this.setState({ migrated: this.state.migrated + 1 }, resolve);
@@ -969,7 +976,8 @@ class App extends React.Component {
             { !!this.state.manualWidgets.length && <li>Widgets to manually migrate: <strong>{this.state.manualWidgets.length}</strong></li> }
             { !!this.state.unmigratedWidgets.length && <li>Widgets to migrate: <strong>{this.state.unmigratedWidgets.length}</strong></li> }
             { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && this.state.started && <li>Migrating: <strong>{this.state.migrated} / {this.state.unmigratedWidgets.length}</strong></li> }
-            { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => this.migrateWidgets()}>Start migration</button></li>}
+            { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => this.migrateWidgets()}>Start run-dry migration</button></li>}
+            { !!this.state.manualWidgets.length && !!this.state.unmigratedWidgets.length && !this.state.started && <li><button type="button" onClick={() => { this.realMigration = true; this.migrateWidgets(); }}>Start REAL migration</button></li>}
             { !!this.state.errors.length && this.state.errors.map(e => <li key={e} style={{ color: 'red' }}>{e}</li>)}
             { this.state.finished && <li>Migration done</li> }
             { this.state.finished && <img src="https://media.giphy.com/media/l3q2Z6S6n38zjPswo/giphy.gif" />}
@@ -1004,7 +1012,7 @@ class App extends React.Component {
             titleMode="always"
             onSave={() => this.onSave()}
             provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
-            onMigrate={widgetConfig => (widgetConfig.error ? this.promise.reject(widgetConfig.error) : this.promise.resolve(widgetConfig))}
+            onMigrate={widgetConfig => (widgetConfig.error ? this.promise.reject(widgetConfig.error) : this.promise.resolve([widgetConfig, this.state.currentWidget]))}
           />
         )}
       </div>

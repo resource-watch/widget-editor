@@ -20,8 +20,8 @@ export default class WidgetService {
   static saveUserWidget(widget, datasetId, token) {
     const widgetObj = {
       application: [getConfig().applications],
-      published: false,
-      default: false,
+      // published: false,
+      // default: false,
       dataset: datasetId
     };
     const bodyObj = Object.assign({}, widget, widgetObj);
