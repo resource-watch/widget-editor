@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.2
+- Remove the timeline from the legend (map only)
+
 ### v1.0.1
 - Fix a bug where the date filters wouldn't work
 - Fix an issue where the UserService would send a wrong "Authorization" header
