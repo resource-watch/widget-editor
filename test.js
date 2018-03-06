@@ -19,11 +19,11 @@ const store = createStore(combineReducers(reducers), enhancer);
 // We set the config of the library
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
-  env: 'preproduction',
-  applications: 'prep',
+  env: 'production',
+  applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
-  assetsPath: '/images/'
-});
+  assetsPath: '/images/',
+  userToken:''});
 
 /* eslint-disable */
 const chartSpec = {
@@ -775,7 +775,7 @@ class App extends React.Component {
   }
 
   getWidgetsList(app) { // eslint-disable-line class-methods-use-this
-    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=preproduction&includes=user`)
+    return fetch(`https://api.resourcewatch.org/v1/widget/?page[size]=9999999&app=${app}&env=production&includes=user`)
       .then(res => res.json())
       .then(({ data: widgets }) => widgets)
       .catch(() => {
@@ -929,9 +929,12 @@ class App extends React.Component {
       }))
       .then(([widgetConfig, w]) => {
         if (this.realMigration) {
-          return WidgetService.saveUserWidget({ widgetConfig, name: w.attributes.name }, w.attributes.dataset, getConfig().userToken)
+          return WidgetService.updateUserWidget({ widgetConfig, name: w.attributes.name }, w.attributes.dataset, w.id, getConfig().userToken)
             .then((response) => {
-              if (response.errors) throw new Error('Unable to save widget');
+              if (response.errors) {
+                console.log(response.errors)
+                throw new Error('Unable to save widget');
+              }
             });
         }
       })
@@ -940,6 +943,7 @@ class App extends React.Component {
         this.setState({ migrated: this.state.migrated + 1 }, resolve);
       }))
       .catch(err => new Promise((resolve) => {
+        console.log(err)
         widget.error = err;
         this.setState({
           errors: [...this.state.errors, `Unable to migrate ${widget.id} – ${err}`],

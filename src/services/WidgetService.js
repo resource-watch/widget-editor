@@ -39,8 +39,9 @@ export default class WidgetService {
       });
   }
 
-  static updateUserWidget(widget, datasetId, token) {
-    return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widget.id}`, {
+  static updateUserWidget(widget, datasetId, widgetId, token) {
+    console.log(widget)
+    return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widgetId}`, {
       method: 'PATCH',
       body: JSON.stringify(widget),
       headers: {
