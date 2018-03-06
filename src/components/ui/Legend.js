@@ -375,63 +375,9 @@ class Legend extends React.PureComponent {
 
     return this.props.layerGroups.map((layerGroup) => {
       const datasetSpec = Object.assign({}, layerGroup);
-      const activeLayer = datasetSpec.layers.find(l => l.active);
+      const activeLayer = datasetSpec.layers.find(l => l.active) || datasetSpec.layers[0];
 
       datasetSpec.layers = sortBy(datasetSpec.layers, (l) => l.layerConfig.dateTime);
-
-      // Legend with timeline
-      if (datasetSpec.dataset === 'c0c71e67-0088-4d69-b375-85297f79ee75' &&
-        datasetSpec.layers.length) {
-        const firstLayer = datasetSpec.layers[0];
-        const lastLayer = datasetSpec.layers[datasetSpec.layers.length - 1];
-        const minYear = new Date(firstLayer.layerConfig.dateTime).getFullYear();
-        const maxYear = new Date(lastLayer.layerConfig.dateTime).getFullYear();
-
-        const currentLayer = datasetSpec.layers.find((l) => {
-          const lYear = new Date(l.layerConfig.dateTime).getFullYear();
-          return lYear === (this.state.currentStepTimeline || minYear);
-        });
-
-        return (
-          <li key={datasetSpec.dataset} className="c-we-legend-unit">
-            <div className="legend-info">
-              <header className="legend-item-header">
-                <h3 className={this.props.className.color}>
-                  <span className="name">{currentLayer.name}</span>
-                </h3>
-                {this.getItemsActions(datasetSpec)}
-              </header>
-              <LegendType config={currentLayer.legendConfig} className={this.props.className} />
-
-              {/* Timeline */}
-              <div className="legend-timeline">
-                { this.state.isTimelinePlaying &&
-                  <button
-                    type="button"
-                    onClick={() => { this.setPlayTimeline(false, datasetSpec, minYear, maxYear); }}
-                  >
-                    <Icon name="icon-stop2" className="-small" />
-                  </button> }
-                { !this.state.isTimelinePlaying &&
-                  <button
-                    type="button"
-                    onClick={() => { this.setPlayTimeline(true, datasetSpec, minYear, maxYear); }}
-                  >
-                    <Icon name="icon-play3" className="-small" />
-                  </button> }
-                { !!(datasetSpec.layers.length) &&
-                  <InputRange
-                    minValue={minYear}
-                    maxValue={maxYear}
-                    value={this.state.currentStepTimeline || minYear}
-                    onChange={(value) => { this.onTimelineChange(value, datasetSpec); }}
-                  /> }
-              </div>
-            </div>
-            <DragHandle />
-          </li>
-        );
-      }
 
       // Legend without timeline
       return (
