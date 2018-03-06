@@ -5,7 +5,6 @@ import isEqual from 'lodash/isEqual';
 import throttle from 'lodash/throttle';
 import sortBy from 'lodash/sortBy';
 // import { Router } from 'routes';
-import InputRange from 'react-input-range';
 
 // Redux
 import { connect } from 'react-redux';
@@ -19,8 +18,6 @@ import LayerInfoModal from 'components/modal/LayerInfoModal';
 import LayersTooltip from 'components/tooltip/LayersTooltip';
 import SliderTooltip from 'components/tooltip/SliderTooltip';
 import Button from 'components/ui/Button';
-
-const TIMELINE_INTERVAL_TIMER = 3000;
 
 const SortableItem = SortableElement(({ value }) => value);
 
@@ -64,9 +61,7 @@ class Legend extends React.PureComponent {
       opacityOptions: {},
       // Show a "tour" tooltip if the user adds a multi-layer
       // layer group for the first time
-      hasShownLayersTourTooltip: false,
-      currentStepTimeline: null,
-      isTimelinePlaying: false
+      hasShownLayersTourTooltip: false
     };
 
     // List of the layers buttons
@@ -152,7 +147,6 @@ class Legend extends React.PureComponent {
    * @param {LayerGroup} layerGroup
    */
   onRemoveLayerGroup(layerGroup) {
-    this.setState({ currentStepTimeline: null, isTimelinePlaying: false });
     this.props.removeLayerGroup(layerGroup);
   }
 
@@ -276,14 +270,6 @@ class Legend extends React.PureComponent {
     }
   }
 
-  onTimelineChange(currentValue = 0, datasetSpec) {
-    const currentLayer = datasetSpec.layers.find((l) => {
-      return new Date(l.layerConfig.dateTime).getFullYear() === parseInt(currentValue);
-    });
-    this.setState({ currentStepTimeline: currentValue });
-    this.props.setLayerGroupActiveLayer(datasetSpec.dataset, currentLayer.id); // datasetId, layerId
-  }
-
   /**
    * Return the action buttons associated to a
    * layer group
@@ -342,29 +328,6 @@ class Legend extends React.PureComponent {
     );
   }
 
-  setPlayTimeline(isPlaying, datasetSpec, minValue, maxValue) {
-    if (this.timer) clearInterval(this.timer);
-
-    if (isPlaying) {
-      this.timer = setInterval(() => {
-        if (this.state.currentStepTimeline === maxValue) {
-          clearInterval(this.timer);
-          return this.setState({ currentStepTimeline: null, isTimelinePlaying: false });
-        }
-        const currentValue = (this.state.currentStepTimeline || minValue);
-        const currentLayer = datasetSpec.layers.find((l) => {
-          return new Date(l.layerConfig.dateTime).getFullYear() === parseInt(currentValue);
-        });
-        requestAnimationFrame(() => {
-          this.props.setLayerGroupActiveLayer(datasetSpec.dataset, currentLayer.id);
-        });
-        return this.setState({ currentStepTimeline: currentValue + 1 });
-      }, TIMELINE_INTERVAL_TIMER, true);
-    }
-
-    this.setState({ isTimelinePlaying: isPlaying });
-  }
-
   /**
    * Return the list of layers
    * @returns {HTMLElement[]}
@@ -377,7 +340,7 @@ class Legend extends React.PureComponent {
       const datasetSpec = Object.assign({}, layerGroup);
       const activeLayer = datasetSpec.layers.find(l => l.active) || datasetSpec.layers[0];
 
-      datasetSpec.layers = sortBy(datasetSpec.layers, (l) => l.layerConfig.dateTime);
+      datasetSpec.layers = sortBy(datasetSpec.layers, l => l.layerConfig.dateTime);
 
       // Legend without timeline
       return (
