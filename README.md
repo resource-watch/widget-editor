@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.3 (not yet released)
+- Change default limit to 50
+
 ### v1.0.2
 - Remove the timeline from the legend (map only)
 
