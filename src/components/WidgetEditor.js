@@ -1156,6 +1156,7 @@ class WidgetEditor extends React.Component {
           <div className="visualization-type-buttons">
             {visualizationOptions.find(v => v.value === 'chart') &&
               <button
+                type="button"
                 onClick={() => this.props.setVisualizationType('chart')}
                 className={chartButtonClassName}
               >
@@ -1164,6 +1165,7 @@ class WidgetEditor extends React.Component {
             }
             {visualizationOptions.find(v => v.value === 'map') &&
               <button
+                type="button"
                 onClick={() => this.props.setVisualizationType('map')}
                 className={mapButtonClassName}
               >
@@ -1172,28 +1174,13 @@ class WidgetEditor extends React.Component {
             }
             {visualizationOptions.find(v => v.value === 'table') &&
               <button
+                type="button"
                 onClick={() => this.props.setVisualizationType('table')}
                 className={tableButtonClassName}
               >
                 Table
               </button>
             }
-          </div>
-          <div className="visualization-type">
-
-            <div className="c-we-field">
-            <Select
-              id="visualization-type-select"
-              properties={{
-                className: 'visualization-type-selector',
-                name: 'visualization-type',
-                value: selectedVisualizationType
-              }}
-              options={visualizationOptions}
-              onChange={value => this.handleVisualizationTypeChange(value, false)}
-            />
-
-            </div>
           </div>
           {
             (selectedVisualizationType === 'chart' ||
