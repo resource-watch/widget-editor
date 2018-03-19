@@ -263,6 +263,7 @@ Steps:
 ## Changelog
 
 ### v1.0.3 (not yet released)
+- “Visualization type” dropdown changed to radio buttons/facets
 - Change default limit to 50
 
 ### v1.0.2
