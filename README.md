@@ -263,6 +263,7 @@ Steps:
 ## Changelog
 
 ### v1.0.3 (not yet released)
+- Category and value labels rename
 - Show alias tooltip immediately on hover
 - “Visualization type” dropdown changed to radio buttons/facets
 - Change default limit to 50
