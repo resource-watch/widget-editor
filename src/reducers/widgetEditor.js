@@ -51,7 +51,7 @@ const initialState = {
   visualizationType: null,
   title: null, // Title of the widget / graph
   caption: null, // Caption of the widget
-  limit: 500,
+  limit: 50,
   areaIntersection: null, // ID of the geostore object
   band: null, // Band of the raster dataset
   /** @type {{ [name: string]: { type: string, alias: string, description: string } }} bandsInfo */

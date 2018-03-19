@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { setLimit } from 'reducers/widgetEditor';
 
 // Maximum value for the query limit
-const LIMIT_MAX_VALUE = 500;
+const LIMIT_MAX_VALUE = 50;
 
 class LimitContainer extends React.Component {
   constructor(props) {
@@ -63,7 +63,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   setLimit: debounce((limit) => {
     dispatch(setLimit(limit));
-  }, 500)
+  }, 50)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LimitContainer);
