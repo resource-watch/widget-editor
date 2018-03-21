@@ -198,10 +198,8 @@ class ColumnBox extends React.Component {
    * cursor on top of the root element
    */
   onMouseOverColumn() {
-    this.detailsTooltipTimer = setTimeout(() => {
-      this.detailsTooltipCloseOnMouseOut = true;
-      this.openDetailsTooltip();
-    }, 1500);
+    this.detailsTooltipCloseOnMouseOut = true;
+    this.openDetailsTooltip();
   }
 
   /**
