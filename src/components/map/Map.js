@@ -236,6 +236,7 @@ class Map extends React.Component {
     if (!this.mapNode) return;
 
     this.map = L.map(this.mapNode, this.getMapOptions());
+    this.map.scrollWheelZoom.disable();
 
     // If the layer has bounds, we just pan in the
     // area
@@ -248,7 +249,6 @@ class Map extends React.Component {
       this.map.dragging.disable();
       this.map.touchZoom.disable();
       this.map.doubleClickZoom.disable();
-      this.map.scrollWheelZoom.disable();
       this.map.boxZoom.disable();
       this.map.keyboard.disable();
     }
