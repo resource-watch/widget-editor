@@ -1142,8 +1142,6 @@ class WidgetEditor extends React.Component {
       chartOptions = jiminy.general.map(val => ({ label: val, value: val }));
     }
 
-    console.log('visualizationOptions', visualizationOptions);
-
     return (
       <div className="c-we-widget-editor">
         <div className="customize-visualization">
