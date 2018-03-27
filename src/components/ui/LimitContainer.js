@@ -63,7 +63,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   setLimit: debounce((limit) => {
     dispatch(setLimit(limit));
-  }, 50)
+  }, 500)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LimitContainer);
