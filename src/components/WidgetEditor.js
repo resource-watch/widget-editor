@@ -6,6 +6,7 @@ import { DragDropContext } from 'react-dnd';
 import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
+import classnames from 'classnames';
 
 // Redux
 import { connect } from 'react-redux';
@@ -1110,6 +1111,16 @@ class WidgetEditor extends React.Component {
     const showEmbedButton = embedButtonMode === 'always'
       || (embedButtonMode === 'auto' && !!getConfig().userToken);
 
+    const mapButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'map'
+    });
+    const tableButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'table'
+    });
+    const chartButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'chart'
+    });
+
     const visualization = this.getVisualization();
 
     // TODO: instead of hiding the whole UI, let's show an error message or
@@ -1140,22 +1151,34 @@ class WidgetEditor extends React.Component {
           >
             Customize Visualization
           </h2>
-          <div className="visualization-type">
-            <div className="c-we-field">
-              <label htmlFor="visualization-type-select">
-                Visualization type
-              </label>
-              <Select
-                id="visualization-type-select"
-                properties={{
-                  className: 'visualization-type-selector',
-                  name: 'visualization-type',
-                  value: selectedVisualizationType
-                }}
-                options={visualizationOptions}
-                onChange={value => this.handleVisualizationTypeChange(value, false)}
-              />
-            </div>
+          <div className="visualization-type-buttons">
+            {visualizationOptions.find(v => v.value === 'chart') &&
+              <button
+                type="button"
+                onClick={() => this.props.setVisualizationType('chart')}
+                className={chartButtonClassName}
+              >
+                Chart
+              </button>
+            }
+            {visualizationOptions.find(v => v.value === 'map') &&
+              <button
+                type="button"
+                onClick={() => this.props.setVisualizationType('map')}
+                className={mapButtonClassName}
+              >
+                Map
+              </button>
+            }
+            {visualizationOptions.find(v => v.value === 'table') &&
+              <button
+                type="button"
+                onClick={() => this.props.setVisualizationType('table')}
+                className={tableButtonClassName}
+              >
+                Table
+              </button>
+            }
           </div>
           {
             (selectedVisualizationType === 'chart' ||
