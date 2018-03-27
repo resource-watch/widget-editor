@@ -268,6 +268,7 @@ Steps:
 - Show alias tooltip immediately on hover
 - “Visualization type” dropdown changed to radio buttons/facets
 - Change default limit to 50
+- Prevent the bars from overlapping when they have same x values
 
 ### v1.0.2
 - Remove the timeline from the legend (map only)
