@@ -40,7 +40,7 @@ class CategoryContainer extends React.Component {
     return connectDropTarget(
       <div className="c-we-column-container">
         <span className="text">
-          Category
+          Category (x)
         </span>
         <div className={containerDivClass}>
           {!category &&
