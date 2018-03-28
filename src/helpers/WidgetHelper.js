@@ -334,7 +334,11 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
   }
 
   if (orderByColumn.length > 0 && chartInfo.y && orderByColumn[0].name === chartInfo.y.name && chartInfo.y.aggregateFunction && chartInfo.y.aggregateFunction !== 'none') {
-    orderByColumn[0].name = `${chartInfo.y.aggregateFunction}(${chartInfo.y.name})`;
+    // FIXME: Might be able to just use "y" instead of
+    // columns.find(c => c.value === chartInfo.y.name).key
+    // NOTE: We need to use the SQL alias of the column because the API
+    // doesn't support functions in the ORDER BY (ex: ORDER BY count(number))
+    orderByColumn[0].name = columns.find(c => c.value === chartInfo.y.name).key;
   }
 
   const sortOrder = chartInfo.order ? chartInfo.order.orderType : 'asc';

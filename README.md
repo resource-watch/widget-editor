@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.4 (not yet released)
+- Fix bugs where the data URL would be miscomputed when using an aggregation and sorting at the same time
+
 ### v1.0.3
 - Disable zoom on scroll by default
 - Category and value labels rename
