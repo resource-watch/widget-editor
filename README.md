@@ -262,7 +262,7 @@ Steps:
 
 ## Changelog
 
-### v1.0.3 (not yet released)
+### v1.0.3
 - Disable zoom on scroll by default
 - Category and value labels rename
 - Show alias tooltip immediately on hover
