@@ -7,7 +7,7 @@ import classNames from 'classnames';
 // Store
 import { connect } from 'react-redux';
 
-import { removeFilter, removeColor, removeCategory, removeValue, removeSize, removeOrderBy, setOrderBy } from 'reducers/widgetEditor';
+import { removeFilter, removeColor, removeCategory, removeValue, removeSize, removeOrderBy } from 'reducers/widgetEditor';
 import { toggleTooltip } from 'reducers/tooltip';
 
 // Components
@@ -134,9 +134,7 @@ class ColumnBox extends React.Component {
 
   @Autobind
   onApplyFilter(filter, notNullSelected) {
-    if (this.props.onConfigure) {
-      this.props.onConfigure({ name: this.props.name, value: filter, notNull: notNullSelected });
-    }
+    this.props.onConfigure({ name: this.props.name, value: filter, notNull: notNullSelected });
   }
 
   @Autobind
@@ -147,36 +145,24 @@ class ColumnBox extends React.Component {
     // there isn't any aggregate function applied
     const value = aggregateFunction === 'none' ? null : aggregateFunction;
 
-    if (this.props.onConfigure) {
-      this.props.onConfigure({ name: this.props.name, value });
-    }
+    this.props.onConfigure({ name: this.props.name, value });
   }
 
   @Autobind
   onApplyAggregateFunctionSize(aggregateFunctionSize) {
     this.setState({ aggregateFunctionSize });
-
-    if (this.props.onConfigure) {
-      this.props.onConfigure(aggregateFunctionSize);
-    }
+    this.props.onConfigure(aggregateFunctionSize);
   }
 
   @Autobind
   onApplyAggregateFunctionColor(aggregateFunctionColor) {
     this.setState({ aggregateFunctionColor });
-
-    if (this.props.onConfigure) {
-      this.props.onConfigure(aggregateFunctionColor);
-    }
+    this.props.onConfigure(aggregateFunctionColor);
   }
 
   @Autobind
   onApplyOrderBy(orderBy) {
-    this.setState({ orderBy });
-
-    if (this.props.onSetOrderType) {
-      this.props.onSetOrderType(orderBy);
-    }
+    this.props.onSetOrderType(orderBy);
   }
 
   /**
@@ -420,7 +406,7 @@ class ColumnBox extends React.Component {
       (isA === 'orderBy');
 
     return connectDragSource(
-      <div // eslint-disable-line jsx-a11y/no-static-element-interactions
+      <div // eslint-disable-line
         // FIXME: which role to assign to the element to make it accessible?
         className={classNames({ 'c-we-columnbox': true, '-dimmed': isDragging })}
         title={isA ? alias || name : ''}
@@ -483,14 +469,12 @@ class ColumnBox extends React.Component {
 }
 
 ColumnBox.propTypes = {
-  // NOTE: Don't make any of the following props as required as React will
-  // throw prop checks errors because of react-dnd (don't know why)
   tableName: PropTypes.string,
   datasetID: PropTypes.string,
-  name: PropTypes.string,
+  name: PropTypes.string.isRequired,
   alias: PropTypes.string,
   description: PropTypes.string,
-  type: PropTypes.string,
+  type: PropTypes.string.isRequired,
   isA: PropTypes.string,
   closable: PropTypes.bool,
   configurable: PropTypes.bool,
@@ -499,8 +483,8 @@ ColumnBox.propTypes = {
   // Store
   widgetEditor: PropTypes.object.isRequired,
   // Injected by React DnD:
-  isDragging: PropTypes.bool,
-  connectDragSource: PropTypes.func,
+  isDragging: PropTypes.bool.isRequired,
+  connectDragSource: PropTypes.func.isRequired,
   // ACTIONS
   removeFilter: PropTypes.func.isRequired,
   removeSize: PropTypes.func.isRequired,
@@ -508,12 +492,19 @@ ColumnBox.propTypes = {
   removeCategory: PropTypes.func.isRequired,
   removeValue: PropTypes.func.isRequired,
   removeOrderBy: PropTypes.func.isRequired,
-  setOrderBy: PropTypes.func.isRequired,
   toggleTooltip: PropTypes.func.isRequired
 };
 
 ColumnBox.defaultProps = {
-  description: ''
+  description: '',
+  onConfigure: () => {},
+  onSetOrderType: () => {},
+  configurable: false,
+  closable: true,
+  isA: undefined,
+  alias: undefined,
+  datasetID: undefined,
+  tableName: undefined
 };
 
 const mapStateToProps = state => ({
@@ -538,9 +529,6 @@ const mapDispatchToProps = dispatch => ({
   },
   removeOrderBy: (value) => {
     dispatch(removeOrderBy(value));
-  },
-  setOrderBy: (value) => {
-    dispatch(setOrderBy(value));
   },
   toggleTooltip: (opened, opts) => {
     dispatch(toggleTooltip(opened, opts));

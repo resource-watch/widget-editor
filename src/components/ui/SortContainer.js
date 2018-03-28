@@ -18,8 +18,8 @@ const boxTarget = {
   }
 };
 
-@DropTarget('columnbox', boxTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
+@DropTarget('columnbox', boxTarget, ({ dropTarget }, monitor) => ({
+  connectDropTarget: dropTarget(),
   isOver: monitor.isOver(),
   canDrop: monitor.canDrop()
 }))
@@ -68,11 +68,15 @@ class SortContainer extends React.Component {
 
 SortContainer.propTypes = {
   connectDropTarget: PropTypes.func,
-  isOver: PropTypes.bool,
   canDrop: PropTypes.bool,
   // Store
-  setOrderBy: PropTypes.func,
-  widgetEditor: PropTypes.object
+  setOrderBy: PropTypes.func.isRequired,
+  widgetEditor: PropTypes.object.isRequired
+};
+
+SortContainer.defaultProps = {
+  connectDropTarget: () => {},
+  canDrop: true
 };
 
 const mapStateToProps = state => ({

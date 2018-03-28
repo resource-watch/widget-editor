@@ -75,9 +75,14 @@ class FilterContainer extends React.Component {
 FilterContainer.propTypes = {
   connectDropTarget: PropTypes.func,
   canDrop: PropTypes.bool,
-  widgetEditor: PropTypes.object,
+  widgetEditor: PropTypes.object.isRequired,
   // Redux
   setFilterValue: PropTypes.func.isRequired
+};
+
+FilterContainer.defaultProps = {
+  connectDropTarget: () => {},
+  canDrop: true
 };
 
 const mapStateToProps = state => ({
