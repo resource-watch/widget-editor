@@ -265,6 +265,7 @@ Steps:
 ### v1.0.4 (not yet released)
 - Fix bugs where the data URL would be miscomputed when using an aggregation and sorting at the same time
 - Make the sorting descending by default
+- By default, sort the pie and bar charts by the value column (descending)
 
 ### v1.0.3
 - Disable zoom on scroll by default

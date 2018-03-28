@@ -329,8 +329,12 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
 
   // If the visualization is a line chart and the user doesn't sort
   // the data, by default we sort it with the category column
-  if (!orderByColumn.length && chartInfo.chartType === 'line') {
-    orderByColumn.push({ name: chartInfo.x.name });
+  if (!orderByColumn.length) {
+    if (chartInfo.chartType === 'line') {
+      orderByColumn.push({ name: chartInfo.x.name });
+    } else if (chartInfo.chartType === 'pie' || chartInfo.chartType === 'bar') {
+      orderByColumn.push({ name: chartInfo.y.name });
+    }
   }
 
   if (orderByColumn.length > 0 && chartInfo.y && orderByColumn[0].name === chartInfo.y.name && chartInfo.y.aggregateFunction && chartInfo.y.aggregateFunction !== 'none') {
