@@ -10,9 +10,10 @@ import { toggleTooltip } from 'reducers/tooltip';
 // Components
 import Button from 'components/ui/Button';
 
-const ORDER_BY_OPTIONS = [
-  'asc', 'desc'
-];
+const ORDER_BY_OPTIONS = {
+  asc: 'Ascending',
+  desc: 'Descending'
+};
 
 class OrderByTooltip extends React.Component {
   constructor(props) {
@@ -59,9 +60,9 @@ class OrderByTooltip extends React.Component {
       <div className="c-we-order-by-tooltip">
         Order by
         <div className="button-container">
-          {ORDER_BY_OPTIONS.map((val, i) =>
-            (
-              <div className="radio-button" key={val}>
+          { Object.keys(ORDER_BY_OPTIONS).map((val, i) => (
+            <div className="radio-button" key={val}>
+              <label htmlFor={`radio-orderby-${i}`}>
                 <input
                   id={`radio-orderby-${i}`}
                   type="radio"
@@ -70,10 +71,10 @@ class OrderByTooltip extends React.Component {
                   onChange={this.handleInputChange}
                   checked={val === orderBy.orderType}
                 />
-                <label htmlFor={`radio-orderby-${i}`}>{val}</label>
-              </div>
-            )
-          )}
+                {ORDER_BY_OPTIONS[val]}
+              </label>
+            </div>
+          ))}
         </div>
         <Button
           properties={{ type: 'button', className: '-primary -compressed' }}
@@ -88,7 +89,7 @@ class OrderByTooltip extends React.Component {
 
 OrderByTooltip.propTypes = {
   onApply: PropTypes.func.isRequired,
-  orderBy: PropTypes.object,
+  orderBy: PropTypes.object.isRequired,
   // store
   toggleTooltip: PropTypes.func.isRequired
 };

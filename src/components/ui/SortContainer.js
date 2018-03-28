@@ -14,7 +14,7 @@ import ColumnBox from 'components/ui/ColumnBox';
 
 const boxTarget = {
   drop(props, monitor) {
-    props.setOrderBy(Object.assign({}, monitor.getItem(), { orderType: 'asc' }));
+    props.setOrderBy(Object.assign({}, monitor.getItem(), { orderType: 'desc' }));
   }
 };
 
