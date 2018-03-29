@@ -44,7 +44,7 @@ class FilterContainer extends React.Component {
     return connectDropTarget(
       <div className="c-we-filter-container">
         <span className="text">
-          Filters
+          Filter by value
         </span>
         <div className={containerDivClass}>
           {(!filters || filters.length === 0) &&

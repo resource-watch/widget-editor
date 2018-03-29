@@ -7,13 +7,10 @@
   font-size: $font-size-small-medium;
   font-weight: $font-weight-bold;
 
-  .text {
-    margin-right: 8px;
-  }
-
   input {
     height: 30px;
     width: 150px;
+    margin-left: 8px;
     text-align: right;
 
     border: 1px solid $border-color-2;

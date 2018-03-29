@@ -46,17 +46,24 @@ class DimensionYContainer extends React.Component {
 
   render() {
     const { canDrop, connectDropTarget, widgetEditor } = this.props;
-    const value = widgetEditor.value;
+    const { value, chartType } = widgetEditor;
 
     const containerDivClass = classNames({
       '-release': canDrop,
       'columnbox-container': true
     });
 
+    // We decide how to name the category container
+    // depending on the type of chart
+    let valueLabel = 'Values';
+    if (chartType === 'line' || chartType === 'scatter') {
+      valueLabel = 'Y-axis';
+    }
+
     return connectDropTarget(
       <div className="c-we-column-container">
         <span className="text">
-          Value (y)
+          {valueLabel}
         </span>
         <div className={containerDivClass}>
           {!value &&
