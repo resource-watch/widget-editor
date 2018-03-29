@@ -267,6 +267,7 @@ Steps:
 - Make the sorting descending by default
 - By default, sort the pie and bar charts by the value column (descending)
 - Don't use Jiminy to get chart recommendations anymore
+- Disable the 1d_scatter and 1d_tick charts
 
 ### v1.0.3
 - Disable zoom on scroll by default

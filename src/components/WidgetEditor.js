@@ -82,9 +82,9 @@ const CHART_TYPES = [
   { label: 'bar', value: 'bar' },
   { label: 'line', value: 'line' },
   { label: 'pie', value: 'pie' },
-  { label: 'scatter', value: 'scatter' },
-  { label: '1d_scatter', value: '1d_scatter' },
-  { label: '1d_tick', value: '1d_tick' }
+  { label: 'scatter', value: 'scatter' }
+  // { label: '1d_scatter', value: '1d_scatter' },
+  // { label: '1d_tick', value: '1d_tick' }
 ];
 
 const DEFAULT_STATE = {

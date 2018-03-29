@@ -5,8 +5,8 @@ import { format } from 'd3-format';
 import BarChart from 'helpers/bar';
 import LineChart from 'helpers/line';
 import PieChart from 'helpers/pie';
-import OneDScatterChart from 'helpers/1d_scatter';
-import OneDTickChart from 'helpers/1d_tick';
+// import OneDScatterChart from 'helpers/1d_scatter';
+// import OneDTickChart from 'helpers/1d_tick';
 import ScatterChart from 'helpers/scatter';
 
 // Helpers
@@ -20,9 +20,9 @@ const CHART_TYPES = {
   bar: BarChart,
   line: LineChart,
   pie: PieChart,
-  scatter: ScatterChart,
-  '1d_scatter': OneDScatterChart,
-  '1d_tick': OneDTickChart
+  scatter: ScatterChart
+  // '1d_scatter': OneDScatterChart,
+  // '1d_tick': OneDTickChart
 };
 
 export const ALLOWED_FIELD_TYPES = [
@@ -539,7 +539,12 @@ export async function getChartConfig(
     }
   }
 
-  return CHART_TYPES[chartInfo.chartType]({
+  const chart = getChartType(chartInfo.chartType);
+  if (!chart) {
+    throw new Error('This chart is currently not supported.');
+  }
+
+  return chart({
     // In the future, we could pass the type of the columns so the chart
     // could select the right scale
     columns: {
