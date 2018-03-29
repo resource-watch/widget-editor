@@ -131,10 +131,10 @@ class SaveWidgetModal extends React.Component {
     return (
       <div className="c-we-save-widget-modal">
         {!saved &&
-        <h2>Save widget</h2>
+        <h2>Save visualization</h2>
         }
         {saved &&
-        <h2>Widget saved!</h2>
+        <h2>Visualization saved!</h2>
         }
         <Spinner
           isLoading={loading}
@@ -216,7 +216,7 @@ class SaveWidgetModal extends React.Component {
                   properties={{ className: '-secondary', type: 'button' }}
                   onClick={this.onClickCheckWidgets}
                 >
-                  Check my widgets
+                  Check my visualizations
                 </Button>
               }
             </div>

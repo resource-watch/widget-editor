@@ -116,7 +116,7 @@ class NEXGDDPEditor extends React.Component {
               className="c-we-button -primary"
               onClick={this.props.onSave}
             >
-              {mode === 'save' ? 'Save widget' : 'Update widget'}
+              {mode === 'save' ? 'Save visualization' : 'Update visualization'}
             </button>
           }
           { canShowEmbedButton &&

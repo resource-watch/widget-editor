@@ -699,7 +699,7 @@ export async function getWidgetConfig(
     let chartConfig = {};
 
     if (visualizationType === 'table') {
-      reject('Table widgets are not supported yet.');
+      reject('Table visualizations are not supported yet.');
       return;
     } else if (visualizationType !== 'map') {
       // If the visualization if a map, we don't have any chartConfig
