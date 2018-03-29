@@ -106,11 +106,6 @@ const DEFAULT_STATE = {
   chartConfigError: null, // Error message when fetching the chart configuration
   chartConfigLoading: false, // Whether we're loading the config
 
-  // JIMINY
-  jiminy: {},
-  jiminyLoaded: false,
-  jiminyError: false,
-
   // LAYERS
   layers: [],
   layersLoaded: false,
@@ -134,8 +129,7 @@ const DEFAULT_STATE = {
  *                     ⮑|-loadData-(3)-----------------------------------------------------------------------------|
  *                       |-getDatasetInfo (4)-|
  *                                            ⮑|-getFields (5)-|
- *                                            |                 ⮑|-getJiminy (6)-|
- *                                            |                 |                  ⮑|-checkEditorRestoredState (7)-|
+ *                                            |                 ⮑|-checkEditorRestoredState (7)-|
  *                                            ⮑|-getLayers (8)-|
  *                                                              ⮑|-setVisualizationOptions (9)-|
  *
@@ -145,8 +139,7 @@ const DEFAULT_STATE = {
  * (4) Get the dataset info (type, provider, etc.), the aliases and descriptions of the fields, the relevant ones
  * (5) Depend on (4). Get the actual list of fields and their types. Filter them according to (4). Not executed
  *     if dataset is a raster.
- * (6) Depend on (5). Get the chart recommendations. Not executed if dataset is a raster.
- * (7) Depend on and (6). Check that the widget is based on fields that still exist and update the fields
+ * (7) Depend on and (5). Check that the widget is based on fields that still exist and update the fields
  *     aliases and descriptions. Not executed if dataset is a raster.
  * (8) Depend on (4). Get the list of layers.
  * (9) Depend on (5) and (8). Set the defaut vizualization. Executed even if (5) is not.
@@ -350,25 +343,6 @@ class WidgetEditor extends React.Component {
         return new Promise(resolve => this.setState({ layersError: true }, resolve));
       })
       .then(() => new Promise(resolve => this.setState({ layersLoaded: true }, resolve)));
-  }
-
-  /**
-   * Fetch the recommendations from Jiminy and save them in the
-   * state
-   * @returns {Promise<any>}
-   */
-  getJiminy(fields) {
-    this.setState({ jiminyError: false, jiminyLoaded: false });
-
-    // We get the name of the columns that we can use to build the
-    // charts
-    const fieldsSt = fields.map(elem => elem.columnName);
-
-    const querySt = `SELECT ${fieldsSt} FROM ${this.props.datasetId} LIMIT 300`;
-    return DatasetService.getJiminySuggestions(querySt)
-      .then(jiminy => new Promise(resolve => this.setState({ jiminy, jiminyError: typeof jiminy === 'undefined' }, resolve)))
-      .catch(() => new Promise(resolve => this.setState({ jiminyError: true }, resolve)))
-      .then(() => new Promise(resolve => this.setState({ jiminyLoaded: true }, resolve)));
   }
 
   /**
@@ -876,18 +850,6 @@ class WidgetEditor extends React.Component {
           }
         });
 
-        // This promise basically calls this.getJiminy but makes
-        // sure that if the dataset is a raster, we don't call it
-        const getJiminy = fields => new Promise((resolve, reject) => {
-          if (this.state.datasetType === 'raster') {
-            this.setState({ jiminyLoaded: true, jiminyError: false }, resolve);
-          } else {
-            this.getJiminy(fields)
-              .then(resolve)
-              .catch(reject);
-          }
-        });
-
         const checkEditorRestoredState = () => { // eslint-disable-line no-shadow
           if (this.state.datasetType !== 'raster') {
             this.checkEditorRestoredState(fieldsInfo);
@@ -896,13 +858,12 @@ class WidgetEditor extends React.Component {
 
         Promise.all([
           getFields
-            .then((fields) => {
-              getJiminy(fields)
-                // If the editor is initially loaded, a previous state might have
-                // been restored. In such a case, we make sure the data is still
-                // up to date (for example, the aliases)
-                .then(() => checkEditorRestoredState())
-                .then(() => this.setState({ initializing: false }));
+            .then(() => {
+              // If the editor is initially loaded, a previous state might have
+              // been restored. In such a case, we make sure the data is still
+              // up to date (for example, the aliases)
+              checkEditorRestoredState();
+              this.setState({ initializing: false });
             }),
           this.getLayers()
         ])
@@ -1056,7 +1017,7 @@ class WidgetEditor extends React.Component {
   isLoading() {
     return !this.state.layersLoaded
       || !this.state.fieldsLoaded
-      || (!this.state.fieldsError && !this.state.jiminyLoaded);
+      || this.state.fieldsError;
   }
 
   /**
@@ -1083,9 +1044,6 @@ class WidgetEditor extends React.Component {
   render() {
     const {
       tableName,
-      jiminy,
-      jiminyError,
-      jiminyLoaded,
       fieldsError,
       layersError,
       layers,
@@ -1135,13 +1093,6 @@ class WidgetEditor extends React.Component {
       return <div className="c-we-widget-editor" />;
     }
 
-    // TODO: could be saved in the state instead of computing it
-    // each time
-    let chartOptions = CHART_TYPES;
-    if (!jiminyError && jiminyLoaded && datasetType !== 'raster') {
-      chartOptions = jiminy.general.map(val => ({ label: val, value: val }));
-    }
-
     return (
       <div className="c-we-widget-editor">
         <div className="customize-visualization">
@@ -1189,7 +1140,7 @@ class WidgetEditor extends React.Component {
                   datasetId={datasetId}
                   datasetType={datasetType}
                   datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
+                  chartOptions={CHART_TYPES}
                   tableName={tableName}
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
@@ -1210,7 +1161,7 @@ class WidgetEditor extends React.Component {
                   datasetId={datasetId}
                   datasetType={datasetType}
                   datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
+                  chartOptions={CHART_TYPES}
                   tableName={tableName}
                   tableViewMode={selectedVisualizationType === 'table'}
                   mode={editorMode}
