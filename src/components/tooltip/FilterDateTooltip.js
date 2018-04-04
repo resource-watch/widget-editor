@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { toastr } from 'react-redux-toastr';
-
-// Redux
-import { connect } from 'react-redux';
-import { toggleTooltip } from 'reducers/tooltip';
+import Flatpickr from 'react-flatpickr';
 
 // Services
 import DatasetService from 'services/DatasetService';
@@ -13,23 +10,63 @@ import DatasetService from 'services/DatasetService';
 import Button from 'components/ui/Button';
 
 class FilterDateTooltip extends React.Component {
+  /**
+   * Return the date shifted by the timezone offset
+   * @param {Date} date Date to offset
+   */
+  static applyTimezoneOffset(date) {
+    return new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000));
+  }
+
+  /**
+   * Return the date shifted by the opposite of the timezone offset
+   * @param {Date} date Date to offset
+   */
+  static revertTimezoneOffset(date) {
+    return new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000));
+  }
+
   constructor(props) {
     super(props);
 
     this.state = {
-      values: []
+      minDate: null,
+      maxDate: null
     };
 
     // DatasetService
     this.datasetService = new DatasetService(props.datasetID);
+
+    this.onChangeStartDate = this.onChangeStartDate.bind(this);
+    this.onChangeEndDate = this.onChangeEndDate.bind(this);
   }
 
   componentDidMount() {
     this.getFilter();
   }
 
-  onValueChange(selected) {
-    this.props.onChange(selected);
+  /**
+   * Event handler executed when the user changes
+   * the start date
+   * @param {Date} date New start date
+   */
+  onChangeStartDate(date) {
+    this.props.onChange([
+      FilterDateTooltip.revertTimezoneOffset(date[0]),
+      this.props.selected[1]
+    ]);
+  }
+
+  /**
+   * Event handler executed when the user changes
+   * the end date
+   * @param {Date} date New end date
+   */
+  onChangeEndDate(date) {
+    this.props.onChange([
+      this.props.selected[0],
+      FilterDateTooltip.revertTimezoneOffset(date[0])
+    ]);
   }
 
   /**
@@ -40,96 +77,90 @@ class FilterDateTooltip extends React.Component {
     const { selected } = this.props;
 
     this.props.getFilter()
-      .then((result) => {
-        const yearRange = [
-          new Date(result.min).getFullYear(),
-          new Date(result.max).getFullYear()
-        ];
-        const years = new Array((yearRange[1] - yearRange[0]) + 1)
-          .fill(undefined)
-          .map((_, index) => yearRange[0] + index);
-
+      .then(({ min, max }) => {
         this.setState({
-          values: years.map(y => ({ value: y, label: y }))
+          minDate: new Date(min),
+          maxDate: new Date(max)
         });
 
-
-        if (this.props.onChange && !selected.length) {
-          this.props.onChange([yearRange[0], yearRange[1]]);
+        if (!selected.length) {
+          this.props.onChange([new Date(min), new Date(max)]);
         }
 
-        if (this.props.onToggleLoading) {
-          this.props.onToggleLoading(false);
-        }
-
-        // We let the tooltip know that the component has been resized
-        if (this.props.onResize) {
-          this.props.onResize();
-        }
-      })
-      .catch((errors) => {
         this.props.onToggleLoading(false);
 
-        try {
-          errors.forEach(er =>
-            toastr.error('Error', er.detail)
-          );
-        } catch (e) {
-          toastr.error('Error', 'Oops');
-        }
+        // We let the tooltip know that the component has been resized
+        this.props.onResize();
+      })
+      .catch((err) => {
+        console.error(err);
+        this.props.onToggleLoading(false);
+        toastr.error('Unable to load some information for the date filter');
       });
   }
 
   render() {
-    const { values } = this.state;
+    const { minDate, maxDate } = this.state;
     const { selected, loading } = this.props;
 
+    const timestampRange = (+maxDate) - (+minDate);
+
+    // NOTE: we apply and then revert an offset to the dates
+    // passed to Flatpickr because the library is unable to
+    // display UTC dates
+    // What we do is that we add the timezone offset to the
+    // timestamp of the dates so they are displayed as the
+    // ones in UTC. We then subtract the offset once we deal
+    // with the dates everywhere else in the code.
+
+    const flatpickrConfig = {
+      minDate: selected.length
+        ? FilterDateTooltip.applyTimezoneOffset(selected[0])
+        : null,
+      maxDate: selected.length
+        ? FilterDateTooltip.applyTimezoneOffset(selected[1])
+        : null,
+      dateFormat: timestampRange <= 24 * 3600 * 1000 // eslint-disable-line no-nested-ternary
+        ? 'H:i'
+        : (timestampRange <= 7 * 24 * 3600 * 1000
+          ? 'd-m-Y H:i'
+          : 'd-m-Y'
+        ),
+      time_24hr: true,
+      noCalendar: timestampRange <= 24 * 3600 * 1000,
+      enableTime: timestampRange <= 7 * 24 * 3600 * 1000,
+      locale: { firstDayOfWeek: 1 }
+    };
+
     return (
-      <div className="c-we-filter-string-tooltip">
+      <div className="date-filter">
         {!loading && selected.length &&
-          <select
-            value={selected[0]}
-            onChange={(e) => {
-              this.props.onChange([
-                e.currentTarget.value,
-                selected[1]
-              ]);
-            }}
-          >
-            {values.map(v => (
-              <option
-                key={v.label}
-                disabled={+v.value > +selected[1]}
-                value={v.value}
-              >
-                {v.label}
-              </option>
-            ))}
-          </select>
+          <label htmlFor="filter-date-from">
+            From:
+            <Flatpickr
+              id="filter-date-from"
+              options={Object.assign({}, flatpickrConfig, {
+                defaultDate: FilterDateTooltip.applyTimezoneOffset(selected[0]),
+                minDate: FilterDateTooltip.applyTimezoneOffset(minDate)
+              })}
+              onChange={this.onChangeStartDate}
+            />
+          </label>
         }
 
         {!loading && selected.length &&
-          <select
-            value={selected[1]}
-            onChange={(e) => {
-              this.props.onChange([
-                selected[0],
-                e.currentTarget.value
-              ]);
-            }}
-          >
-            {values.map(v => (
-              <option
-                key={v.label}
-                disabled={+v.value < +selected[0]}
-                value={v.value}
-              >
-                {v.label}
-              </option>
-            ))}
-          </select>
+          <label htmlFor="filter-date-to">
+            To:
+            <Flatpickr
+              id="filter-date-to"
+              options={Object.assign({}, flatpickrConfig, {
+                defaultDate: FilterDateTooltip.applyTimezoneOffset(selected[1]),
+                maxDate: FilterDateTooltip.applyTimezoneOffset(maxDate)
+              })}
+              onChange={this.onChangeEndDate}
+            />
+          </label>
         }
-
 
         {!loading &&
           <div className="buttons">
@@ -147,36 +178,18 @@ class FilterDateTooltip extends React.Component {
 }
 
 FilterDateTooltip.propTypes = {
-  tableName: PropTypes.string.isRequired,
   datasetID: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
+  // NOTE: the values are expected as Date objects
   selected: PropTypes.array.isRequired,
-  loading: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
   /**
    * Get the filter value or min/max values
    */
   getFilter: PropTypes.func.isRequired,
-  onResize: PropTypes.func, // Passed from the tooltip component
-  onChange: PropTypes.func,
-  onToggleLoading: PropTypes.func,
-  onApply: PropTypes.func,
-  // store
-  widgetEditor: PropTypes.object.isRequired
+  onResize: PropTypes.func.isRequired, // Passed from the tooltip component
+  onChange: PropTypes.func.isRequired,
+  onToggleLoading: PropTypes.func.isRequired,
+  onApply: PropTypes.func.isRequired
 };
 
-FilterDateTooltip.defaultProps = {
-  selected: []
-};
-
-const mapDispatchToProps = dispatch => ({
-  toggleTooltip: (opened, opts) => {
-    dispatch(toggleTooltip(opened, opts));
-  }
-});
-
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(FilterDateTooltip);
+export default FilterDateTooltip;

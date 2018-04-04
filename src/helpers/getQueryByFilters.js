@@ -39,7 +39,7 @@ export default function getQueryByFilters(
     }
 
     if (filter.type === 'date') {
-      const whereClause = `${filter.name} >= '01-01-${filter.value[0]}' AND ${filter.name} <= '01-01-${filter.value[1]}'`;
+      const whereClause = `${filter.name} >= ${+filter.value[0]} AND ${filter.name} <= ${+filter.value[1]}`;
       return filter.notNull ? `${whereClause} AND ${filter.name} IS NOT NULL` : whereClause;
     }
 

@@ -50,8 +50,16 @@ class FilterTooltip extends React.Component {
   }
 
   onApply() {
+    const { type } = this.props;
     const { selected, notNullSelected } = this.state;
-    this.props.onApply(selected, notNullSelected);
+
+    // We save the date filter values as timestamp
+    let value = selected;
+    if (type === 'date') {
+      value = selected.map(d => +d);
+    }
+
+    this.props.onApply(value, notNullSelected);
 
     // We close the tooltip
     requestAnimationFrame(() => {
@@ -61,7 +69,11 @@ class FilterTooltip extends React.Component {
 
   onScreenClick(e) {
     const el = document.querySelector('.c-we-tooltip');
-    const clickOutside = el && el.contains && !el.contains(e.target);
+    const flatpicker = document.querySelector('.flatpickr-calendar.open');
+
+    const clickOutside = el && el.contains && !el.contains(e.target)
+      && (!flatpicker || !flatpicker.contains(e.target));
+
     if (clickOutside) {
       this.props.toggleTooltip(false);
     }
@@ -154,7 +166,10 @@ class FilterTooltip extends React.Component {
             {...this.props}
             getFilter={() => this.getFilter()}
             loading={this.state.loading}
-            selected={this.state.selected}
+            selected={
+              // We parse the timestamps as dates
+              this.state.selected.map(d => new Date(d))
+            }
             onChange={this.onChange}
             onToggleLoading={this.onToggleLoading}
             onApply={this.onApply}
