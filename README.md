@@ -273,6 +273,7 @@ Steps:
 - Vastly improve the date filter
 - Move and rename the area intersection filter
 - Don't minify the JS bundle in develoment mode
+- Fix a bug where the tooltip of the filters could disappear right after opening
 
 ### v1.0.3
 - Disable zoom on scroll by default

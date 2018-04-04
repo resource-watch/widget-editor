@@ -182,8 +182,15 @@ class ColumnBox extends React.Component {
   /**
    * Event handler executed when the user puts the
    * cursor on top of the root element
+   * @param {MouseEvent} e Event
    */
-  onMouseOverColumn() {
+  onMouseOverColumn(e) {
+    // If the cursor comes from an element within the
+    // column, we don't open the tooltip again
+    if (e && this.el && this.el.contains(e.relatedTarget)) {
+      return;
+    }
+
     this.detailsTooltipCloseOnMouseOut = true;
     this.openDetailsTooltip();
   }
@@ -191,8 +198,15 @@ class ColumnBox extends React.Component {
   /**
    * Event handler executed when the user moves the
    * cursor away from the root element
+   * @param {MouseEvent} e Event
    */
-  onMouseOutColumn() {
+  onMouseOutColumn(e) {
+    // If the cursor goes over an element within the
+    // column, we don't close the tooltip
+    if (e && this.el && this.el.contains(e.relatedTarget)) {
+      return;
+    }
+
     if (this.detailsTooltipTimer) {
       clearTimeout(this.detailsTooltipTimer);
       this.detailsTooltipTimer = null;
@@ -411,8 +425,8 @@ class ColumnBox extends React.Component {
         className={classNames({ 'c-we-columnbox': true, '-dimmed': isDragging })}
         title={isA ? alias || name : ''}
         onClick={e => !isA && this.onClickColumn(e)}
-        onMouseOver={() => !isA && this.onMouseOverColumn()}
-        onMouseOut={() => !isA && this.onMouseOutColumn()}
+        onMouseOver={e => !isA && this.onMouseOverColumn(e)}
+        onMouseOut={e => !isA && this.onMouseOutColumn(e)}
         ref={(node) => { this.el = node; }}
       >
         <Icon
