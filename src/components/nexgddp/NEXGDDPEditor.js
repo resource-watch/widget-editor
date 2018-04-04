@@ -12,11 +12,11 @@ import { setChartType } from 'reducers/widgetEditor';
 // Components
 import Icon from 'components/ui/Icon';
 import FilterContainer from 'components/ui/FilterContainer';
+import AreaContainer from 'components/ui/AreaContainer';
 import DimensionsContainer from 'components/ui/DimensionsContainer';
 import FieldsContainer from 'components/ui/FieldsContainer';
 import Select from 'components/form/SelectInput';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
-import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Helpers
 import { canRenderChart } from 'helpers/WidgetHelper';
@@ -79,8 +79,6 @@ class NEXGDDPEditor extends React.Component {
               </div>
             </div>
           }
-          { hasGeoInfo
-              && <AreaIntersectionFilter required /> }
         </div>
         { !areaIntersection
             && <p>Please select both a chart style and an area intersection to proceed.</p> }
@@ -98,6 +96,7 @@ class NEXGDDPEditor extends React.Component {
             <div className="customization-container">
               <DimensionsContainer />
               <FilterContainer />
+              { hasGeoInfo && <AreaContainer required /> }
             </div>
           </div>
         ) }

@@ -271,6 +271,7 @@ Steps:
 - Rename the "Category", "Value", "Filter" and "Limit" column containers
 - Replace the keyword "widget" by "visualization" accross the project
 - Vastly improve the date filter
+- Move and rename the area intersection filter
 
 ### v1.0.3
 - Disable zoom on scroll by default

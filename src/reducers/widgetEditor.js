@@ -21,7 +21,7 @@ const SHOW_LAYER = 'WIDGET_EDITOR/SHOW_LAYER';
 const SET_FIELDS = 'WIDGET_EDITOR/SET_FIELDS';
 const SET_LIMIT = 'WIDGET_EDITOR/SET_LIMIT';
 const RESET = 'WIDGET_EDITOR/RESET';
-const SET_AREA_INTERSEACTION = 'WIDGET_EDITOR/SET_AREA_INTERSEACTION';
+const SET_AREA_INTERSECTION = 'WIDGET_EDITOR/SET_AREA_INTERSECTION';
 const SET_VISUALIZATION_TYPE = 'WIDGET_EDITOR/SET_VISUALIZATION_TYPE';
 const SET_BAND = 'WIDGET_EDITOR/SET_BAND';
 const SET_LAYER = 'WIDGET_EDITOR/SET_LAYER';
@@ -209,7 +209,7 @@ export default function (state = initialState, action) {
       });
     }
 
-    case SET_AREA_INTERSEACTION: {
+    case SET_AREA_INTERSECTION: {
       return Object.assign({}, state, {
         areaIntersection: action.payload
       });
@@ -380,7 +380,7 @@ export function setLimit(limit) {
 }
 
 export function setAreaIntersection(id) {
-  return dispatch => dispatch({ type: SET_AREA_INTERSEACTION, payload: id });
+  return dispatch => dispatch({ type: SET_AREA_INTERSECTION, payload: id });
 }
 
 export function setVisualizationType(vis) {

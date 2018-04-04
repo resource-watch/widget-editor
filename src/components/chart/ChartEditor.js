@@ -12,13 +12,13 @@ import { setChartType } from 'reducers/widgetEditor';
 // Components
 import Icon from 'components/ui/Icon';
 import FilterContainer from 'components/ui/FilterContainer';
+import AreaContainer from 'components/ui/AreaContainer';
 import DimensionsContainer from 'components/ui/DimensionsContainer';
 import FieldsContainer from 'components/ui/FieldsContainer';
 import SortContainer from 'components/ui/SortContainer';
 import LimitContainer from 'components/ui/LimitContainer';
 import Select from 'components/form/SelectInput';
 import HowToWidgetEditorModal from 'components/modal/HowToWidgetEditorModal';
-import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Helpers
 import { canRenderChart } from 'helpers/WidgetHelper';
@@ -89,7 +89,6 @@ class ChartEditor extends React.Component {
               </div>
             </div>
           }
-          { hasGeoInfo && <AreaIntersectionFilter /> }
         </div>
         <p>Drag and drop elements from the list to the boxes:</p>
         <div className="actions-div">
@@ -104,6 +103,7 @@ class ChartEditor extends React.Component {
           <div className="customization-container">
             <DimensionsContainer />
             <FilterContainer />
+            { hasGeoInfo && <AreaContainer /> }
             <SortContainer />
             <LimitContainer />
           </div>

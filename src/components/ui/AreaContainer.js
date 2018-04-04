@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { toastr } from 'react-redux-toastr';
 import Autobind from 'autobind-decorator';
+import { connect } from 'react-redux';
 
 // Components
 import CustomSelect from 'components/ui/CustomSelect';
@@ -34,12 +34,12 @@ const AREAS = [
   }
 ];
 
-class AreaIntersectionFilter extends React.Component {
+class AreaContainer extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      areaOptions: [],
+      areaOptions: AREAS,
       loading: true
     };
 
@@ -51,14 +51,12 @@ class AreaIntersectionFilter extends React.Component {
   componentDidMount() {
     let error = false;
 
-    this.fetchAreas()
-      .catch(() => { error = true; })
-      .then(() => (getConfig().userToken ? this.fetchUserAreas() : null))
+    this.fetchUserAreas()
       .catch(() => { error = true; })
       .then(() => this.setState({ loading: false }))
       .then(() => {
         if (error) {
-          toastr.error('Area intersection', 'Some of the options of the "Area intersection" filter failed to load. You might want to reload the page to try to load them again.');
+          toastr.error('Area intersection', 'Some of the options of the area filter failed to load. You might want to reload the page to try to load them again.');
         }
       });
   }
@@ -100,27 +98,13 @@ class AreaIntersectionFilter extends React.Component {
   }
 
   /**
-   * Fetch the list of the areas for the area intersection
-   * filter
-  */
-  fetchAreas() {
-    return this.areasService.fetchCountries()
-      .then((data) => {
-        this.setState({
-          areaOptions: [...this.state.areaOptions, ...AREAS,
-            ...data.map(elem => ({
-              label: elem.name || '',
-              id: elem.geostoreId,
-              value: `country-${elem.geostoreId}`
-            }))]
-        });
-      });
-  }
-
-  /**
    * Fetch the areas of the logged user
    */
   fetchUserAreas() {
+    if (!getConfig().userToken) {
+      return Promise.resolve();
+    }
+
     return this.userService.getUserAreas()
       .then((response) => {
         const userAreas = response.map(val => ({
@@ -129,7 +113,6 @@ class AreaIntersectionFilter extends React.Component {
           value: `user-area-${val.attributes.geostore}`
         }));
         this.setState({
-          loadingUserAreas: false,
           areaOptions: [...this.state.areaOptions, ...userAreas]
         });
       });
@@ -146,13 +129,11 @@ class AreaIntersectionFilter extends React.Component {
     selectedArea = selectedArea && selectedArea.value;
 
     return (
-      <div className="area-intersection">
-        <div className="c-we-field" ref={(node) => { this.el = node; }}>
-          <label htmlFor="area-intersection-select">
-            Area intersection { required ? '*' : '' } { loading && <Spinner isLoading className="-light -small -inline" /> }
-          </label>
+      <div className="c-we-area-container">
+        <label htmlFor="we-filter-area" className="text">
+          Filter by area{ required ? ' *' : '' } { loading && <Spinner isLoading className="-light -small -inline" /> }
           <CustomSelect
-            id="area-intersection-select"
+            id="we-filter-area"
             placeholder="Select area"
             options={areaOptions}
             value={selectedArea}
@@ -160,19 +141,13 @@ class AreaIntersectionFilter extends React.Component {
             allowNonLeafSelection={false}
             waitForChangeConfirmation
           />
-        </div>
+        </label>
       </div>
     );
   }
 }
 
-AreaIntersectionFilter.defaultProps = {
-  required: false,
-  showRequiredTooltip: false
-};
-
-AreaIntersectionFilter.propTypes = {
-  // Add a visual clue the field is mandatory
+AreaContainer.propTypes = {
   required: PropTypes.bool,
   // Store
   widgetEditor: PropTypes.object.isRequired,
@@ -180,11 +155,17 @@ AreaIntersectionFilter.propTypes = {
   setAreaIntersection: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
+AreaContainer.defaultProps = {
+  required: false
+};
+
+const mapStateToProps = state => ({
+  widgetEditor: state.widgetEditor
+});
 
 const mapDispatchToProps = dispatch => ({
   toggleModal: (open, opts) => { dispatch(toggleModal(open, opts)); },
   setAreaIntersection: id => dispatch(setAreaIntersection(id))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AreaIntersectionFilter);
+export default connect(mapStateToProps, mapDispatchToProps)(AreaContainer);
