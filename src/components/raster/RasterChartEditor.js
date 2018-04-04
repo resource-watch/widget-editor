@@ -14,7 +14,6 @@ import { toggleModal } from 'reducers/modal';
 // Components
 import Select from 'components/form/SelectInput';
 import Spinner from 'components/ui/Spinner';
-import AreaIntersectionFilter from 'components/ui/AreaIntersectionFilter';
 
 // Services
 import RasterService from 'services/RasterService';
@@ -160,7 +159,6 @@ class RasterChartEditor extends React.Component {
                 />
               ) }
             </div>
-            { hasGeoInfo && <AreaIntersectionFilter /> }
           </div>
           { band && band.description && (
             <p className="description">
