@@ -195,7 +195,5 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     }
   }
 
-  console.log(config);
-
   return config;
 };
