@@ -5,7 +5,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
 
-export default {
+const config = {
   input: 'index.js',
   output: {
     file: 'dist/bundle.js',
@@ -26,7 +26,12 @@ export default {
         'react-dnd/lib/index.js': ['DragDropContext', 'DropTarget', 'DragSource']
       }
     }),
-    uglify(),
     filesize()
   ]
 };
+
+if (process.env.NODE_ENV !== 'development') {
+  config.plugins.push(uglify());
+}
+
+export default config;
