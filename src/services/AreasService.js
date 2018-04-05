@@ -7,7 +7,7 @@ export default class AreasService {
   /**
    * Fetch countries
    */
-  fetchCountries() {
+  fetchCountries() { // eslint-disable-line class-methods-use-this
     return fetch(`${getConfig().url}/geostore/admin/list`)
       .then(response => response.json())
       .then(array => array.data.sort((a, b) => {
@@ -24,7 +24,7 @@ export default class AreasService {
   /**
    * Get country
    */
-  getCountry(iso) {
+  getCountry(iso) { // eslint-disable-line class-methods-use-this
     return fetch(`${getConfig().url}/query/134caa0a-21f7-451d-a7fe-30db31a424aa?sql=SELECT name_engli as label, st_asgeojson(the_geom_simple) as geojson, bbox as bounds from gadm28_countries WHERE iso = '${iso}'`)
       .then(response => response.json());
   }
@@ -32,7 +32,7 @@ export default class AreasService {
   /**
    * Get a geostore area
    */
-  getArea(id) {
+  getArea(id) { // eslint-disable-line class-methods-use-this
     return fetch(`${getConfig().url}/geostore/${id}`)
       .then(response => response.json());
   }
@@ -42,8 +42,8 @@ export default class AreasService {
    * @param {object} geojson Geojson
    * @returns {Promise<string>}
    */
-  createArea(geojson) {
-    fetch(`${getConfig().url}/geostore`, {
+  createArea(geojson) { // eslint-disable-line class-methods-use-this
+    return fetch(`${getConfig().url}/geostore`, {
       method: 'POST',
       headers: new Headers({
         'content-type': 'application/json'
@@ -61,7 +61,7 @@ export default class AreasService {
    * @param {File} file File to convert
    * @returns {Promise<Object>} geojson object
    */
-  convertToJSON(file) {
+  convertToJSON(file) { // eslint-disable-line class-methods-use-this
     const formData = new FormData();
     formData.append('file', file);
 

@@ -274,6 +274,7 @@ Steps:
 - Move and rename the area intersection filter
 - Don't minify the JS bundle in develoment mode
 - Fix a bug where the tooltip of the filters could disappear right after opening
+- Fix an issue where the area intersection filter wouldn't work
 
 ### v1.0.3
 - Disable zoom on scroll by default
