@@ -269,7 +269,7 @@ Steps:
 - Don't use Jiminy to get chart recommendations anymore
 - Disable the 1d_scatter and 1d_tick charts
 - Rename the "Category", "Value", "Filter" and "Limit" column containers
-- Replace the keyword "widget" by "visualization" accross the project
+- Replace the keyword "widget" by "visualization" across the project
 - Vastly improve the date filter
 - Move and rename the area intersection filter
 - Don't minify the JS bundle in develoment mode
