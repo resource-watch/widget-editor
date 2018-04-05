@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.5 (not released yet)
+- Fix a bug where the date filter wouldn't work (formatting issue in the query)
+
 ### v1.0.4
 - Fix bugs where the data URL would be miscomputed when using an aggregation and sorting at the same time
 - Make the sorting descending by default

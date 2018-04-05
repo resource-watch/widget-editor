@@ -53,10 +53,10 @@ class FilterTooltip extends React.Component {
     const { type } = this.props;
     const { selected, notNullSelected } = this.state;
 
-    // We save the date filter values as timestamp
+    // We save the date filter values as ISO strings
     let value = selected;
     if (type === 'date') {
-      value = selected.map(d => +d);
+      value = selected.map(d => d.toISOString());
     }
 
     this.props.onApply(value, notNullSelected);
