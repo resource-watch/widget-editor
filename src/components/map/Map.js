@@ -95,7 +95,8 @@ class Map extends React.Component {
     // We automatically pan to the bounds if they are provided
     // or updated
     if ((!this.props.mapConfig.bounds && nextProps.mapConfig.bounds)
-      || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds)) {
+      || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds
+      && nextProps.mapConfig.bounds)) {
       this.map.fitBounds(nextProps.mapConfig.bounds);
     }
   }

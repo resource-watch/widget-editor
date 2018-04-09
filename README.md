@@ -264,6 +264,7 @@ Steps:
 
 ### v1.0.6 (not released yet)
 - Improve the styles of the columns, especially when overflowing
+- Fix an issue where non-existing bounds could be passed to the map
 
 ### v1.0.5
 - Fix a bug where the date filter wouldn't work (formatting issue in the query)
