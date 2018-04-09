@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.6 (not released yet)
+- Improve the styles of the columns, especially when overflowing
+
 ### v1.0.5
 - Fix a bug where the date filter wouldn't work (formatting issue in the query)
 

@@ -17,13 +17,12 @@
   .filter-box {
     flex-shrink: 0;
     display: flex;
-    align-items: flex-end;
     flex-direction: column;
     min-height: 30px;
-    max-height: 60px;
+    max-height: 75px;
     overflow: auto;
     width: 150px;
-    padding: $space-1 10px;
+    padding: $space-1;
     border: 1px solid $border-color-2;
     border-radius: 4px;
 
@@ -37,9 +36,9 @@
       }
     }
 
-    .c-we-columnbox {
+    // .c-we-columnbox
+    > div:not(:last-of-type) {
       margin-bottom: 5px;
-      margin-right: 5px;
     }
 
     .placeholder {

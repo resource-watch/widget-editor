@@ -17,8 +17,6 @@ import AggregateFunctionTooltip from 'components/tooltip/AggregateFunctionToolti
 import OrderByTooltip from 'components/tooltip/OrderByTooltip';
 import ColumnDetails from 'components/tooltip/ColumnDetails';
 
-const NAME_MAX_LENGTH = 9;
-
 /**
  * Implements the drag source contract.
  */
@@ -431,9 +429,11 @@ class ColumnBox extends React.Component {
       >
         <Icon
           name={iconName}
-          className="-smaller"
+          className="-smaller column-type"
         />
-        { ((alias || name).length > NAME_MAX_LENGTH) ? `${(alias || name).substr(0, NAME_MAX_LENGTH - 1)}...` : (alias || name) }
+        <div className="column-name">
+          { alias || name }
+        </div>
         {isA === 'value' && aggregateFunction &&
           <div className="aggregate-function">
             {aggregateFunction}
@@ -458,10 +458,12 @@ class ColumnBox extends React.Component {
           <button
             type="button"
             onClick={this.triggerClose}
+            className="close-button"
+            aria-label="Remove column"
           >
             <Icon
               name="icon-cross"
-              className="-smaller close-button"
+              className="-smaller"
             />
           </button>
         }
@@ -470,10 +472,12 @@ class ColumnBox extends React.Component {
             type="button"
             onClick={this.triggerConfigure}
             ref={(node) => { this.settingsButton = node; }}
+            className="configure-button"
+            aria-label="Configure"
           >
             <Icon
               name="icon-cog"
-              className="-smaller configure-button"
+              className="-smaller"
             />
           </button>
         }

@@ -1,7 +1,6 @@
 .c-we-columnbox {
   display: flex;
-  float: left;
-  clear: left;
+  justify-content: space-between;
   align-items: center;
   min-height: 22px;
   background-color: $color-blue-turquoise;
@@ -9,7 +8,7 @@
   font-weight: $font-weight-bold;
   color: $color-white;
   border-radius: 15px;
-  padding: 3px 15px 4px 10px;
+  padding: 4px 7px;
   cursor: grab;
 
   &.-dimmed {
@@ -17,11 +16,38 @@
   }
 
   button {
+    flex-shrink: 0;
     margin: 0;
     padding: 0;
     border: 0;
     background-color: transparent;
   }
+
+  .c-we-icon {
+    fill: $color-white;
+    flex-shrink: 0;
+  }
+
+  .column-type {
+    margin-right: 5px;
+  }
+
+  .column-name {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .close-button {
+    margin-left: 5px;
+  }
+
+  .configure-button {
+    margin-left: 5px;
+  }
+
 
   .aggregate-function {
     margin-left: 6px;
@@ -32,19 +58,4 @@
     margin-left: 10px;
     color: $color-grey;
   }
-
-  .c-we-icon {
-    margin-right: 5px;
-    fill: $color-white;
-
-    &.close-button {
-      cursor: pointer;
-      margin-left: 5px;
-    }
-
-    &.configure-button {
-      cursor: pointer;
-    }
-  }
-
 }
