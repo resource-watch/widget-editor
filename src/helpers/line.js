@@ -71,7 +71,8 @@ const defaultChart = {
     {
       "orient": "left",
       "scale": "y",
-      "labelOverlap": "parity"
+      "labelOverlap": "parity",
+      "format": "s"
     }
   ],
   "marks": [
