@@ -262,7 +262,7 @@ Steps:
 
 ## Changelog
 
-### v1.0.6 (not released yet)
+### v1.0.6
 - Improve the styles of the columns, especially when overflowing
 - Fix an issue where non-existing bounds could be passed to the map
 - Don't limit the number of layers to 10
