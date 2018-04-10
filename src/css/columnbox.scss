@@ -4,12 +4,13 @@
   align-items: center;
   min-height: 22px;
   background-color: $color-blue-turquoise;
-  font-size: $font-size-small-medium;
+  font-size: $font-size-small;
   font-weight: $font-weight-bold;
   color: $color-white;
   border-radius: 15px;
-  padding: 4px 7px;
+  padding: 3px 7px;
   cursor: grab;
+  white-space: nowrap;
 
   &.-dimmed {
     opacity: 0.5;
