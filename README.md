@@ -262,6 +262,9 @@ Steps:
 
 ## Changelog
 
+### v1.0.7 (not yet released)
+- Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
+
 ### v1.0.6
 - Improve the styles of the columns, especially when overflowing
 - Fix an issue where non-existing bounds could be passed to the map
