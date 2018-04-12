@@ -7,6 +7,7 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 import classnames from 'classnames';
+import { Legend, LegendItemTypes, Icons } from 'wri-api-components';
 
 // Redux
 import { connect } from 'react-redux';
@@ -43,13 +44,11 @@ import DatasetService from 'services/DatasetService';
 import WidgetService from 'services/WidgetService';
 
 // Components
-import Select from 'components/form/SelectInput';
 import Spinner from 'components/ui/Spinner';
 import VegaChart from 'components/chart/VegaChart';
 import Map from 'components/map/Map';
 import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
-import Legend from 'components/ui/Legend';
 import TableView from 'components/table/TableView';
 
 // Editors
@@ -547,18 +546,16 @@ class WidgetEditor extends React.Component {
                 />
               </MapControls>
 
-              <Legend
-                layerGroups={this.state.layerGroups}
-                className={{ color: '-dark' }}
-                toggleLayerGroupVisibility={
-                  layerGroup => this.onToggleLayerGroupVisibility(layerGroup)
-                }
-                setLayerGroupsOrder={() => {}}
-                setLayerGroupActiveLayer={() => {}}
-                readonly
-                interactionDisabled
-                expanded={false}
-              />
+              <div className="c-we-legend-map">
+                <Icons />
+                <Legend
+                  layerGroups={this.state.layerGroups}
+                  expanded={false}
+                  sortable={false}
+                  maxHeight={250}
+                  LegendItemTypes={<LegendItemTypes />}
+                />
+              </div>
             </div>
           );
         } else {

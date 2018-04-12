@@ -16,9 +16,9 @@ Provide the link to the task(s), if any.
 
 ## Changelog
 
-If not already done, add a new entry in the changelog with the new version number and "not yet released". For example, if the current version of the editor is v0.0.1 and your PR is the first for the new version, add:
+If not already done, add a new entry in the changelog with the new version number and "- Unreleased". For example, if the current version of the editor is v0.0.1 and your PR is the first for the new version, add:
 ```md
-### v0.0.2 (not yet released)
+### v0.0.2 - Unreleased
 ```
 
 and below, the bullets with the changes of your PR:
@@ -26,3 +26,4 @@ and below, the bullets with the changes of your PR:
 - Fix a bug preventing the editor from XXX
 ```
 
+You can see the Changelog [here](https://github.com/resource-watch/widget-editor/blob/develop/CHANGELOG.md).
