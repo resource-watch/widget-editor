@@ -33,6 +33,7 @@ const SET_LATLNG = 'WIDGET_EDITOR/SET_LATLNG';
 const SET_BOUNDS = 'WIDGET_EDITOR/SET_BOUNDS';
 const SET_DATASET_ID = 'WIDGET_EDITOR/SET_DATASET_ID';
 const SET_TABLENAME = 'WIDGET_EDITOR/SET_TABLENAME';
+const SET_CONTRACTED = 'WIDGET_EDITOR/SET_CONTRACTED';
 
 /**
  * REDUCER
@@ -59,7 +60,8 @@ const initialState = {
   zoom: 3,
   latLng: { lat: 0, lng: 0 },
   /** @type {number[][]} bounds */
-  bounds: null // Bounds of the map (south west, then north east)
+  bounds: null, // Bounds of the map (south west, then north east)
+  contracted: false // Whether the left panel is contracted or expanded
 };
 
 export default function (state = initialState, action) {
@@ -279,6 +281,12 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_CONTRACTED: {
+      return Object.assign({}, state, {
+        contracted: action.payload
+      });
+    }
+
     default:
       return state;
   }
@@ -425,4 +433,8 @@ export function setDatasetId(datasetId) {
 
 export function setTableName(tableName) {
   return dispatch => dispatch({ type: SET_TABLENAME, payload: tableName });
+}
+
+export function setContracted(contracted) {
+  return dispatch => dispatch({ type: SET_CONTRACTED, payload: contracted });
 }

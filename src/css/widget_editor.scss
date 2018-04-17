@@ -8,26 +8,85 @@
 
   .customize-visualization {
     position: relative;
-    min-height: 620px;
+    min-height: 690px;
     max-height: 740px;
     margin: -20px 0;
     flex-basis: 522px;
     flex-shrink: 0;
     flex-grow: 0;
-    padding: $margin-size-small;
+    padding: 5px;
     border: 1px solid $border-color-1;
     box-shadow: 0 1px 2px 0 rgba($color-black, .09);
     background-color: $base-bg-color;
+
+    &.-contracted {
+      flex-basis: 0;
+
+      > .content {
+        display: none;
+      }
+    }
+
+    > .btn-toggle {
+      position: absolute;
+      bottom: 35px;
+      right: 0;
+      width: 30px;
+      height: 40px;
+      padding: 0;
+      transform: translateX(100%);
+      border: 1px solid $border-color-1;
+      border-left: none;
+      border-radius: 0 2px 2px 0;
+      box-shadow: 0 1px 2px 0 rgba($color-black, .09);
+      background-color: $base-bg-color;
+      cursor: pointer;
+      z-index: 1000;
+
+      // Hack to hide the box-shadow on the left
+      &:after {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 100%;
+        background: $base-bg-color;
+        content: '';
+      }
+
+      &:hover {
+        .c-we-icon {
+          fill: $base-font-color;
+        }
+      }
+
+      &.-contracted {
+        .c-we-icon {
+          transform: translate(calc(-50% + 1px), -50%) rotate(180deg);
+        }
+      }
+
+      .c-we-icon {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 15px;
+        transform: translate(calc(-50% - 1px), -50%);
+        fill: rgba($base-font-color, .7);
+        transition: fill $animation-time-2 $ease-in-out-sine;
+      }
+    }
+
+    > .content {
+      padding: #{$margin-size-small - 5px};
 
     > .title {
       color: $color-dark-pink;
       font-weight: $font-weight-light;
     }
-
-    // h5 {
-    //   margin: 0 0 10px;
-    //   font-size: $font-size-extra-small;
-    // }
 
     .visualization-type-buttons {
       display: flex;
@@ -51,7 +110,7 @@
         }
       }
     }
-
+    }
   }
 
   .visualization {
@@ -62,7 +121,7 @@
     flex-shrink: 1;
     flex-basis: 100%;
     overflow-x: hidden;
-    padding: #{$margin-size-extra-small + 25px} $margin-size-extra-small $margin-size-extra-small;
+    padding: #{$margin-size-extra-small + 25px} 35px $margin-size-extra-small;
     padding-right: 0;
 
     &.-error {

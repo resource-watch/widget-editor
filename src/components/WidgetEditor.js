@@ -34,7 +34,8 @@ import {
   setChartType,
   setAreaIntersection,
   setDatasetId,
-  setTableName
+  setTableName,
+  setContracted
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -50,6 +51,7 @@ import Map from 'components/map/Map';
 import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
 import TableView from 'components/table/TableView';
+import Icon from 'components/ui/Icon';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
@@ -957,6 +959,9 @@ class WidgetEditor extends React.Component {
     // We also reset the default map state
     this.setDefaultMapState(props);
 
+    // We contract/expand the let panel
+    this.props.setContracted(this.props.contracted);
+
     // If the there's a layer, we compute the LayerGroup
     // representation
     const layerGroups = [];
@@ -1056,7 +1061,8 @@ class WidgetEditor extends React.Component {
       widgetId,
       saveButtonMode,
       embedButtonMode,
-      selectedVisualizationType
+      selectedVisualizationType,
+      widgetEditor
     } = this.props;
 
     const editorMode = !widgetId ||
@@ -1092,119 +1098,129 @@ class WidgetEditor extends React.Component {
 
     return (
       <div className="c-we-widget-editor">
-        <div className="customize-visualization">
-          { this.isLoading() && <Spinner className="-light" isLoading /> }
-          <h2
-            className="title"
+        <div className={classnames('customize-visualization', { '-contracted': widgetEditor.contracted })}>
+          <button
+            type="button"
+            className={classnames('btn-toggle', { '-contracted': widgetEditor.contracted })}
+            onClick={() => this.props.setContracted(!widgetEditor.contracted)}
+            aria-label="Toggle panel"
           >
-            Customize Visualization
-          </h2>
-          <div className="visualization-type-buttons">
-            {visualizationOptions.find(v => v.value === 'chart') &&
-              <button
-                type="button"
-                onClick={() => this.handleVisualizationTypeChange('chart', false)}
-                className={chartButtonClassName}
-              >
-                Chart
-              </button>
+            <Icon name="icon-arrow-left" />
+          </button>
+          <div className="content">
+            { this.isLoading() && <Spinner className="-light" isLoading /> }
+            <h2
+              className="title"
+            >
+              Customize Visualization
+            </h2>
+            <div className="visualization-type-buttons">
+              {visualizationOptions.find(v => v.value === 'chart') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('chart', false)}
+                  className={chartButtonClassName}
+                >
+                  Chart
+                </button>
+              }
+              {visualizationOptions.find(v => v.value === 'map') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('map', false)}
+                  className={mapButtonClassName}
+                >
+                  Map
+                </button>
+              }
+              {visualizationOptions.find(v => v.value === 'table') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('table', false)}
+                  className={tableButtonClassName}
+                >
+                  Table
+                </button>
+              }
+            </div>
+            {
+              (selectedVisualizationType === 'chart' ||
+              selectedVisualizationType === 'table')
+                && !fieldsError && tableName && datasetProvider !== 'nexgddp'
+                && (
+                  <ChartEditor
+                    datasetId={datasetId}
+                    datasetType={datasetType}
+                    datasetProvider={datasetProvider}
+                    chartOptions={CHART_TYPES}
+                    tableName={tableName}
+                    tableViewMode={selectedVisualizationType === 'table'}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    showEmbedButton={showEmbedButton}
+                    onSave={() => this.onClickSave()}
+                    onEmbed={() => this.onClickEmbed()}
+                    hasGeoInfo={hasGeoInfo}
+                  />
+                )
             }
-            {visualizationOptions.find(v => v.value === 'map') &&
-              <button
-                type="button"
-                onClick={() => this.handleVisualizationTypeChange('map', false)}
-                className={mapButtonClassName}
-              >
-                Map
-              </button>
+            {
+              (selectedVisualizationType === 'chart' ||
+              selectedVisualizationType === 'table')
+                && !fieldsError && tableName && datasetProvider === 'nexgddp'
+                && (
+                  <NEXGDDPEditor
+                    datasetId={datasetId}
+                    datasetType={datasetType}
+                    datasetProvider={datasetProvider}
+                    chartOptions={CHART_TYPES}
+                    tableName={tableName}
+                    tableViewMode={selectedVisualizationType === 'table'}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    showEmbedButton={showEmbedButton}
+                    onSave={() => this.onClickSave()}
+                    onEmbed={() => this.onClickEmbed()}
+                    hasGeoInfo={hasGeoInfo}
+                  />
+                )
             }
-            {visualizationOptions.find(v => v.value === 'table') &&
-              <button
-                type="button"
-                onClick={() => this.handleVisualizationTypeChange('table', false)}
-                className={tableButtonClassName}
-              >
-                Table
-              </button>
+            {
+              selectedVisualizationType === 'map'
+                && layers && layers.length > 0
+                && datasetProvider
+                && (
+                  <MapEditor
+                    datasetId={datasetId}
+                    widgetId={widgetId}
+                    tableName={tableName}
+                    provider={datasetProvider}
+                    datasetType={datasetType}
+                    layerGroups={this.state.layerGroups}
+                    layers={layers}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    onSave={() => this.onClickSave()}
+                  />
+                )
+            }
+            {
+              selectedVisualizationType === 'raster_chart'
+                && tableName
+                && datasetProvider
+                && (
+                  <RasterChartEditor
+                    datasetId={datasetId}
+                    tableName={tableName}
+                    provider={datasetProvider}
+                    mode={editorMode}
+                    hasGeoInfo={hasGeoInfo}
+                    showSaveButton={showSaveButton}
+                    onSave={() => this.onClickSave()}
+                  />
+                )
             }
           </div>
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider !== 'nexgddp'
-              && (
-                <ChartEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={CHART_TYPES}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider === 'nexgddp'
-              && (
-                <NEXGDDPEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={CHART_TYPES}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'map'
-              && layers && layers.length > 0
-              && datasetProvider
-              && (
-                <MapEditor
-                  datasetId={datasetId}
-                  widgetId={widgetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  datasetType={datasetType}
-                  layerGroups={this.state.layerGroups}
-                  layers={layers}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'raster_chart'
-              && tableName
-              && datasetProvider
-              && (
-                <RasterChartEditor
-                  datasetId={datasetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  mode={editorMode}
-                  hasGeoInfo={hasGeoInfo}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
         </div>
         {visualization}
       </div>
@@ -1248,7 +1264,8 @@ const mapDispatchToProps = dispatch => ({
   setChartType: (...params) => dispatch(setChartType(...params)),
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
   setDatasetId: (...params) => dispatch(setDatasetId(...params)),
-  setTableName: (...params) => dispatch(setTableName(...params))
+  setTableName: (...params) => dispatch(setTableName(...params)),
+  setContracted: (...params) => dispatch(setContracted(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1305,6 +1322,10 @@ WidgetEditor.propTypes = {
     lng: PropTypes.number
   }),
   /**
+   * Initially display the editor with its left panel contracted
+   */
+  contracted: PropTypes.bool,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1356,13 +1377,15 @@ WidgetEditor.propTypes = {
   setChartType: PropTypes.func,
   setAreaIntersection: PropTypes.func,
   setDatasetId: PropTypes.func,
-  setTableName: PropTypes.func
+  setTableName: PropTypes.func,
+  setContracted: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {
   saveButtonMode: 'auto',
   embedButtonMode: 'auto',
   titleMode: 'auto',
+  contracted: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
