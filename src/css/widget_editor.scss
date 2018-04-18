@@ -185,6 +185,10 @@
       z-index: 2; // At least 2 to be on top of the map
       font-family: $body-font-family;
 
+      &.-light {
+        color: $white;
+      }
+
       > div { // Override a property of the library
         display: block !important;
 

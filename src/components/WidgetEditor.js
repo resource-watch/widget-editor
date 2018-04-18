@@ -424,7 +424,8 @@ class WidgetEditor extends React.Component {
     } = this.state;
 
     const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, bounds, title, caption } = widgetEditor;
+    const { chartType, layer, zoom, latLng, bounds, title, caption,
+      visualizationType, basemapLayers } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -453,7 +454,11 @@ class WidgetEditor extends React.Component {
     }
 
     const titleCaption = (
-      <div className="chart-title">
+      <div
+        className={classnames('chart-title', {
+          '-light': visualizationType === 'map' && (basemapLayers.basemap === 'dark' || basemapLayers.basemap === 'satellite')
+        })}
+      >
         {chartTitle}
         {chartCaption}
       </div>
