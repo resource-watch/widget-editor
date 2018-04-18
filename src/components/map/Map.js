@@ -109,6 +109,10 @@ class Map extends React.Component {
       || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds
       && nextProps.mapConfig.bounds)) {
       this.map.fitBounds(nextProps.mapConfig.bounds);
+    } else if (this.props.editorContracted !== nextProps.editorContracted) {
+      // The size of the map container has changed so we tell
+      // Leaflet about it
+      this.map.invalidateSize();
     }
   }
 
@@ -346,6 +350,10 @@ Map.propTypes = {
    */
   boundaries: PropTypes.bool.isRequired,
   /**
+   * Whether the left panel of the editor is contracted
+   */
+  editorContracted: PropTypes.bool.isRequired,
+  /**
    * Configuration of the map
    */
   mapConfig: PropTypes.shape({
@@ -379,7 +387,8 @@ Map.defaultProps = {
 const mapStateToProps = ({ widgetEditor }) => ({
   basemap: BASEMAPS[widgetEditor.basemapLayers.basemap],
   labels: LABELS[widgetEditor.basemapLayers.labels || 'none'],
-  boundaries: widgetEditor.basemapLayers.boundaries
+  boundaries: widgetEditor.basemapLayers.boundaries,
+  editorContracted: widgetEditor.contracted
 });
 
 export default connect(mapStateToProps, null)(Map);
