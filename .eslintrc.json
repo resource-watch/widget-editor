@@ -5,6 +5,9 @@
     "mocha": true,
     "es6": true
   },
+  "globals": {
+    "L": true
+  },
   "extends": "vizzuality",
   "rules": {
     "import/prefer-default-export": 0,

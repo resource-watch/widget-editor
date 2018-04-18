@@ -12,6 +12,8 @@ $ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega
 $ yarn add widget-editor
 ```
 
+Note that [leaflet](http://leafletjs.com/) is not listed as a peer dependency of this package because you can load it from a CDN. Make sure Leaflet is bundled with your app or globally available as `window.L`.
+
 You can [check the release tab](https://github.com/resource-watch/widget-editor/releases) on Github to see what is the most recent version.
 
 *NOTE: you can either use npm or yarn.*

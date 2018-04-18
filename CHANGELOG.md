@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.7 - Unreleased
+## v1.1.0 - Unreleased
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
 - Display the ticks of the Y axis of the bar, line and scatter charts with the SI unit
 - Add the possibility to contract the left panel (prop `contracted`)
@@ -8,6 +8,7 @@
 - Change the color of the title and caption to white for the dark and satellite basemaps
 - Fix a bug where the size of the left panel would vary
 - Add a new prop, `theme`, to customize the visual appearance of the Vega visualizations
+- Remove Leaflet from the peer dependencies (possibility to load it from a CDN)
 
 ## v1.0.6 - 10/04/2018
 - Improve the styles of the columns, especially when overflowing
