@@ -3,6 +3,10 @@
 ## v1.0.7 - Unreleased
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
 - Display the ticks of the Y axis of the bar, line and scatter charts with the SI unit
+- Add the possibility to contract the left panel (prop `contracted`)
+- Save and restore the basemap, labels and boundaries layers for the map widgets
+- Change the color of the title and caption to white for the dark and satellite basemaps
+- Fix a bug where the size of the left panel would vary
 
 ## v1.0.6 - 10/04/2018
 - Improve the styles of the columns, especially when overflowing

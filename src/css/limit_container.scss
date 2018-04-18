@@ -1,19 +1,22 @@
 .c-we-limit-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
   margin-top: 8px;
 
-  font-size: $font-size-small-medium;
-  font-weight: $font-weight-bold;
-
-  input {
-    height: 30px;
-    width: 150px;
-    margin-left: 8px;
+  label {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     text-align: right;
+    font-size: $font-size-small-medium;
+    font-weight: $font-weight-bold;
 
-    border: 1px solid $border-color-2;
-    border-radius: 4px;
+    input {
+      height: 30px;
+      width: 150px;
+      margin-left: 8px;
+      text-align: right;
+
+      border: 1px solid $border-color-2;
+      border-radius: 4px;
+    }
   }
 }
