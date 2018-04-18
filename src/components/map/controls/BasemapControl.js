@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Autobind from 'autobind-decorator';
-import { BASEMAPS } from 'components/map/constants';
+import { BASEMAPS, LABELS } from 'components/map/constants';
+import { connect } from 'react-redux';
+
+// Redux
+import { setBasemap, setLabels, setBoundaries } from 'reducers/widgetEditor';
 
 // Components
 import TetherComponent from 'react-tether';
@@ -12,6 +16,14 @@ import RadioGroup from 'components/form/RadioGroup';
 // Types
 /**
  * Basemap
+ * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
+ */
+/**
+ * Label
+ * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
+ */
+/**
+ * Boundary
  * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
  */
 
@@ -38,21 +50,6 @@ class BasemapControl extends React.Component {
     }
   }
 
-  @Autobind
-  onChangeBasemap(basemap) {
-    if (this.props.onChangeBasemap) {
-      const { basemaps } = this.props;
-      this.props.onChangeBasemap(basemaps[basemap]);
-    }
-  }
-
-  @Autobind
-  onToggleLabels(label) {
-    if (this.props.onToggleLabels) {
-      this.props.onToggleLabels(label.checked);
-    }
-  }
-
   toggleDropdown(to) {
     const active = (typeof to !== 'undefined' && to !== null) ? to : !this.state.active;
 
@@ -70,7 +67,7 @@ class BasemapControl extends React.Component {
 
   // RENDER
   render() {
-    const { basemap, basemaps, labels } = this.props;
+    const { basemaps, labels, selectedBasemap, selectedLabels, boundaries } = this.props;
     const { active } = this.state;
 
     return (
@@ -93,28 +90,41 @@ class BasemapControl extends React.Component {
         {active &&
           <div>
             <RadioGroup
-              options={Object.keys(basemaps).map((k) => {
-                const bs = basemaps[k];
-                return {
-                  label: bs.label,
-                  value: bs.id
-                };
-              })}
+              options={Object.keys(basemaps).map(k => ({
+                label: basemaps[k].label,
+                value: basemaps[k].id
+              }))}
               name="basemap"
               properties={{
-                default: basemap.id
+                default: selectedBasemap
               }}
-              onChange={this.onChangeBasemap}
+              onChange={this.props.setBasemap}
             />
+
             <div className="divisor" />
+
+            <RadioGroup
+              options={Object.keys(labels).map(k => ({
+                label: labels[k].label,
+                value: labels[k].id
+              }))}
+              name="labels"
+              properties={{
+                default: selectedLabels || 'none'
+              }}
+              onChange={this.props.setLabels}
+            />
+
+            <div className="divisor" />
+
             <Checkbox
               properties={{
-                name: 'label',
-                title: 'Show labels',
-                value: 'label',
-                checked: labels
+                name: 'boundaries',
+                title: 'Boundaries',
+                value: 'boundaries',
+                checked: boundaries
               }}
-              onChange={this.onToggleLabels}
+              onChange={({ checked }) => this.props.setBoundaries(checked)}
             />
           </div>
         }
@@ -126,35 +136,63 @@ class BasemapControl extends React.Component {
 BasemapControl.propTypes = {
   /**
    * List of available basemaps
-   * @type {{ [name: string]: Basemap} basemaps
+   * @type {{ [name: string]: Basemap }} basemaps
    */
   basemaps: PropTypes.object,
   /**
    * Selected basemap
-   * @type {Basemap} basemap
+   * @type {string} selectedBasemap
    */
-  basemap: PropTypes.object,
+  selectedBasemap: PropTypes.string.isRequired,
   /**
-   * Whether the labels are show or not
-   * @type {boolean} labels
+   * List of available labels
+   * @type {{ [name: string]: Label }} labels
    */
-  labels: PropTypes.bool,
+  labels: PropTypes.object,
   /**
-   * Callback executed when the basemap is changed
-   * @type {(basemap: Basemap) => void} onChangeBasemap
+   * Selected label
+   * @type {string} selectedLabels
    */
-  onChangeBasemap: PropTypes.func,
+  // NOTE: can't use isRequired here because of this:
+  // https://github.com/facebook/react/issues/3163
+  selectedLabels: PropTypes.string, // eslint-disable-line react/require-default-props
   /**
-   * Callback executed when the labels are toggled
-   * @type {(visibleLabels: boolean) => void} onChangeBasemap
+   * Whether the boundaries ar visible
+   * @type {boolean} boundariesVisible
    */
-  onToggleLabels: PropTypes.func
+  boundaries: PropTypes.bool.isRequired,
+  /**
+   * Set the current basemap
+   * @type {(basemap: string) => void} setBasemap
+   */
+  setBasemap: PropTypes.func.isRequired,
+  /**
+   * Set the current labels
+   * @type {(labels: string) => void} setLabels
+   */
+  setLabels: PropTypes.func.isRequired,
+  /**
+   * Set the visibility of the boundaries
+   * @type {(boundaries: boolean) => void} setBoundaries
+   */
+  setBoundaries: PropTypes.func.isRequired
 };
 
 BasemapControl.defaultProps = {
-  basemap: BASEMAPS.dark,
   basemaps: BASEMAPS,
-  labels: false
+  labels: LABELS
 };
 
-export default BasemapControl;
+const mapStateToProps = ({ widgetEditor }) => ({
+  selectedBasemap: widgetEditor.basemapLayers.basemap,
+  selectedLabels: widgetEditor.basemapLayers.labels,
+  boundaries: widgetEditor.basemapLayers.boundaries
+});
+
+const mapDispatchToProps = dispatch => ({
+  setBasemap: basemap => dispatch(setBasemap(basemap)),
+  setLabels: labels => dispatch(setLabels(labels === 'none' ? null : labels)),
+  setBoundaries: boundaries => dispatch(setBoundaries(boundaries))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(BasemapControl);

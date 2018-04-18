@@ -35,7 +35,10 @@ import {
   setAreaIntersection,
   setDatasetId,
   setTableName,
-  setContracted
+  setContracted,
+  setBasemap,
+  setLabels,
+  setBoundaries
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -114,10 +117,6 @@ const DEFAULT_STATE = {
 
   // DATASET INFO
   datasetInfoLoaded: false,
-
-  // MAP
-  basemap: undefined, // Which basemap to display
-  labels: undefined, // Whether to show the labels
 
   visualizationOptions: [] // Available visualizations
 };
@@ -531,8 +530,6 @@ class WidgetEditor extends React.Component {
             <div className="visualization">
               {titleCaption}
               <Map
-                basemap={this.state.basemap}
-                labels={this.state.labels}
                 LayerManager={LayerManager}
                 mapConfig={mapConfig}
                 layerGroups={this.state.layerGroups}
@@ -540,12 +537,7 @@ class WidgetEditor extends React.Component {
               />
 
               <MapControls>
-                <BasemapControl
-                  basemap={this.state.basemap}
-                  labels={this.state.labels}
-                  onChangeBasemap={basemap => this.setState({ basemap })}
-                  onToggleLabels={labels => this.setState({ labels })}
-                />
+                <BasemapControl />
               </MapControls>
 
               <div className="c-we-legend-map">
@@ -883,7 +875,7 @@ class WidgetEditor extends React.Component {
     widgetService.fetchData()
       .then((data) => {
         const { widgetConfig, name } = data.attributes;
-        const { paramsConfig, zoom, lat, lng, bbox } = widgetConfig;
+        const { paramsConfig, zoom, lat, lng, bbox, basemapLayers } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -937,6 +929,13 @@ class WidgetEditor extends React.Component {
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+        if (basemapLayers) {
+          if (basemapLayers.basemap) this.props.setBasemap(basemapLayers.basemap);
+          if (basemapLayers.labels !== undefined) this.props.setLabels(basemapLayers.labels);
+          if (basemapLayers.boundaries !== undefined && basemapLayers.boundaries !== null) {
+            this.props.setBoundaries(basemapLayers.boundaries);
+          }
+        }
       });
   }
 
@@ -1265,7 +1264,10 @@ const mapDispatchToProps = dispatch => ({
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
   setDatasetId: (...params) => dispatch(setDatasetId(...params)),
   setTableName: (...params) => dispatch(setTableName(...params)),
-  setContracted: (...params) => dispatch(setContracted(...params))
+  setContracted: (...params) => dispatch(setContracted(...params)),
+  setBasemap: (...params) => dispatch(setBasemap(...params)),
+  setLabels: (...params) => dispatch(setLabels(...params)),
+  setBoundaries: (...params) => dispatch(setBoundaries(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1378,7 +1380,10 @@ WidgetEditor.propTypes = {
   setAreaIntersection: PropTypes.func,
   setDatasetId: PropTypes.func,
   setTableName: PropTypes.func,
-  setContracted: PropTypes.func
+  setContracted: PropTypes.func,
+  setBasemap: PropTypes.func,
+  setLabels: PropTypes.func,
+  setBoundaries: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {

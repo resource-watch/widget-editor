@@ -34,6 +34,9 @@ const SET_BOUNDS = 'WIDGET_EDITOR/SET_BOUNDS';
 const SET_DATASET_ID = 'WIDGET_EDITOR/SET_DATASET_ID';
 const SET_TABLENAME = 'WIDGET_EDITOR/SET_TABLENAME';
 const SET_CONTRACTED = 'WIDGET_EDITOR/SET_CONTRACTED';
+const SET_BASEMAP = 'WIDGET_EDITOR/SET_BASEMAP';
+const SET_LABELS = 'WIDGET_EDITOR/SET_LABELS';
+const SET_BOUNDARIES = 'WIDGET_EDITOR/SET_BOUNDARIES';
 
 /**
  * REDUCER
@@ -61,7 +64,15 @@ const initialState = {
   latLng: { lat: 0, lng: 0 },
   /** @type {number[][]} bounds */
   bounds: null, // Bounds of the map (south west, then north east)
-  contracted: false // Whether the left panel is contracted or expanded
+  contracted: false, // Whether the left panel is contracted or expanded
+  basemapLayers: { // Default layers on the map
+    /** @type {string} basemap */
+    basemap: 'dark',
+    /** @type {string} labels */
+    labels: null,
+    /** @type {boolean} boundaries */
+    boundaries: false
+  }
 };
 
 export default function (state = initialState, action) {
@@ -287,6 +298,24 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_BASEMAP: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { basemap: action.payload })
+      });
+    }
+
+    case SET_LABELS: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { labels: action.payload })
+      });
+    }
+
+    case SET_BOUNDARIES: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { boundaries: action.payload })
+      });
+    }
+
     default:
       return state;
   }
@@ -437,4 +466,16 @@ export function setTableName(tableName) {
 
 export function setContracted(contracted) {
   return dispatch => dispatch({ type: SET_CONTRACTED, payload: contracted });
+}
+
+export function setBasemap(basemap) {
+  return dispatch => dispatch({ type: SET_BASEMAP, payload: basemap });
+}
+
+export function setLabels(labels) {
+  return dispatch => dispatch({ type: SET_LABELS, payload: labels });
+}
+
+export function setBoundaries(boundaries) {
+  return dispatch => dispatch({ type: SET_BOUNDARIES, payload: boundaries });
 }
