@@ -423,7 +423,7 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType, theme } = this.props;
     const { chartType, layer, zoom, latLng, bounds, title, caption,
       visualizationType, basemapLayers } = widgetEditor;
 
@@ -514,7 +514,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -600,7 +600,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -1333,6 +1333,10 @@ WidgetEditor.propTypes = {
    */
   contracted: PropTypes.bool,
   /**
+   * Theme to apply to the Vega visualizations
+   */
+  theme: PropTypes.object,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1396,6 +1400,7 @@ WidgetEditor.defaultProps = {
   embedButtonMode: 'auto',
   titleMode: 'auto',
   contracted: false,
+  theme: ChartTheme(),
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 

@@ -7,6 +7,7 @@
 - Save and restore the basemap, labels and boundaries layers for the map widgets
 - Change the color of the title and caption to white for the dark and satellite basemaps
 - Fix a bug where the size of the left panel would vary
+- Add a new prop, `theme`, to customize the visual appearance of the Vega visualizations
 
 ## v1.0.6 - 10/04/2018
 - Improve the styles of the columns, especially when overflowing

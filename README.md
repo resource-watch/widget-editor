@@ -137,6 +137,7 @@ Name | Default value | Mandatory | Description
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title _and_ caption are only editable if a user token is passed to the configuration. If `"always"`, the title _and_ caption are always editable. If `"never"`, they are always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `contracted: boolean` | `false` | No | Initially display the editor with its left panel contracted
+`theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
 `onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
