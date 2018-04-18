@@ -21,7 +21,7 @@ const store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'prep',
+  applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
   assetsPath: '/images/'
 });
@@ -48,7 +48,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datasetId: '20cc5eca-8c63-4c41-8e8e-134dcf1e6d76',
+      datasetId: 'a86d906d-9862-4783-9e30-cdb68cd808b8',
       // datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
       widgetId: undefined,
       previewWidgetId: undefined,
@@ -150,7 +150,7 @@ class App extends React.Component {
           widgetCaption={this.state.widgetCaption}
           saveButtonMode="always"
           embedButtonMode="always"
-          titleMode="always"
+          titleMode="never"
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
           onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
