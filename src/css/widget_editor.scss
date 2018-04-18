@@ -8,6 +8,8 @@
 
   .customize-visualization {
     position: relative;
+    display: flex;
+    align-items: stretch;
     min-height: 690px;
     max-height: 740px;
     margin: -20px 0;
@@ -81,6 +83,8 @@
     }
 
     > .content {
+      display: flex;
+      flex-direction: column;
       padding: #{$margin-size-small - 5px};
 
     > .title {
