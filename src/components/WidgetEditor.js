@@ -909,8 +909,10 @@ class WidgetEditor extends React.Component {
           this.datasetService.getLayer(layer)
             .then(l => this.props.setLayer(Object.assign({}, l, { ...l.attributes })));
         }
-        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (value) this.props.setValue(value);
+        // NOTE: the aggregation must be restored after the value
+        // because when the value changes, the aggregation is reset
+        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (size) this.props.setSize(size);
         if (color) this.props.setColor(color);
         if (orderBy) this.props.setOrderBy(orderBy);

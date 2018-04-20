@@ -9,6 +9,7 @@
 - Fix a bug where the size of the left panel would vary
 - Add a new prop, `theme`, to customize the visual appearance of the Vega visualizations
 - Remove Leaflet from the peer dependencies (possibility to load it from a CDN)
+- Fix a bug where the aggregation would often not be restored
 
 ## v1.0.6 - 10/04/2018
 - Improve the styles of the columns, especially when overflowing
