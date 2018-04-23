@@ -877,9 +877,9 @@ class WidgetEditor extends React.Component {
   restoreWidget(widgetId) {
     const widgetService = new WidgetService(widgetId);
 
-    widgetService.fetchData()
+    widgetService.fetchData('metadata')
       .then((data) => {
-        const { widgetConfig, name } = data.attributes;
+        const { widgetConfig, name, metadata } = data.attributes;
         const { paramsConfig, zoom, lat, lng, bbox, basemapLayers } = widgetConfig;
         const {
           visualizationType,
@@ -894,9 +894,14 @@ class WidgetEditor extends React.Component {
           limit,
           chartType,
           layer,
-          areaIntersection,
-          caption
+          areaIntersection
         } = paramsConfig;
+
+        let caption;
+        if (metadata && metadata.length && metadata[0].attributes.info
+          && metadata[0].attributes.info.caption) {
+          caption = metadata[0].attributes.info.caption;
+        }
 
         // We restore the type of visualization
         // We default to "chart" to maintain the compatibility with previously created
