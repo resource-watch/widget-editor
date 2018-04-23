@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.1.0 - Unreleased
+## v1.1.0 - 23/04/2018
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
 - Display the ticks of the Y axis of the bar, line and scatter charts with the SI unit
 - Add the possibility to contract the left panel (prop `contracted`)
