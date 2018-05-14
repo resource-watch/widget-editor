@@ -58,7 +58,7 @@ import Icon from 'components/ui/Icon';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
-import MapEditor from 'components/map/MapEditor';
+import MapEditor from 'components/map/editor/MapEditor';
 import RasterChartEditor from 'components/raster/RasterChartEditor';
 import NEXGDDPEditor from 'components/nexgddp/NEXGDDPEditor';
 
@@ -95,6 +95,7 @@ const DEFAULT_STATE = {
   // DATASET
   datasetType: null, // Type of the dataset
   datasetProvider: null, // Name of the provider
+  datasetConnectorUrl: null, // Connector URL
 
   // FIELDS
   fieldsLoaded: false,
@@ -393,6 +394,8 @@ class WidgetEditor extends React.Component {
           const defaultWidget = attributes.widget && attributes.widget.length &&
             attributes.widget.find(w => w.attributes.defaultEditableWidget);
 
+          const connectorUrl = attributes.connectorUrl || null;
+
           this.props.setTableName(attributes.tableName);
 
           this.setState({
@@ -401,6 +404,7 @@ class WidgetEditor extends React.Component {
             hasGeoInfo: attributes.geoInfo,
             datasetType: attributes.type,
             datasetProvider: attributes.provider,
+            datasetConnectorUrl: connectorUrl,
             defaultWidget
           }, () => resolve(fieldsInfo));
         });
@@ -423,7 +427,8 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType, theme } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType, theme,
+      useLayerEditor } = this.props;
     const { chartType, layer, zoom, latLng, bounds, title, caption,
       visualizationType, basemapLayers } = widgetEditor;
 
@@ -561,7 +566,7 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization">
               {titleCaption}
-              Select a layer
+              {useLayerEditor ? 'Select or create a layer' : 'Select a layer'}
             </div>
           );
         }
@@ -1062,6 +1067,7 @@ class WidgetEditor extends React.Component {
       layers,
       datasetType,
       datasetProvider,
+      datasetConnectorUrl,
       visualizationOptions,
       hasGeoInfo,
       defaultWidget
@@ -1073,7 +1079,8 @@ class WidgetEditor extends React.Component {
       saveButtonMode,
       embedButtonMode,
       selectedVisualizationType,
-      widgetEditor
+      widgetEditor,
+      useLayerEditor
     } = this.props;
 
     const editorMode = !widgetId ||
@@ -1207,6 +1214,8 @@ class WidgetEditor extends React.Component {
                     tableName={tableName}
                     provider={datasetProvider}
                     datasetType={datasetType}
+                    connectorUrl={datasetConnectorUrl}
+                    useLayerEditor={useLayerEditor}
                     layerGroups={this.state.layerGroups}
                     layers={layers}
                     mode={editorMode}
