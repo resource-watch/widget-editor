@@ -1344,6 +1344,10 @@ WidgetEditor.propTypes = {
    */
   theme: PropTypes.object,
   /**
+   * Let the user creates a layer when selecting a map visualization
+   */
+  useLayerEditor: PropTypes.bool,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1408,6 +1412,7 @@ WidgetEditor.defaultProps = {
   titleMode: 'auto',
   contracted: false,
   theme: ChartTheme(),
+  useLayerEditor: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
