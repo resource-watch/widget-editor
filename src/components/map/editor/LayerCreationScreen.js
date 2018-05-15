@@ -224,7 +224,7 @@ class LayerCreationScreen extends React.Component {
           </button>
         </div>
         <div className="c-we-field">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="name">Name *</label>
           <input
             type="text"
             name="name"
@@ -245,7 +245,7 @@ class LayerCreationScreen extends React.Component {
           />
         </div>
         <div className="c-we-field">
-          <label htmlFor="select-layer-type">Layer type</label>
+          <label htmlFor="select-layer-type">Layer type *</label>
           <Select
             properties={{
               name: 'select-layer-type',
@@ -258,7 +258,7 @@ class LayerCreationScreen extends React.Component {
         { type === 'cartodb' && (
           <div>
             <div className="c-we-field">
-              <label htmlFor="cartodb-account">Account</label>
+              <label htmlFor="cartodb-account">Account *</label>
               <input
                 type="text"
                 name="cartodb-account"
@@ -271,7 +271,7 @@ class LayerCreationScreen extends React.Component {
               />
             </div>
             <div className="c-we-field">
-              <label htmlFor="cartodb-sql">SQL query</label>
+              <label htmlFor="cartodb-sql">SQL query *</label>
               <textarea
                 name="cartodb-sql"
                 id="cartodb-sql"
@@ -283,7 +283,7 @@ class LayerCreationScreen extends React.Component {
               />
             </div>
             <div className="c-we-field">
-              <label htmlFor="cartodb-css">CartoCSS</label>
+              <label htmlFor="cartodb-css">CartoCSS *</label>
               <textarea
                 name="cartodb-css"
                 id="cartodb-css"
@@ -312,7 +312,7 @@ class LayerCreationScreen extends React.Component {
             </div>
             { gee.imageCollection && (
               <div className="c-we-field">
-                <label htmlFor="select-gee-position">Image position</label>
+                <label htmlFor="select-gee-position">Image position *</label>
                 <Select
                   properties={{
                     name: 'select-gee-position',
@@ -340,7 +340,7 @@ class LayerCreationScreen extends React.Component {
               </div>
             ) }
             <div className="c-we-field">
-              <label htmlFor="select-style-type">Type of styles</label>
+              <label htmlFor="select-style-type">Type of styles *</label>
               <Select
                 properties={{
                   name: 'select-style-type',
@@ -355,7 +355,7 @@ class LayerCreationScreen extends React.Component {
             </div>
             { gee.styleType === 'sld' && (
               <div className="c-we-field">
-                <label htmlFor="gee-sld-value">SLD (Styled Layer Descriptor)</label>
+                <label htmlFor="gee-sld-value">SLD (Styled Layer Descriptor) *</label>
                 <textarea
                   name="gee-sld-value"
                   id="gee-sld-value"
