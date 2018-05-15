@@ -1,18 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Flatpickr from 'react-flatpickr';
 
 // Redux
 import { connect } from 'react-redux';
 import { showLayer } from 'reducers/widgetEditor';
 
+// Helpers
+import { revertTimezoneOffset } from 'helpers/date';
+
 // Components
 import Select from 'components/form/SelectInput';
 import Icon from 'components/ui/Icon';
+import Checkbox from 'components/form/Checkbox';
 
 const LAYER_TYPES = [
   // { label: 'WMS', value: 'wms' },
   // { label: 'Other', value: 'other' },
-  // { label: 'GEE', value: 'gee' },
+  { label: 'GEE', value: 'gee' },
   { label: 'Carto', value: 'cartodb' }
 ].sort((a, b) => b.label - a.label);
 
@@ -53,13 +58,44 @@ class LayerCreationScreen extends React.Component {
          * @type {string} cartocss
          */
         cartocss: ''
+      },
+      gee: {
+        /**
+         * Whether the layer is a collection of images
+         * @type {boolean} imageCollection
+         */
+        imageCollection: false,
+        /**
+         * Position of the image to show
+         * @type {'first'|'last'} position
+         */
+        position: null,
+        /**
+         * Dates filter for the images
+         * NOTE: UTC dates only
+         * @type {Date[]} datesFilter
+         */
+        datesFilter: [],
+        /**
+         * Type of styles
+         * @type {'sld'|'standard'} styleType
+         */
+        styleType: null,
+        /**
+         * SLD (Styled Layer Descriptor) for the image
+         * @type {string} sldValue
+         */
+        sldValue: ''
       }
     };
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     if (this.canRenderLayer(this.state)) {
       this.props.showLayer(this.getLayer(this.state, this.props));
+    } else if (this.canRenderLayer(prevState, prevProps)
+      && !this.canRenderLayer(this.state, this.props)) {
+      this.props.showLayer(null);
     }
   }
 
@@ -67,6 +103,35 @@ class LayerCreationScreen extends React.Component {
     // By removing the layer from the map, we avoid
     // showing a preview of a layer that can't be restored
     this.props.showLayer(null);
+  }
+
+  /**
+   * Event handler executed when the user changes
+   * the date range of a GEE layer
+   * @param {Date[]} dates Dates
+   */
+  onChangeDatesFilter(dates) {
+    if (dates.length < 2) {
+      this.setState({
+        gee: Object.assign({}, this.state.gee, {
+          datesFilter: []
+        })
+      });
+      return;
+    }
+
+    // NOTE: we revert the timezone offset of the dates
+    // coming from Flatpickr because the library is unable to
+    // display UTC dates
+
+    this.setState({
+      gee: Object.assign({}, this.state.gee, {
+        datesFilter: [
+          revertTimezoneOffset(dates[0]),
+          revertTimezoneOffset(dates[1])
+        ]
+      })
+    });
   }
 
   /**
@@ -94,6 +159,25 @@ class LayerCreationScreen extends React.Component {
           ]
         }
       };
+    } else if (state.type === 'gee') {
+      layerConfig = {
+        type: 'gee',
+        body: Object.assign(
+          {
+            isImageCollection: state.gee.imageCollection,
+            styleType: state.gee.styleType
+          },
+          state.gee.imageCollection
+            ? { position: state.gee.position }
+            : {},
+          state.gee.imageCollection && state.gee.datesFilter.length
+            ? { filterDates: state.gee.datesFilter.map(d => `${d.getUTCFullYear()}-${`${d.getUTCMonth() + 1}`.padStart(2, '0')}-${`${d.getUTCDate()}`.padStart(2, '0')}`) }
+            : {},
+          state.gee.styleType === 'sld'
+            ? { sldValue: state.gee.sldValue }
+            : {}
+        )
+      };
     }
 
     return {
@@ -113,13 +197,20 @@ class LayerCreationScreen extends React.Component {
    * @returns {boolean}
    */
   canRenderLayer(state) { // eslint-disable-line class-methods-use-this
-    const cartodb = state.cartodb.account && state.cartodb.sql && state.cartodb.cartocss;
-    return state.name && state.type && (state.type === 'cartodb' ? cartodb : true);
+    const { name, type, cartodb, gee } = state;
+
+    const cartodbCond = cartodb.account && cartodb.sql && cartodb.cartocss;
+    const geeCond = (gee.imageCollection ? gee.position : true) && gee.styleType
+      && (gee.styleType === 'sld' ? gee.sldValue : true);
+
+    return !!name && !!type
+      && (type === 'cartodb' ? !!cartodbCond : true)
+      && (type === 'gee' ? !!geeCond : true);
   }
 
   render() {
     const { onChangeScreen } = this.props;
-    const { name, description, type, cartodb } = this.state;
+    const { name, description, type, cartodb, gee } = this.state;
 
     return (
       <div className="layer-creation-screen">
@@ -203,6 +294,79 @@ class LayerCreationScreen extends React.Component {
                 })}
               />
             </div>
+          </div>
+        ) }
+        { type === 'gee' && (
+          <div>
+            <div className="c-we-field">
+              <Checkbox
+                properties={{
+                  title: 'Image collection',
+                  checked: gee.imageCollection,
+                  default: gee.imageCollection
+                }}
+                onChange={({ checked }) => this.setState({
+                  gee: Object.assign({}, gee, { imageCollection: checked })
+                })}
+              />
+            </div>
+            { gee.imageCollection && (
+              <div className="c-we-field">
+                <label htmlFor="select-gee-position">Image position</label>
+                <Select
+                  properties={{
+                    name: 'select-gee-position',
+                    value: gee.position,
+                    default: gee.position
+                  }}
+                  options={[{ label: 'First', value: 'first' }, { label: 'Last', value: 'last' }]}
+                  onChange={value => this.setState({
+                    gee: Object.assign({}, gee, { position: value })
+                  })}
+                />
+              </div>
+            ) }
+            { gee.imageCollection && (
+              <div className="c-we-field">
+                <label htmlFor="gee-dates-filter">Date range</label>
+                <Flatpickr
+                  id="gee-dates-filter"
+                  options={{
+                    mode: 'range',
+                    locale: { firstDayOfWeek: 1 }
+                  }}
+                  onChange={(dates) => this.onChangeDatesFilter(dates)}
+                />
+              </div>
+            ) }
+            <div className="c-we-field">
+              <label htmlFor="select-style-type">Type of styles</label>
+              <Select
+                properties={{
+                  name: 'select-style-type',
+                  value: gee.styleType,
+                  default: gee.styleType
+                }}
+                options={[{ label: 'SLD', value: 'sld' }, { label: 'Standard', value: 'standard' }]}
+                onChange={value => this.setState({
+                  gee: Object.assign({}, gee, { styleType: value })
+                })}
+              />
+            </div>
+            { gee.styleType === 'sld' && (
+              <div className="c-we-field">
+                <label htmlFor="gee-sld-value">SLD (Styled Layer Descriptor)</label>
+                <textarea
+                  name="gee-sld-value"
+                  id="gee-sld-value"
+                  placeholder="SLD"
+                  value={gee.sldValue}
+                  onChange={({ target }) => this.setState({
+                    gee: Object.assign({}, gee, { sldValue: target.value })
+                  })}
+                />
+              </div>
+            ) }
           </div>
         ) }
       </div>
