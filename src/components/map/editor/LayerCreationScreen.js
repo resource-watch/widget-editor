@@ -40,6 +40,22 @@ class LayerCreationScreen extends React.Component {
        * @type {string} type
        */
       type: '',
+      /**
+       * Minimum zoom of the layer
+       * @type {number} minZoom
+       */
+      minZoom: 0,
+      /**
+       * Minimum zoom of the layer
+       * @type {number} minZoom
+       */
+      maxZoom: 18,
+      /**
+       * Bounding box of the layer
+       * NOTE: the format is [SW long, SW lat, NE long, NE lat]
+       * @type {number[]} bbox
+       */
+      bbox: null,
       cartodb: {
         /**
          * Name of the account
@@ -144,40 +160,64 @@ class LayerCreationScreen extends React.Component {
     let layerConfig = {};
 
     if (state.type === 'cartodb') {
-      layerConfig = {
-        account: state.cartodb.account,
-        body: {
-          layers: [
+      layerConfig = Object.assign(
+        {
+          account: state.cartodb.account,
+          body: Object.assign(
             {
-              type: 'cartodb',
-              options: {
-                sql: state.cartodb.sql,
-                cartocss: state.cartodb.cartocss,
-                cartocss_version: '2.3.0'
-              }
-            }
-          ]
-        }
-      };
+              layers: [
+                {
+                  type: 'cartodb',
+                  options: {
+                    sql: state.cartodb.sql,
+                    cartocss: state.cartodb.cartocss,
+                    cartocss_version: '2.3.0'
+                  }
+                }
+              ]
+            },
+            state.minZoom !== null && state.minZoom !== undefined
+              ? { minzoom: state.minZoom }
+              : {},
+            state.maxZoom !== null && state.maxZoom !== undefined
+              ? { maxzoom: state.maxZoom }
+              : {}
+          )
+        },
+        state.bbox
+          ? { bbox: state.bbox }
+          : {}
+      );
     } else if (state.type === 'gee') {
-      layerConfig = {
-        type: 'gee',
-        body: Object.assign(
-          {
-            isImageCollection: state.gee.imageCollection,
-            styleType: state.gee.styleType
-          },
-          state.gee.imageCollection
-            ? { position: state.gee.position }
-            : {},
-          state.gee.imageCollection && state.gee.datesFilter.length
-            ? { filterDates: state.gee.datesFilter.map(d => `${d.getUTCFullYear()}-${`${d.getUTCMonth() + 1}`.padStart(2, '0')}-${`${d.getUTCDate()}`.padStart(2, '0')}`) }
-            : {},
-          state.gee.styleType === 'sld'
-            ? { sldValue: state.gee.sldValue }
-            : {}
-        )
-      };
+      layerConfig = Object.assign(
+        {
+          type: 'gee',
+          body: Object.assign(
+            {
+              isImageCollection: state.gee.imageCollection,
+              styleType: state.gee.styleType
+            },
+            state.gee.imageCollection
+              ? { position: state.gee.position }
+              : {},
+            state.gee.imageCollection && state.gee.datesFilter.length
+              ? { filterDates: state.gee.datesFilter.map(d => `${d.getUTCFullYear()}-${`${d.getUTCMonth() + 1}`.padStart(2, '0')}-${`${d.getUTCDate()}`.padStart(2, '0')}`) }
+              : {},
+            state.gee.styleType === 'sld'
+              ? { sldValue: state.gee.sldValue }
+              : {},
+            state.minZoom !== null && state.minZoom !== undefined
+              ? { minzoom: state.minZoom }
+              : {},
+            state.maxZoom !== null && state.maxZoom !== undefined
+              ? { maxzoom: state.maxZoom }
+              : {}
+          )
+        },
+        state.bbox
+          ? { bbox: state.bbox }
+          : {}
+      );
     }
 
     return {
@@ -210,7 +250,7 @@ class LayerCreationScreen extends React.Component {
 
   render() {
     const { onChangeScreen } = this.props;
-    const { name, description, type, cartodb, gee } = this.state;
+    const { name, description, type, minZoom, maxZoom, bbox, cartodb, gee } = this.state;
 
     return (
       <div className="layer-creation-screen">
@@ -301,6 +341,7 @@ class LayerCreationScreen extends React.Component {
             <div className="c-we-field">
               <Checkbox
                 properties={{
+                  name: 'image-collection',
                   title: 'Image collection',
                   checked: gee.imageCollection,
                   default: gee.imageCollection
@@ -368,6 +409,110 @@ class LayerCreationScreen extends React.Component {
               </div>
             ) }
           </div>
+        ) }
+        <div className="c-we-field">
+          <label htmlFor="min-zoom">Mimimum zoom</label>
+          <input
+            type="number"
+            name="min-zoom"
+            id="min-zoom"
+            placeholder="Maximum zoom"
+            value={minZoom}
+            min="0"
+            max={maxZoom}
+            onChange={({ target }) => this.setState({ minZoom: +target.value })}
+          />
+        </div>
+        <div className="c-we-field">
+          <label htmlFor="max-zoom">Maximum zoom</label>
+          <input
+            type="number"
+            name="max-zoom"
+            id="max-zoom"
+            placeholder="Minimum zoom"
+            value={maxZoom}
+            min={minZoom}
+            max="18"
+            onChange={({ target }) => this.setState({ maxZoom: +target.value })}
+          />
+        </div>
+        <div className="c-we-field">
+          <Checkbox
+            properties={{
+              name: 'bbox',
+              title: 'Add a bounding box',
+              checked: !!bbox,
+              default: !!bbox
+            }}
+            onChange={({ checked }) => this.setState({
+              bbox: checked ? [-180, -90, 180, 90] : null
+            })}
+          />
+        </div>
+        { bbox && (
+          <fieldset className="c-we-field">
+            <legend>Bounding box</legend>
+            <div className="c-we-field">
+              <label htmlFor="bbox-sw-long">South west longitude</label>
+              <input
+                type="number"
+                name="bbox-sw-long"
+                id="bbox-sw-long"
+                placeholder="South west longitude"
+                value={bbox[0]}
+                min="-180"
+                max={bbox[2]}
+                onChange={({ target }) => this.setState({
+                  bbox: [+target.value, ...bbox.slice(1)]
+                })}
+              />
+            </div>
+            <div className="c-we-field">
+              <label htmlFor="bbox-sw-lat">South west latitude</label>
+              <input
+                type="number"
+                name="bbox-sw-lat"
+                id="bbox-sw-lat"
+                placeholder="South west latitude"
+                value={bbox[1]}
+                min="-90"
+                max={bbox[3]}
+                onChange={({ target }) => this.setState({
+                  bbox: [bbox[0], +target.value, ...bbox.slice(2)]
+                })}
+              />
+            </div>
+            <div className="c-we-field">
+              <label htmlFor="bbox-ne-long">North east longitude</label>
+              <input
+                type="number"
+                name="bbox-ne-long"
+                id="bbox-ne-long"
+                placeholder="North east longitude"
+                value={bbox[2]}
+                min={bbox[0]}
+                max="180"
+                onChange={({ target }) => this.setState({
+                  bbox: [...bbox.slice(0, 2), +target.value, bbox[3]]
+                })}
+              />
+            </div>
+            <div className="c-we-field">
+              <label htmlFor="bbox-ne-lat">North east latitude</label>
+              <input
+                type="number"
+                name="bbox-ne-lat"
+                id="bbox-ne-lat"
+                placeholder="North east latitude"
+                value={bbox[3]}
+                min={bbox[1]}
+                max="90"
+                onChange={({ target }) => this.setState({
+                  bbox: [...bbox.slice(0, 3), +target.value]
+                })}
+              />
+            </div>
+          </fieldset>
         ) }
       </div>
     );
