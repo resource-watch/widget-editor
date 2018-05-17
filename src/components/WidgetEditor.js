@@ -192,6 +192,10 @@ class WidgetEditor extends React.Component {
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(this.getWidgetConfig.bind(this));
     }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(this.getLayer.bind(this));
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -298,6 +302,10 @@ class WidgetEditor extends React.Component {
 
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(null);
+    }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(null);
     }
   }
 
@@ -771,6 +779,27 @@ class WidgetEditor extends React.Component {
     }
 
     return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+  }
+
+  /**
+   * Return the layer created by the user, if any
+   * NOTE: If the map isn't rendered, rejects
+   * NOTE: this method is public
+   * @returns {Promise<object>}
+   */
+  getLayer() {
+    return new Promise((resolve, reject) => {
+      const { layer } = this.props.widgetEditor;
+
+      if (layer && layer.id && layer.id.match(/^widget-editor-layer-[0-9]+/)) {
+        const res = Object.assign({}, layer);
+        delete res.id;
+        resolve(res);
+      } else {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject('Unable to retrieve the layer.');
+      }
+    });
   }
 
   /**
@@ -1380,6 +1409,11 @@ WidgetEditor.propTypes = {
    * to get the widget config
    */
   provideWidgetConfig: PropTypes.func,
+  /**
+   * Callback executed at mounting time to provide a function
+   * to get the layer created by the user, if any
+   */
+  provideLayer: PropTypes.func,
   /**
    * Callback executed when the value of the title is updated
    * The callback gets passed the new value

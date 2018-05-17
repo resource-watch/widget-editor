@@ -111,7 +111,7 @@ class MapEditor extends React.Component {
             </button>
           </div>
         ) }
-        {/* <div className="actions-container">
+        <div className="actions-container">
           {
             canShowSaveButton &&
             <button
@@ -122,7 +122,7 @@ class MapEditor extends React.Component {
               {mode === 'save' ? 'Save visualization' : 'Update visualization'}
             </button>
           }
-        </div> */}
+        </div>
       </div>
     );
   }

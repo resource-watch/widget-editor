@@ -222,7 +222,8 @@ class LayerCreationScreen extends React.Component {
 
     return {
       // Fake ID necessary for the layer to render
-      id: `xxx-widget-editor-${+(new Date())}`,
+      // NOTE: do not change without updating WidgetEditor too
+      id: `widget-editor-layer-${+(new Date())}`,
       name: state.name,
       description: state.description,
       dataset: props.datasetId,
