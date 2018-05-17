@@ -23,8 +23,9 @@ export default class WidgetService {
    * @param {string} token Token of the user
    * @param {object} widgetBody Content of request to create the widget
    * @param {object} metadataBody Content of the request to create the metadata
+   * @param {object} layerBody Content of the request to create the layer, if any
    */
-  static saveUserWidget(datasetId, token, widgetBody, metadataBody = null) {
+  static saveUserWidget(datasetId, token, widgetBody, metadataBody = null, layerBody) {
     const widget = Object.assign({}, widgetBody, {
       application: [getConfig().applications],
       published: false,
@@ -39,6 +40,12 @@ export default class WidgetService {
         application: getConfig().applications
       });
 
+    const layer = !layerBody
+      ? null
+      : Object.assign({}, layerBody, {
+        application: getConfig().applications.split(',')
+      });
+
     const getRequestOptions = body => ({
       method: 'POST',
       body: JSON.stringify(body),
@@ -48,7 +55,36 @@ export default class WidgetService {
       }
     });
 
-    return fetch(`${getConfig().url}/dataset/${datasetId}/widget`, getRequestOptions(widget))
+    return new Promise((resolve, reject) => {
+      if (layer) {
+        fetch(`${getConfig().url}/dataset/${datasetId}/layer`, getRequestOptions(layer))
+          .then(resolve)
+          .catch(reject);
+        return;
+      }
+
+      resolve(null);
+    })
+      .then((res) => {
+        if (layer) {
+          if (!res.ok) {
+            console.error('Unable to create the layer');
+            throw new Error(res.statusText);
+          }
+          return res.json();
+        }
+
+        return res;
+      })
+      .then(({ data }) => {
+        if (layer) {
+          const layerId = data.id;
+          widget.widgetConfig.layer_id = layerId;
+          widget.widgetConfig.paramsConfig.layer = layerId;
+        }
+
+        return fetch(`${getConfig().url}/dataset/${datasetId}/widget`, getRequestOptions(widget));
+      })
       .then((res) => {
         if (!res.ok) {
           console.error('Unable to create the widget');

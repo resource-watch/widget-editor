@@ -77,10 +77,19 @@ class SaveWidgetModal extends React.Component {
     });
 
     const { description } = this.state;
-    const { widgetEditor, datasetId, getWidgetConfig } = this.props;
+    const { widgetEditor, datasetId, getWidgetConfig, getLayer } = this.props;
 
     try {
       const widgetConfig = await getWidgetConfig();
+      let layer = null;
+
+      if (getLayer) {
+        try {
+          layer = await getLayer();
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
       const widgetObj = Object.assign(
         {},
@@ -100,7 +109,7 @@ class SaveWidgetModal extends React.Component {
         };
       }
 
-      WidgetService.saveUserWidget(datasetId, getConfig().userToken, widgetObj, metadataObj)
+      WidgetService.saveUserWidget(datasetId, getConfig().userToken, widgetObj, metadataObj, layer)
         .then(() => this.setState({ saved: true, error: false }))
         .catch((err) => {
           this.setState({
@@ -242,6 +251,10 @@ SaveWidgetModal.propTypes = {
    * Async callback to get the widget config
    */
   getWidgetConfig: PropTypes.func.isRequired,
+  /**
+   * Async callback to get the layer the user created, if any
+   */
+  getLayer: PropTypes.func,
   /**
    * Callback executed when the user clicks the
    * button to check their widgets

@@ -146,6 +146,7 @@ Name | Default value | Mandatory | Description
 `onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
 `onChangeWidgetCaption: function` | `undefined` | No | Callback executed when the caption of the widget is changed. The first argument is the new value.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
+`provideLayer: function` | `undefined` | No | Callback which is passed a function to get the layer created by the user, if any (see below)
 
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
 
@@ -182,6 +183,39 @@ getWidgetConfig()
 
 For more information about the `widgetConfig` object, take a look at [this Jupyter notebook](https://github.com/resource-watch/notebooks/blob/master/ResourceWatch/Api_definition/widget_definition.ipynb).
 
+### Get the layer created by the user
+
+First, you need to understand that if the prop `useLayerEditor` is not set, the user won't be able to create a layer.
+
+If it is, then the user has the possibility to create a layer when choosing the map visualization. When the user clicks the save button, you can retrieve this layer calling the function passed by the `provideLayer` prop.
+
+```jsx
+let getLayer;
+
+const App = props => {
+  return (
+    <WidgetEditor
+      datasetId="XXX"
+      useLayerEditor
+      provideLayer={(func) => { getLayer = func; }}
+    />
+  );
+};
+```
+
+Once the editor's mounted, whenever you want, you can call `getLayer`:
+```js
+getLayer()
+  .then((layer) => {
+    // Here you are: 🗺
+  })
+  .reject(() => {
+    // This happens if you call the method when the map
+    // hasn't been rendered yet
+  });
+```
+
+For more information about the layers, check this [notebook](https://github.com/resource-watch/notebooks/blob/develop/ResourceWatch/Api_definition/layer_definition.ipynb).
 
 ## How to use the `Modal` component
 If you want to re-use the editor's modal in your app, you need to include the component within a non-positioned container (at the root for example). You can then open it with any content using its [redux' actions](https://github.com/resource-watch/widget-editor/blob/master/src/reducers/modal.js).
