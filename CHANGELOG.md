@@ -2,6 +2,7 @@
 
 ## v1.1.1 (not yet released)
 - Fix a bug where the title and caption wouldn't be set at the mounting of the editor
+- Sync the title of the widget with the name of the selected layer
 
 ## v1.1.0 - 23/04/2018
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
