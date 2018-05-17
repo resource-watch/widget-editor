@@ -65,12 +65,13 @@ class App extends React.Component {
   }
 
   async onSave() {
-    if (this.getWidgetConfig) {
+    if (this.getWidgetConfig && this.getLayer) {
       this.props.toggleModal(true, {
         children: SaveWidgetModal,
         childrenProps: {
           datasetId: this.state.datasetId,
           getWidgetConfig: this.getWidgetConfig,
+          getLayer: this.getLayer,
           onClickCheckWidgets: () => alert('Check my widgets'),
           onChangeWidgetTitle: title => this.setState({ widgetTitle: title })
         }
@@ -150,12 +151,14 @@ class App extends React.Component {
           widgetCaption={this.state.widgetCaption}
           saveButtonMode="always"
           embedButtonMode="always"
-          titleMode="never"
+          titleMode="always"
+          useLayerEditor
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
           onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
           onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
+          provideLayer={(func) => { this.getLayer = func; }}
         />
         <div style={{ border: '1px solid black', margin: '40px 0', padding: '0 10px' }}>
           <p>
