@@ -118,8 +118,9 @@ export default class WidgetService {
    * @param {string} token Token of the user
    * @param {object} widgetBody Content of request to create the widget
    * @param {object} metadataBody Content of the request to create the metadata
+   * @param {object} layerBody Content of the request to create the layer, if any
    */
-  static updateUserWidget(datasetId, widgetId, token, widgetBody, metadataBody = null) {
+  static updateUserWidget(datasetId, widgetId, token, widgetBody, metadataBody = null, layerBody) {
     const widget = Object.assign({}, widgetBody, {
       application: [getConfig().applications],
       published: false,
@@ -143,7 +144,45 @@ export default class WidgetService {
       }
     });
 
-    return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widgetId}`, getRequestOptions(widget))
+    const layer = !layerBody
+      ? null
+      : Object.assign({}, layerBody, {
+        application: getConfig().applications.split(',')
+      });
+
+    return new Promise((resolve, reject) => {
+      if (layer) {
+        const requestOptions = getRequestOptions(layer);
+        requestOptions.method = 'POST';
+
+        fetch(`${getConfig().url}/dataset/${datasetId}/layer`, requestOptions)
+          .then(resolve)
+          .catch(reject);
+        return;
+      }
+
+      resolve(null);
+    })
+      .then((res) => {
+        if (layer) {
+          if (!res.ok) {
+            console.error('Unable to create the layer');
+            throw new Error(res.statusText);
+          }
+          return res.json();
+        }
+
+        return res;
+      })
+      .then(({ data }) => {
+        if (layer) {
+          const layerId = data.id;
+          widget.widgetConfig.layer_id = layerId;
+          widget.widgetConfig.paramsConfig.layer = layerId;
+        }
+
+        return fetch(`${getConfig().url}/dataset/${datasetId}/widget/${widgetId}`, getRequestOptions(widget));
+      })
       .then((res) => {
         if (!res.ok) {
           console.error('Unable to update the widget');

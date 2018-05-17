@@ -25,8 +25,16 @@ class MapEditor extends React.Component {
        * Screen (component) to render
        * @type {function} ActiveScreen
        */
-      ActiveScreen: props.useLayerEditor ? null : LayerSelectionScreen
+      ActiveScreen: (props.useLayerEditor && !props.widgetEditor.layer)
+        ? null
+        : LayerSelectionScreen
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.ActiveScreen === null && nextProps.widgetEditor.layer) {
+      this.setState({ ActiveScreen: LayerSelectionScreen });
+    }
   }
 
   /**
