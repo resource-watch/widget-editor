@@ -156,6 +156,18 @@ class WidgetEditor extends React.Component {
     // We set the default position of the map according
     // to the external prop
     this.setDefaultMapState(props);
+
+    // If the title is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetTitle) {
+      props.setTitle(props.widgetTitle);
+    }
+
+    // If the caption is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetCaption) {
+      props.setCaption(props.widgetCaption);
+    }
   }
 
   /**

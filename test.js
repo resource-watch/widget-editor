@@ -150,7 +150,7 @@ class App extends React.Component {
           widgetCaption={this.state.widgetCaption}
           saveButtonMode="always"
           embedButtonMode="always"
-          titleMode="never"
+          titleMode="always"
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
           onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
