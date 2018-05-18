@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { setLimit } from 'reducers/widgetEditor';
 
 // Maximum value for the query limit
-const LIMIT_MAX_VALUE = 500;
+const LIMIT_MAX_VALUE = 50;
 
 class LimitContainer extends React.Component {
   constructor(props) {
@@ -34,17 +34,18 @@ class LimitContainer extends React.Component {
   render() {
     return (
       <div className="c-we-limit-container">
-        <span className="text">
-          Limit
-        </span>
-        <input
-          type="number"
-          step="1"
-          min="1"
-          max={LIMIT_MAX_VALUE}
-          value={this.state.limit}
-          onChange={e => this.handleLimitChange(e.target.value)}
-        />
+        <label htmlFor="we-filter-limit" className="text">
+          Max rows
+          <input
+            id="we-filter-limit"
+            type="number"
+            step="1"
+            min="1"
+            max={LIMIT_MAX_VALUE}
+            value={this.state.limit}
+            onChange={e => this.handleLimitChange(e.target.value)}
+          />
+        </label>
       </div>
     );
   }

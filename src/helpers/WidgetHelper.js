@@ -5,8 +5,8 @@ import { format } from 'd3-format';
 import BarChart from 'helpers/bar';
 import LineChart from 'helpers/line';
 import PieChart from 'helpers/pie';
-import OneDScatterChart from 'helpers/1d_scatter';
-import OneDTickChart from 'helpers/1d_tick';
+// import OneDScatterChart from 'helpers/1d_scatter';
+// import OneDTickChart from 'helpers/1d_tick';
 import ScatterChart from 'helpers/scatter';
 
 // Helpers
@@ -20,9 +20,9 @@ const CHART_TYPES = {
   bar: BarChart,
   line: LineChart,
   pie: PieChart,
-  scatter: ScatterChart,
-  '1d_scatter': OneDScatterChart,
-  '1d_tick': OneDTickChart
+  scatter: ScatterChart
+  // '1d_scatter': OneDScatterChart,
+  // '1d_tick': OneDTickChart
 };
 
 export const ALLOWED_FIELD_TYPES = [
@@ -329,15 +329,23 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
 
   // If the visualization is a line chart and the user doesn't sort
   // the data, by default we sort it with the category column
-  if (!orderByColumn.length && chartInfo.chartType === 'line') {
-    orderByColumn.push({ name: chartInfo.x.name });
+  if (!orderByColumn.length) {
+    if (chartInfo.chartType === 'line') {
+      orderByColumn.push({ name: chartInfo.x.name });
+    } else if (chartInfo.chartType === 'pie' || chartInfo.chartType === 'bar') {
+      orderByColumn.push({ name: chartInfo.y.name });
+    }
   }
 
   if (orderByColumn.length > 0 && chartInfo.y && orderByColumn[0].name === chartInfo.y.name && chartInfo.y.aggregateFunction && chartInfo.y.aggregateFunction !== 'none') {
-    orderByColumn[0].name = `${chartInfo.y.aggregateFunction}(${chartInfo.y.name})`;
+    // FIXME: Might be able to just use "y" instead of
+    // columns.find(c => c.value === chartInfo.y.name).key
+    // NOTE: We need to use the SQL alias of the column because the API
+    // doesn't support functions in the ORDER BY (ex: ORDER BY count(number))
+    orderByColumn[0].name = columns.find(c => c.value === chartInfo.y.name).key;
   }
 
-  const sortOrder = chartInfo.order ? chartInfo.order.orderType : 'asc';
+  const sortOrder = chartInfo.order ? chartInfo.order.orderType : 'desc';
   const query = `${getQueryByFilters(tableName, chartInfo.filters, columns, orderByColumn, sortOrder)} LIMIT ${chartInfo.limit}`;
 
   const geostore = chartInfo.areaIntersection ? `&geostore=${chartInfo.areaIntersection}` : '';
@@ -531,7 +539,12 @@ export async function getChartConfig(
     }
   }
 
-  return CHART_TYPES[chartInfo.chartType]({
+  const chart = getChartType(chartInfo.chartType);
+  if (!chart) {
+    throw new Error('This chart is currently not supported.');
+  }
+
+  return chart({
     // In the future, we could pass the type of the columns so the chart
     // could select the right scale
     columns: {
@@ -677,16 +690,16 @@ export async function getWidgetConfig(
       visualizationType,
       band,
       layer,
-      caption,
       zoom,
       latLng,
-      bounds
+      bounds,
+      basemapLayers
     } = widgetEditor;
 
     let chartConfig = {};
 
     if (visualizationType === 'table') {
-      reject('Table widgets are not supported yet.');
+      reject('Table visualizations are not supported yet.');
       return;
     } else if (visualizationType !== 'map') {
       // If the visualization if a map, we don't have any chartConfig
@@ -715,7 +728,8 @@ export async function getWidgetConfig(
         layer_id: layer && layer.id,
         zoom,
         ...latLng,
-        ...bounds && { bbox: [bounds[0][1], bounds[0][0], bounds[1][1], bounds[1][0]] }
+        ...bounds && { bbox: [bounds[0][1], bounds[0][0], bounds[1][1], bounds[1][0]] },
+        basemapLayers
       };
     }
 
@@ -731,7 +745,6 @@ export async function getWidgetConfig(
       {
         paramsConfig: {
           visualizationType,
-          caption,
           limit,
           value,
           category,

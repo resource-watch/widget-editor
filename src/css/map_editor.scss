@@ -2,8 +2,43 @@
   display: flex;
   justify-content: space-between;
   flex-direction: column;
-  height: 370px;
+  flex-grow: 1;
   margin-top: 20px;
+  overflow-y: auto;
+
+  .breadcrumbs {
+    margin-bottom: 15px;
+
+    .c-we-button {
+      padding-left: 0;
+
+      .c-we-icon {
+        margin-right: 5px;
+
+        use {
+          fill: currentColor;
+        }
+      }
+    }
+  }
+
+  .initial-screen {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .c-we-button {
+      margin: 15px 0;
+    }
+  }
+
+  .layer-creation-screen {
+    .Select {
+      max-width: none;
+    }
+  }
 
   .selector-container {
     h5 {

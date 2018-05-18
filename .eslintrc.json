@@ -5,6 +5,9 @@
     "mocha": true,
     "es6": true
   },
+  "globals": {
+    "L": true
+  },
   "extends": "vizzuality",
   "rules": {
     "import/prefer-default-export": 0,
@@ -21,7 +24,9 @@
       "ignoreRegExpLiterals": true,
       "ignoreStrings": true,
       "ignoreTemplateLiterals": true
-    }]
+    }],
+    "object-curly-newline": 0,
+    "prefer-destructuring": 0
   },
   "parser": "babel-eslint",
   "parserOptions": {

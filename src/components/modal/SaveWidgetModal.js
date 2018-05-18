@@ -77,10 +77,19 @@ class SaveWidgetModal extends React.Component {
     });
 
     const { description } = this.state;
-    const { widgetEditor, datasetId, getWidgetConfig } = this.props;
+    const { widgetEditor, datasetId, getWidgetConfig, getLayer } = this.props;
 
     try {
       const widgetConfig = await getWidgetConfig();
+      let layer = null;
+
+      if (getLayer) {
+        try {
+          layer = await getLayer();
+        } catch (err) {
+          console.error(err);
+        }
+      }
 
       const widgetObj = Object.assign(
         {},
@@ -91,10 +100,16 @@ class SaveWidgetModal extends React.Component {
         { widgetConfig }
       );
 
-      WidgetService.saveUserWidget(widgetObj, datasetId, getConfig().userToken)
-        .then((response) => {
-          if (response.errors) throw new Error(response.errors[0].detail);
-        })
+      let metadataObj = null;
+      if (widgetEditor.caption) {
+        metadataObj = {
+          info: {
+            caption: widgetEditor.caption
+          }
+        };
+      }
+
+      WidgetService.saveUserWidget(datasetId, getConfig().userToken, widgetObj, metadataObj, layer)
         .then(() => this.setState({ saved: true, error: false }))
         .catch((err) => {
           this.setState({
@@ -131,10 +146,10 @@ class SaveWidgetModal extends React.Component {
     return (
       <div className="c-we-save-widget-modal">
         {!saved &&
-        <h2>Save widget</h2>
+        <h2>Save visualization</h2>
         }
         {saved &&
-        <h2>Widget saved!</h2>
+        <h2>Visualization saved!</h2>
         }
         <Spinner
           isLoading={loading}
@@ -216,7 +231,7 @@ class SaveWidgetModal extends React.Component {
                   properties={{ className: '-secondary', type: 'button' }}
                   onClick={this.onClickCheckWidgets}
                 >
-                  Check my widgets
+                  Check my visualizations
                 </Button>
               }
             </div>
@@ -236,6 +251,10 @@ SaveWidgetModal.propTypes = {
    * Async callback to get the widget config
    */
   getWidgetConfig: PropTypes.func.isRequired,
+  /**
+   * Async callback to get the layer the user created, if any
+   */
+  getLayer: PropTypes.func,
   /**
    * Callback executed when the user clicks the
    * button to check their widgets

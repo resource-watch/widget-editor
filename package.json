@@ -1,6 +1,6 @@
 {
   "name": "widget-editor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Widget editor used in Resource Watch and PReP",
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",
@@ -69,8 +69,8 @@
     "build:css": "postcss --use autoprefixer < dist/styles.css | postcss --use cssnano > dist/styles.min.css",
     "build:js": "rollup -c rollup.config.js",
     "watch:js": "rollup -c rollup.config.js --watch",
-    "build": "NODE_ENV=production $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run build:js",
-    "watch": "NODE_ENV=development $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run watch:js",
+    "build": "export NODE_ENV=production && $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run build:js",
+    "watch": "export NODE_ENV=development && $npm_execpath run build:images && $npm_execpath run build:css && $npm_execpath run watch:js",
     "prepublish": "$npm_execpath run build"
   },
   "dependencies": {
@@ -87,18 +87,18 @@
     "react-dnd": "^2.5.4",
     "react-dnd-html5-backend": "^2.5.4",
     "react-dropzone": "^4.2.3",
+    "react-flatpickr": "^3.6.4",
     "react-input-autosize": "^2.0.1",
-    "react-input-range": "^1.2.2",
     "react-redux": "^5.0.6",
     "react-redux-toastr": "^7.1.6",
     "react-select": "^1.0.0-rc.10",
     "react-sortable-hoc": "^0.6.8",
     "react-tether": "^0.6.0",
     "toastr": "^2.1.2",
-    "vega-tooltip": "^0.5.1"
+    "vega-tooltip": "^0.5.1",
+    "wri-api-components": "1.0.3"
   },
   "peerDependencies": {
-    "leaflet": "^1.2.0",
     "prop-types": "^15.6.0",
     "react": "^15.6.2",
     "react-dom": "^15.6.2",

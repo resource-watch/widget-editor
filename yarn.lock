@@ -3055,6 +3055,10 @@ flat-cache@^1.2.1:
     graceful-fs "^4.1.2"
     write "^0.2.1"
 
+flatpickr@^4.3.2:
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-4.4.3.tgz#53ba7b06523f73ee69175b3ed808c7fc0f245c4f"
+
 flatten@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
@@ -3500,6 +3504,10 @@ hoek@2.x.x:
 hoek@4.x.x:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-4.2.1.tgz#9634502aa12c445dd5a7c5734b572bb8738aacbb"
+
+hoist-non-react-statics@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz#aa448cf0986d55cc40773b17174b7dd066cb7cfb"
 
 hoist-non-react-statics@^2.1.0, hoist-non-react-statics@^2.5.0:
   version "2.5.0"
@@ -4361,7 +4369,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-lodash@^4.0.0, lodash@^4.12.0, lodash@^4.14.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@~4.17.4:
+lodash@^4.0.0, lodash@^4.12.0, lodash@^4.14.0, lodash@^4.16.6, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.2.0, lodash@^4.2.1, lodash@^4.3.0, lodash@~4.17.4:
   version "4.17.5"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.5.tgz#99a92d65c0272debe8c96b6057bc8fbfa3bed511"
 
@@ -4884,6 +4892,10 @@ object-copy@^0.1.0:
 object-keys@^1.0.8:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/object-keys/-/object-keys-1.0.11.tgz#c54601778ad560f1142ce0e01bcca8b56d13426d"
+
+object-unfreeze@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/object-unfreeze/-/object-unfreeze-1.1.0.tgz#69628bea1f3c9d29f4eb0ba63b38002d70ea3ce9"
 
 object-visit@^1.0.0:
   version "1.0.1"
@@ -5569,6 +5581,14 @@ prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.7, pr
     loose-envify "^1.3.1"
     object-assign "^4.1.1"
 
+prop-types@^15.6.1:
+  version "15.6.1"
+  resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.1.tgz#36644453564255ddda391191fb3a125cbdf654ca"
+  dependencies:
+    fbjs "^0.8.16"
+    loose-envify "^1.3.1"
+    object-assign "^4.1.1"
+
 proxy-addr@~2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/proxy-addr/-/proxy-addr-2.0.3.tgz#355f262505a621646b3130a728eb647e22055341"
@@ -5718,7 +5738,7 @@ rc-slider@^8.4.0:
     shallowequal "^1.0.1"
     warning "^3.0.0"
 
-rc-tooltip@^3.7.0:
+rc-tooltip@3.7.0, rc-tooltip@^3.7.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/rc-tooltip/-/rc-tooltip-3.7.0.tgz#3afbf109865f7cdcfe43752f3f3f501f7be37aaa"
   dependencies:
@@ -5754,6 +5774,14 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-css-modules@^4.7.1:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/react-css-modules/-/react-css-modules-4.7.2.tgz#3ded05fc8b5f2879d19131aa850cb6b2b8ca4f0b"
+  dependencies:
+    hoist-non-react-statics "^1.2.0"
+    lodash "^4.16.6"
+    object-unfreeze "^1.1.0"
+
 react-dnd-html5-backend@^2.5.4:
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/react-dnd-html5-backend/-/react-dnd-html5-backend-2.5.4.tgz#974ad083f67b12d56977a5b171f5ffeb29d78352"
@@ -5771,7 +5799,7 @@ react-dnd@^2.5.4:
     lodash "^4.2.0"
     prop-types "^15.5.10"
 
-react-dom@^15.6.2:
+react-dom@15.6.2, react-dom@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
   dependencies:
@@ -5787,13 +5815,20 @@ react-dropzone@^4.2.3:
     attr-accept "^1.0.3"
     prop-types "^15.5.7"
 
+react-flatpickr@^3.6.4:
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/react-flatpickr/-/react-flatpickr-3.6.4.tgz#41a8406d00d787b629839ae1f5a01ed3bb6e84ac"
+  dependencies:
+    flatpickr "^4.3.2"
+    prop-types "^15.5.10"
+
 react-input-autosize@^2.0.1, react-input-autosize@^2.1.2:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-2.2.1.tgz#ec428fa15b1592994fb5f9aa15bb1eb6baf420f8"
   dependencies:
     prop-types "^15.5.8"
 
-react-input-range@^1.2.2:
+react-input-range@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/react-input-range/-/react-input-range-1.3.0.tgz#f96d001631ab817417f1e26d8f9f9684b4827f59"
   dependencies:
@@ -7699,6 +7734,23 @@ wrap-ansi@^2.0.0:
 wrappy@1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
+
+wri-api-components@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/wri-api-components/-/wri-api-components-1.0.3.tgz#d3e3e04e1b427f1a6ee69645bf56578df163fd40"
+  dependencies:
+    prop-types "^15.6.1"
+    rc-tooltip "3.7.0"
+    react "15.6.2"
+    react-css-modules "^4.7.1"
+    react-dom "15.6.2"
+    react-input-range "1.3.0"
+    react-sortable-hoc "^0.6.8"
+    wri-json-api-serializer "^1.0.1"
+
+wri-json-api-serializer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/wri-json-api-serializer/-/wri-json-api-serializer-1.0.1.tgz#49d26541d7fb5b10f9cc096f8f085395fa04e8a7"
 
 write@^0.2.1:
   version "0.2.1"

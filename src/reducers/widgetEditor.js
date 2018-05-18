@@ -21,7 +21,7 @@ const SHOW_LAYER = 'WIDGET_EDITOR/SHOW_LAYER';
 const SET_FIELDS = 'WIDGET_EDITOR/SET_FIELDS';
 const SET_LIMIT = 'WIDGET_EDITOR/SET_LIMIT';
 const RESET = 'WIDGET_EDITOR/RESET';
-const SET_AREA_INTERSEACTION = 'WIDGET_EDITOR/SET_AREA_INTERSEACTION';
+const SET_AREA_INTERSECTION = 'WIDGET_EDITOR/SET_AREA_INTERSECTION';
 const SET_VISUALIZATION_TYPE = 'WIDGET_EDITOR/SET_VISUALIZATION_TYPE';
 const SET_BAND = 'WIDGET_EDITOR/SET_BAND';
 const SET_LAYER = 'WIDGET_EDITOR/SET_LAYER';
@@ -33,6 +33,10 @@ const SET_LATLNG = 'WIDGET_EDITOR/SET_LATLNG';
 const SET_BOUNDS = 'WIDGET_EDITOR/SET_BOUNDS';
 const SET_DATASET_ID = 'WIDGET_EDITOR/SET_DATASET_ID';
 const SET_TABLENAME = 'WIDGET_EDITOR/SET_TABLENAME';
+const SET_CONTRACTED = 'WIDGET_EDITOR/SET_CONTRACTED';
+const SET_BASEMAP = 'WIDGET_EDITOR/SET_BASEMAP';
+const SET_LABELS = 'WIDGET_EDITOR/SET_LABELS';
+const SET_BOUNDARIES = 'WIDGET_EDITOR/SET_BOUNDARIES';
 
 /**
  * REDUCER
@@ -51,7 +55,7 @@ const initialState = {
   visualizationType: null,
   title: null, // Title of the widget / graph
   caption: null, // Caption of the widget
-  limit: 500,
+  limit: 50,
   areaIntersection: null, // ID of the geostore object
   band: null, // Band of the raster dataset
   /** @type {{ [name: string]: { type: string, alias: string, description: string } }} bandsInfo */
@@ -59,7 +63,16 @@ const initialState = {
   zoom: 3,
   latLng: { lat: 0, lng: 0 },
   /** @type {number[][]} bounds */
-  bounds: null // Bounds of the map (south west, then north east)
+  bounds: null, // Bounds of the map (south west, then north east)
+  contracted: false, // Whether the left panel is contracted or expanded
+  basemapLayers: { // Default layers on the map
+    /** @type {string} basemap */
+    basemap: 'dark',
+    /** @type {string} labels */
+    labels: null,
+    /** @type {boolean} boundaries */
+    boundaries: false
+  }
 };
 
 export default function (state = initialState, action) {
@@ -209,7 +222,7 @@ export default function (state = initialState, action) {
       });
     }
 
-    case SET_AREA_INTERSEACTION: {
+    case SET_AREA_INTERSECTION: {
       return Object.assign({}, state, {
         areaIntersection: action.payload
       });
@@ -276,6 +289,30 @@ export default function (state = initialState, action) {
     case SET_TABLENAME: {
       return Object.assign({}, state, {
         tableName: action.payload
+      });
+    }
+
+    case SET_CONTRACTED: {
+      return Object.assign({}, state, {
+        contracted: action.payload
+      });
+    }
+
+    case SET_BASEMAP: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { basemap: action.payload })
+      });
+    }
+
+    case SET_LABELS: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { labels: action.payload })
+      });
+    }
+
+    case SET_BOUNDARIES: {
+      return Object.assign({}, state, {
+        basemapLayers: Object.assign({}, state.basemapLayers, { boundaries: action.payload })
       });
     }
 
@@ -380,7 +417,7 @@ export function setLimit(limit) {
 }
 
 export function setAreaIntersection(id) {
-  return dispatch => dispatch({ type: SET_AREA_INTERSEACTION, payload: id });
+  return dispatch => dispatch({ type: SET_AREA_INTERSECTION, payload: id });
 }
 
 export function setVisualizationType(vis) {
@@ -425,4 +462,20 @@ export function setDatasetId(datasetId) {
 
 export function setTableName(tableName) {
   return dispatch => dispatch({ type: SET_TABLENAME, payload: tableName });
+}
+
+export function setContracted(contracted) {
+  return dispatch => dispatch({ type: SET_CONTRACTED, payload: contracted });
+}
+
+export function setBasemap(basemap) {
+  return dispatch => dispatch({ type: SET_BASEMAP, payload: basemap });
+}
+
+export function setLabels(labels) {
+  return dispatch => dispatch({ type: SET_LABELS, payload: labels });
+}
+
+export function setBoundaries(boundaries) {
+  return dispatch => dispatch({ type: SET_BOUNDARIES, payload: boundaries });
 }

@@ -96,7 +96,7 @@ export default class RasterService {
 
     return {
       chartType: 'bar',
-      limit: 500,
+      limit: 50,
       order: null,
       filters: [],
       areaIntersection,

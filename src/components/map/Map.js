@@ -2,7 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import pick from 'lodash/pick';
-import { BASEMAPS, LABELS } from 'components/map/constants';
+import { BASEMAPS, LABELS, BOUNDARIES } from 'components/map/constants';
+
+// Redux
+import { connect } from 'react-redux';
 
 // Components
 import Spinner from 'components/ui/Spinner';
@@ -12,9 +15,10 @@ import Spinner from 'components/ui/Spinner';
  * Basemap
  * @typedef {{ id: string, label: string, value: string, options: any }} Basemap
  */
-
-// Leaflet can't be imported on the server because it's not isomorphic
-const L = (typeof window !== 'undefined') ? require('leaflet') : null;
+/**
+ * Label
+ * @typedef {{ id: string, label: string, value: string, options: any }} Label
+ */
 
 const MAP_CONFIG = {
   minZoom: 2,
@@ -92,11 +96,20 @@ class Map extends React.Component {
       this.setLabels(nextProps.labels);
     }
 
+    if (this.props.boundaries !== nextProps.boundaries) {
+      this.setBoundaries(nextProps.boundaries);
+    }
+
     // We automatically pan to the bounds if they are provided
     // or updated
     if ((!this.props.mapConfig.bounds && nextProps.mapConfig.bounds)
-      || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds)) {
+      || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds
+      && nextProps.mapConfig.bounds)) {
       this.map.fitBounds(nextProps.mapConfig.bounds);
+    } else if (this.props.editorContracted !== nextProps.editorContracted) {
+      // The size of the map container has changed so we tell
+      // Leaflet about it
+      this.map.invalidateSize();
     }
   }
 
@@ -141,7 +154,7 @@ class Map extends React.Component {
 
   /**
    * Set the map's basemap
-   * @param {{ id: string, value: string, label: string, options: object }} basemap Basemap
+   * @param {Basemap} basemap Basemap
    */
   setBasemap(basemap) {
     if (this.tileLayer) this.tileLayer.remove();
@@ -152,16 +165,30 @@ class Map extends React.Component {
   }
 
   /**
-   * Toggle the map's labels
-   * @param {boolean} showLabels Whether to show the labels
+   * Set the map's labels
+   * @param {Label} labels Labels
    */
-  setLabels(showLabels) {
-    if (this.labelLayer && !showLabels) this.labelLayer.remove();
+  setLabels(labels) {
+    if (this.labelsLayer) this.labelsLayer.remove();
 
-    if (showLabels) {
-      this.labelLayer = L.tileLayer(LABELS.value, LABELS.options || {})
+    if (labels.id !== 'none') {
+      this.labelsLayer = L.tileLayer(labels.value, labels.options || {})
         .addTo(this.map)
         .setZIndex(this.props.layerGroups.length + 1);
+    }
+  }
+
+  /**
+   * Toggle the visibility of the boundaries on the map
+   * @param {boolean} showBoundaries
+   */
+  setBoundaries(showBoundaries) {
+    if (this.boundariesLayer) this.boundariesLayer.remove();
+
+    if (showBoundaries) {
+      this.boundariesLayer = L.tileLayer(BOUNDARIES.dark.value, BOUNDARIES.dark.options || {})
+        .addTo(this.map)
+        .setZIndex(this.props.layerGroups.length + 2);
     }
   }
 
@@ -236,6 +263,7 @@ class Map extends React.Component {
     if (!this.mapNode) return;
 
     this.map = L.map(this.mapNode, this.getMapOptions());
+    this.map.scrollWheelZoom.disable();
 
     // If the layer has bounds, we just pan in the
     // area
@@ -248,7 +276,6 @@ class Map extends React.Component {
       this.map.dragging.disable();
       this.map.touchZoom.disable();
       this.map.doubleClickZoom.disable();
-      this.map.scrollWheelZoom.disable();
       this.map.boxZoom.disable();
       this.map.keyboard.disable();
     }
@@ -261,6 +288,7 @@ class Map extends React.Component {
     // We set the current basemap and labels
     this.setBasemap(this.props.basemap);
     this.setLabels(this.props.labels);
+    this.setBoundaries(this.props.boundaries);
 
     // We add the event listeners
     this.setEventListeners();
@@ -308,12 +336,20 @@ Map.propTypes = {
    * Selected basemap
    * @type {Basemap} basemap
    */
-  basemap: PropTypes.object,
+  basemap: PropTypes.object.isRequired,
   /**
-   * Whether the labels are show or not
-   * @type {boolean} labels
+   * Selected labels
+   * @type {Label} labels
    */
-  labels: PropTypes.bool,
+  labels: PropTypes.object.isRequired,
+  /**
+   * Whether to show the boundaries or not
+   */
+  boundaries: PropTypes.bool.isRequired,
+  /**
+   * Whether the left panel of the editor is contracted
+   */
+  editorContracted: PropTypes.bool.isRequired,
   /**
    * Configuration of the map
    */
@@ -342,9 +378,14 @@ Map.propTypes = {
 };
 
 Map.defaultProps = {
-  basemap: BASEMAPS.dark,
-  labels: false,
   interactionEnabled: true
 };
 
-export default Map;
+const mapStateToProps = ({ widgetEditor }) => ({
+  basemap: BASEMAPS[widgetEditor.basemapLayers.basemap],
+  labels: LABELS[widgetEditor.basemapLayers.labels || 'none'],
+  boundaries: widgetEditor.basemapLayers.boundaries,
+  editorContracted: widgetEditor.contracted
+});
+
+export default connect(mapStateToProps, null)(Map);

@@ -76,4 +76,24 @@
       }
     }
   }
+
+  .date-filter {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 15px;
+
+    > label {
+      flex-basis: calc(50% - 10px);
+      font-size: $font-size-normal;
+
+      &:first-of-type {
+        margin-right: 20px;
+      }
+
+      input {
+        display: block;
+      }
+    }
+  }
 }

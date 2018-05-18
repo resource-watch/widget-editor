@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import ReduxThunk from 'redux-thunk';
+import 'leaflet';
 import { Provider, connect } from 'react-redux';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import WidgetEditor, { reducers, setConfig, Tooltip, Modal, Icons, SaveWidgetModal, EmbedTableModal, modalActions, VegaChart, WidgetService, getVegaTheme } from 'dist/bundle';
@@ -20,7 +21,7 @@ const store = createStore(combineReducers(reducers), enhancer);
 setConfig({
   url: 'https://api.resourcewatch.org/v1',
   env: 'production,preproduction',
-  applications: 'prep',
+  applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
   assetsPath: '/images/'
 });
@@ -47,8 +48,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      // datasetId: '20cc5eca-8c63-4c41-8e8e-134dcf1e6d76',
-      datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
+      datasetId: 'a86d906d-9862-4783-9e30-cdb68cd808b8',
+      // datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
       widgetId: undefined,
       previewWidgetId: undefined,
       previewConfig: undefined,
@@ -64,12 +65,13 @@ class App extends React.Component {
   }
 
   async onSave() {
-    if (this.getWidgetConfig) {
+    if (this.getWidgetConfig && this.getLayer) {
       this.props.toggleModal(true, {
         children: SaveWidgetModal,
         childrenProps: {
           datasetId: this.state.datasetId,
           getWidgetConfig: this.getWidgetConfig,
+          getLayer: this.getLayer,
           onClickCheckWidgets: () => alert('Check my widgets'),
           onChangeWidgetTitle: title => this.setState({ widgetTitle: title })
         }
@@ -150,11 +152,13 @@ class App extends React.Component {
           saveButtonMode="always"
           embedButtonMode="always"
           titleMode="always"
+          useLayerEditor
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
           onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
           onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
           provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
+          provideLayer={(func) => { this.getLayer = func; }}
         />
         <div style={{ border: '1px solid black', margin: '40px 0', padding: '0 10px' }}>
           <p>

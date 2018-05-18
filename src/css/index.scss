@@ -145,6 +145,8 @@ $margin-size-big: 100px;
 @import
   "node_modules/rc-slider/dist/rc-slider",
   "node_modules/vega-tooltip/build/vega-tooltip",
+  "node_modules/flatpickr/dist/flatpickr.min",
+  "node_modules/wri-api-components/dist/components",
   "add_widget_to_collection_tooltip",
   "aggregate_function_tooltip",
   "button",
@@ -158,6 +160,7 @@ $margin-size-big: 100px;
   "field",
   "fields_container",
   "filter_container",
+  "area_container",
   "filter_tooltip",
   "how_to_widget_editor_modal",
   "icon",
@@ -186,4 +189,5 @@ $margin-size-big: 100px;
   "widget_card",
   "widget_dock",
   "widget_editor",
-  "widget_list";
+  "widget_list",
+  "flatpickr";

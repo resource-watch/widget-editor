@@ -12,6 +12,8 @@ $ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega
 $ yarn add widget-editor
 ```
 
+Note that [leaflet](http://leafletjs.com/) is not listed as a peer dependency of this package because you can load it from a CDN. Make sure Leaflet is bundled with your app or globally available as `window.L`.
+
 You can [check the release tab](https://github.com/resource-watch/widget-editor/releases) on Github to see what is the most recent version.
 
 *NOTE: you can either use npm or yarn.*
@@ -136,11 +138,15 @@ Name | Default value | Mandatory | Description
 `embedButtonMode: string` | `"auto"` | No | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
 `titleMode: string` | `"auto"` | No | If `"auto"`, the title _and_ caption are only editable if a user token is passed to the configuration. If `"always"`, the title _and_ caption are always editable. If `"never"`, they are always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
+`contracted: boolean` | `false` | No | Initially display the editor with its left panel contracted
+`theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
+`useLayerEditor: boolean`| `false` | No | Let the user create a layer when selecting a map visualization
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
 `onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
 `onChangeWidgetCaption: function` | `undefined` | No | Callback executed when the caption of the widget is changed. The first argument is the new value.
 `provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
+`provideLayer: function` | `undefined` | No | Callback which is passed a function to get the layer created by the user, if any (see below)
 
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
 
@@ -177,6 +183,39 @@ getWidgetConfig()
 
 For more information about the `widgetConfig` object, take a look at [this Jupyter notebook](https://github.com/resource-watch/notebooks/blob/master/ResourceWatch/Api_definition/widget_definition.ipynb).
 
+### Get the layer created by the user
+
+First, you need to understand that if the prop `useLayerEditor` is not set, the user won't be able to create a layer.
+
+If it is, then the user has the possibility to create a layer when choosing the map visualization. When the user clicks the save button, you can retrieve this layer calling the function passed by the `provideLayer` prop.
+
+```jsx
+let getLayer;
+
+const App = props => {
+  return (
+    <WidgetEditor
+      datasetId="XXX"
+      useLayerEditor
+      provideLayer={(func) => { getLayer = func; }}
+    />
+  );
+};
+```
+
+Once the editor's mounted, whenever you want, you can call `getLayer`:
+```js
+getLayer()
+  .then((layer) => {
+    // Here you are: 🗺
+  })
+  .reject(() => {
+    // This happens if you call the method when the map
+    // hasn't been rendered yet
+  });
+```
+
+For more information about the layers, check this [notebook](https://github.com/resource-watch/notebooks/blob/develop/ResourceWatch/Api_definition/layer_definition.ipynb).
 
 ## How to use the `Modal` component
 If you want to re-use the editor's modal in your app, you need to include the component within a non-positioned container (at the root for example). You can then open it with any content using its [redux' actions](https://github.com/resource-watch/widget-editor/blob/master/src/reducers/modal.js).
@@ -258,91 +297,6 @@ Steps:
 2. Tag the commit with the new version number: `git tag -a v0.0.X COMMIT_HASH` and add as description the list of changes from the changelog
 3. Publish to npm: `yarn publish`
 
-**(*)** Don't forget to remove the "(not yet released)" text next to the version number!
+**(*)** Don't forget to remove the "Unreleased" text next to the version number and add the date of the release (DD/MM/YYYY)!
 
-## Changelog
-
-### v1.0.0
-- Migrate from Vega 2 to Vega 3 (not backward compatible)
-- Increase the timeout for the data fetching to 30s (due to Carto's latency in some cases)
-- Prevent the title and caption from overlapping the legend, if any
-- Fix a bug where the user's last interaction wouldn't be necessarily the one reflected by the visualization
-- Fix a bug where the height of the chart would grow in the editor after a resize
-
-### v0.1.3
-- Remove unused CSS rules that would interfere with the styles of RW or Prep
-- Auto-pan to the bounding box of a layer, if provided
-- Save and restore the bounding box of the widgets
-- Support for WMS datasets
-
-### v0.1.2
-- Fix a bug where the save button would appear with the table visualization and throw a controlled error when the user tries to get its config
-- Remove React warning in the tooltip
-- Fix a bug that would prevent the tooltip and the legend from displaying dates
-- Remove the code that forced the tooltip to show the column "x" (only for the tooltips opened based on the horizontal position of the cursor)
-- Fix a bug that would prevent `VegaChart` from re-rendering when the data's changed
-- Fix a bug that would force the user to add an optional prop to `VegaChart`
-
-### v0.1.1
-- Improve the resilience of the tooltip of the Vega charts and allow more than two values to be displayed at once
-- Show 'save' not 'update' when viewing default widgets in explore
-- Autoselect the default layer, if present, in the `MapEditor` component
-- Let the title of the widget being controlled from the outside
-- Fix a bug where the `locale` attribute of the config wouldn't default to `"en"`
-- Fix a bug where the columns wouldn't get their alias and description
-- Autoselect the first available chart type when the visualization is "Chart"
-- Add a caption to the editor, controllable from the outside and linked to the `titleMode` prop
-- By default, let the chart's legend opened (if any)
-
-### v0.1.0
-- Fix a bug that prevented map widgets from being restored
-- Add the missing Leaflet stylesheet to the testing file
-- Add a watch mode for the JS files
-- Remove external CSS for `rc-slider`
-- Scope all of the CSS classes of the components (now they start with `c-we-` instead of just `c-`)
-
-### v0.0.9
-- Add the missing type to some buttons
-- Add `rc-slider/assets/index.css` as required dependency
-
-### v0.0.8
-- Fix an issue that would prevent the update of the config
-- Remove the `widgetConfig` prop of `SaveWidgetModal` and replace it by `getWidgetConfig`
-- Fix the endpoint used in `removeUserWidget` from the `WidgetService`
-- Fix issues with the auth token in `WidgetService`
-- Build the library with [Rollup](https://rollupjs.org/) and make it SSR-ready
-- Add a new attribute `assetsPath` to the configuration (mandatory)
-- Scope the actions to avoid conflicts
-
-### v0.0.7
-- Remove the `widgetEditorExplore` reducer and actions
-- Reduce the size of the library by 1% (-9kB) minified
-
-### v0.0.6
-- Add the `embedButtonMode` prop for the `WidgetEditor` component
-- Add the `onEmbed` prop for the `WidgetEditor` component
-- Possibility to use `EmbedTableModal` as an external component
-- Fix a bug where the area intersection filter would display "Waiting for actions"
-- Remove the need for `babel-polyfill`
-- Reduce the size of the library by 53% (-997kB) minified
-
-### v0.0.5
-- Add missing params to the queries (`application` and `env`)
-
-### v0.0.4
-- Added an option to set the default state of the map
-
-### v0.0.3
-- External images use absolute URLs and documentation about how to configure webpack to load them
-- Fixed bug that prevented layers from other apps than RW to be displayed
-- Made the `userEmail` property optional in the configuration
-- Scope the styles of the modal
-- Fixed bug that would prevent the editor from correctly restoring some widgets
-
-### v0.0.2
-
-- Use react 15.x instead of react 16
-
-### v0.0.1
-
-Initial version of the library
+## [Changelog](https://github.com/resource-watch/widget-editor/blob/develop/CHANGELOG.md)

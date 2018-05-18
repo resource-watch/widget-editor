@@ -1,6 +1,10 @@
-.c-we-chart-editor {
+$margin-between-fields: 20px;
 
-  $margin-between-fields: 20px;
+.c-we-chart-editor {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
 
   .selectors-container {
     display: flex;

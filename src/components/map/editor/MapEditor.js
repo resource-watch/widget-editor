@@ -5,10 +5,13 @@ import Autobind from 'autobind-decorator';
 // Redux
 import { connect } from 'react-redux';
 
-import { showLayer, setBounds } from 'reducers/widgetEditor';
+import { showLayer, setBounds, setTitle } from 'reducers/widgetEditor';
 
 // Components
-import Select from 'components/form/SelectInput';
+/* eslint-disable no-unused-vars */
+import LayerSelectionScreen from 'components/map/editor/LayerSelectionScreen';
+import LayerCreationScreen from 'components/map/editor/LayerCreationScreen';
+/* eslint-enable no-unused-vars */
 
 // Helpers
 import { canRenderChart } from 'helpers/WidgetHelper';
@@ -17,15 +20,34 @@ class MapEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    // If a widget has been restored, we don't set
-    // the default layer
-    if (!props.widgetId) {
-      // If a default layer is present, we'll select
-      // it by default
-      const defaultLayer = props.layers.find(l => l.default);
-      if (defaultLayer) {
-        this.setLayer(defaultLayer);
-      }
+    this.state = {
+      /**
+       * Screen (component) to render
+       * @type {function} ActiveScreen
+       */
+      ActiveScreen: (props.useLayerEditor && !props.widgetEditor.layer)
+        ? null
+        : LayerSelectionScreen
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.ActiveScreen === null && nextProps.widgetEditor.layer) {
+      this.setState({ ActiveScreen: LayerSelectionScreen });
+    }
+  }
+
+  /**
+   * Event handler executed when changing the active screen
+   * @param {function|null} Component React component
+   */
+  @Autobind
+  onChangeScreen(Component) {
+    this.setState({ ActiveScreen: Component });
+
+    // We deselect the active layer
+    if (Component === null) {
+      this.setLayer(null);
     }
   }
 
@@ -65,7 +87,9 @@ class MapEditor extends React.Component {
   }
 
   render() {
-    const { widgetEditor, layers, mode, showSaveButton, provider } = this.props;
+    const { ActiveScreen } = this.state;
+    const { widgetEditor, layers, connectorUrl, tableName, mode, showSaveButton,
+      provider, widgetId, useLayerEditor } = this.props;
     const { layer } = widgetEditor;
 
     const canSave = canRenderChart(widgetEditor, provider);
@@ -73,25 +97,28 @@ class MapEditor extends React.Component {
 
     return (
       <div className="c-we-map-editor">
-        <div className="selector-container">
-          <h5>
-            Layers
-          </h5>
-          <Select
-            properties={{
-              name: 'layer-selector',
-              value: layer && layer.id,
-              default: layer && layer.id
-            }}
-            options={layers.map(val => (
-              {
-                label: val.name,
-                value: val.id
-              }
-            ))}
-            onChange={this.onChangeLayer}
+        { ActiveScreen && (
+          <ActiveScreen
+            widgetId={widgetId}
+            layers={layers}
+            connectorUrl={connectorUrl}
+            tableName={tableName}
+            useLayerEditor={useLayerEditor}
+            onChangeLayer={this.onChangeLayer}
+            onChangeScreen={this.onChangeScreen}
           />
-        </div>
+        ) }
+        { !ActiveScreen && (
+          <div className="initial-screen">
+            <button type="button" className="c-we-button -secondary" onClick={() => this.onChangeScreen(LayerSelectionScreen)}>
+              Choose an existing layer
+            </button>
+            or
+            <button type="button" className="c-we-button -secondary" onClick={() => this.onChangeScreen(LayerCreationScreen)}>
+              Create a new layer
+            </button>
+          </div>
+        ) }
         <div className="actions-container">
           {
             canShowSaveButton &&
@@ -100,7 +127,7 @@ class MapEditor extends React.Component {
               className="c-we-button -primary"
               onClick={this.props.onSave}
             >
-              {mode === 'save' ? 'Save widget' : 'Update widget'}
+              {mode === 'save' ? 'Save visualization' : 'Update visualization'}
             </button>
           }
         </div>
@@ -116,6 +143,9 @@ MapEditor.propTypes = {
   widgetId: PropTypes.string,
   layers: PropTypes.array.isRequired,
   provider: PropTypes.string.isRequired,
+  connectorUrl: PropTypes.string.isRequired,
+  useLayerEditor: PropTypes.bool.isRequired,
+  tableName: PropTypes.string.isRequired,
   mode: PropTypes.oneOf(['save', 'update']),
   /**
    * Whether the save/update button should be shown
@@ -136,7 +166,10 @@ MapEditor.propTypes = {
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
-  showLayer: layer => dispatch(showLayer(layer)),
+  showLayer: (layer) => {
+    dispatch(showLayer(layer));
+    dispatch(setTitle((layer && layer.name) || ''));
+  },
   setBounds: (...params) => dispatch(setBounds(...params))
 });
 

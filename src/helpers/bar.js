@@ -6,18 +6,17 @@ import { getTimeFormat } from 'helpers/WidgetHelper';
 /* eslint-disable */
 const defaultChart = {
   "data": [
-    { "name": "table" },
+    {
+      "name": "table",
+      "transform": [
+        { "type": "identifier", "as": "id" }
+      ]
+    },
     {
       "name":"stats",
       "source":"table",
       "transform": [
-        {
-          "type": "aggregate",
-          "fields": ["x"],
-          "ops": ["distinct"],
-          "as": ["value"]
-        },
-        { "type": "extent", "field": "value", "signal": "extent" }
+        { "type": "extent", "field": "x", "signal": "extent" }
       ]
     }
   ],
@@ -27,7 +26,7 @@ const defaultChart = {
       "type": "band",
       "range": "width",
       "padding": 0.05,
-      "domain": { "data": "table", "field": "x" }
+      "domain": { "data": "table", "field": "id" }
     },
     {
       "name": "y",
@@ -47,17 +46,19 @@ const defaultChart = {
       "encode": {
         "labels": {
           "update": {
-             "align": { "signal": "width < 300 || extent[1] > 10 ? 'right' : 'center'"},
-            "baseline": {"signal": "width < 300 || extent[1] > 10 ? 'middle' : 'top'" },
+            "text": { "signal": "data('table')[datum.value - 1].x" },
+            "align": { "signal": "width < 300 || extent[1] > 10 ? 'right' : 'center'" },
+            "baseline": { "signal": "width < 300 || extent[1] > 10 ? 'middle' : 'top'" },
             "angle": { "signal": "width < 300 || extent[1] > 10 ? -90 :0 " }
-            }
           }
         }
+      }
     },
     {
       "orient": "left",
       "scale": "y",
       "labelOverlap": "parity",
+      "format": "s",
       "encode": {
         "labels": {
           "update": {
@@ -75,7 +76,7 @@ const defaultChart = {
       "encode": {
         "update": {
           "opacity":{"value":1},
-          "x": { "scale": "x", "field": "x" },
+          "x": { "scale": "x", "field": "id" },
           "width": { "scale": "x", "band": 1 },
           "y": { "scale": "y", "field": "y" },
           "y2": { "scale": "y", "value": 0 }
@@ -178,7 +179,7 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     const format = getTimeFormat(temporalData);
     if (format) {
       xField.format = format;
-      xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
+      xAxis.encode.labels.update.text = { "signal": `utcFormat(data('table')[datum.value - 1].x, '${format}')` };
     }
 
     // We also set the format for the tooltip
@@ -191,7 +192,7 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
       xField.format = 'd';
 
       const xAxis = config.axes.find(a => a.scale === 'x');
-      xAxis.encode.labels.update.text = { "signal": "format(datum.value, 'd')" };
+      xAxis.encode.labels.update.text = { "signal": "format(data('table')[datum.value - 1].x, 'd')" };
     }
   }
 

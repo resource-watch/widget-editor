@@ -5,13 +5,13 @@ import commonjs from 'rollup-plugin-commonjs';
 import uglify from 'rollup-plugin-uglify';
 import filesize from 'rollup-plugin-filesize';
 
-export default {
+const config = {
   input: 'index.js',
   output: {
     file: 'dist/bundle.js',
     format: 'cjs'
   },
-  external: ['leaflet', 'prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega'],
+  external: ['prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega'],
   plugins: [
     babel({
       runtimeHelpers: true,
@@ -23,10 +23,16 @@ export default {
     }),
     commonjs({
       namedExports: {
-        'react-dnd/lib/index.js': ['DragDropContext', 'DropTarget', 'DragSource']
+        'react-dnd/lib/index.js': ['DragDropContext', 'DropTarget', 'DragSource'],
+        'wri-api-components': ['Legend', 'LegendItemTypes', 'Icons']
       }
     }),
-    uglify(),
     filesize()
   ]
 };
+
+if (process.env.NODE_ENV !== 'development') {
+  config.plugins.push(uglify());
+}
+
+export default config;

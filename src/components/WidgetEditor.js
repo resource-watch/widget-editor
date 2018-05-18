@@ -6,6 +6,8 @@ import { DragDropContext } from 'react-dnd';
 import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
+import classnames from 'classnames';
+import { Legend, LegendItemTypes, Icons } from 'wri-api-components';
 
 // Redux
 import { connect } from 'react-redux';
@@ -32,7 +34,11 @@ import {
   setChartType,
   setAreaIntersection,
   setDatasetId,
-  setTableName
+  setTableName,
+  setContracted,
+  setBasemap,
+  setLabels,
+  setBoundaries
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -42,18 +48,17 @@ import DatasetService from 'services/DatasetService';
 import WidgetService from 'services/WidgetService';
 
 // Components
-import Select from 'components/form/SelectInput';
 import Spinner from 'components/ui/Spinner';
 import VegaChart from 'components/chart/VegaChart';
 import Map from 'components/map/Map';
 import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
-import Legend from 'components/ui/Legend';
 import TableView from 'components/table/TableView';
+import Icon from 'components/ui/Icon';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
-import MapEditor from 'components/map/MapEditor';
+import MapEditor from 'components/map/editor/MapEditor';
 import RasterChartEditor from 'components/raster/RasterChartEditor';
 import NEXGDDPEditor from 'components/nexgddp/NEXGDDPEditor';
 
@@ -78,18 +83,19 @@ const VISUALIZATION_TYPES = [
 ];
 
 const CHART_TYPES = [
-  { label: 'bar', value: 'bar' },
-  { label: 'line', value: 'line' },
-  { label: 'pie', value: 'pie' },
-  { label: 'scatter', value: 'scatter' },
-  { label: '1d_scatter', value: '1d_scatter' },
-  { label: '1d_tick', value: '1d_tick' }
+  { label: 'Bar', value: 'bar' },
+  { label: 'Line', value: 'line' },
+  { label: 'Pie', value: 'pie' },
+  { label: 'Scatter', value: 'scatter' }
+  // { label: '1d_scatter', value: '1d_scatter' },
+  // { label: '1d_tick', value: '1d_tick' }
 ];
 
 const DEFAULT_STATE = {
   // DATASET
   datasetType: null, // Type of the dataset
   datasetProvider: null, // Name of the provider
+  datasetConnectorUrl: null, // Connector URL
 
   // FIELDS
   fieldsLoaded: false,
@@ -105,11 +111,6 @@ const DEFAULT_STATE = {
   chartConfigError: null, // Error message when fetching the chart configuration
   chartConfigLoading: false, // Whether we're loading the config
 
-  // JIMINY
-  jiminy: {},
-  jiminyLoaded: false,
-  jiminyError: false,
-
   // LAYERS
   layers: [],
   layersLoaded: false,
@@ -117,10 +118,6 @@ const DEFAULT_STATE = {
 
   // DATASET INFO
   datasetInfoLoaded: false,
-
-  // MAP
-  basemap: undefined, // Which basemap to display
-  labels: undefined, // Whether to show the labels
 
   visualizationOptions: [] // Available visualizations
 };
@@ -133,8 +130,7 @@ const DEFAULT_STATE = {
  *                     ⮑|-loadData-(3)-----------------------------------------------------------------------------|
  *                       |-getDatasetInfo (4)-|
  *                                            ⮑|-getFields (5)-|
- *                                            |                 ⮑|-getJiminy (6)-|
- *                                            |                 |                  ⮑|-checkEditorRestoredState (7)-|
+ *                                            |                 ⮑|-checkEditorRestoredState (7)-|
  *                                            ⮑|-getLayers (8)-|
  *                                                              ⮑|-setVisualizationOptions (9)-|
  *
@@ -144,8 +140,7 @@ const DEFAULT_STATE = {
  * (4) Get the dataset info (type, provider, etc.), the aliases and descriptions of the fields, the relevant ones
  * (5) Depend on (4). Get the actual list of fields and their types. Filter them according to (4). Not executed
  *     if dataset is a raster.
- * (6) Depend on (5). Get the chart recommendations. Not executed if dataset is a raster.
- * (7) Depend on and (6). Check that the widget is based on fields that still exist and update the fields
+ * (7) Depend on and (5). Check that the widget is based on fields that still exist and update the fields
  *     aliases and descriptions. Not executed if dataset is a raster.
  * (8) Depend on (4). Get the list of layers.
  * (9) Depend on (5) and (8). Set the defaut vizualization. Executed even if (5) is not.
@@ -162,6 +157,18 @@ class WidgetEditor extends React.Component {
     // We set the default position of the map according
     // to the external prop
     this.setDefaultMapState(props);
+
+    // If the title is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetTitle) {
+      props.setTitle(props.widgetTitle);
+    }
+
+    // If the caption is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetCaption) {
+      props.setCaption(props.widgetCaption);
+    }
   }
 
   /**
@@ -184,6 +191,10 @@ class WidgetEditor extends React.Component {
 
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(this.getWidgetConfig.bind(this));
+    }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(this.getLayer.bind(this));
     }
   }
 
@@ -230,6 +241,18 @@ class WidgetEditor extends React.Component {
     // its value has changed, then we update the store
     if (this.props.widgetCaption !== nextProps.widgetCaption) {
       this.props.setCaption(nextProps.widgetCaption);
+    }
+
+    // Whenever the title changes, we call the callback
+    if (this.props.widgetEditor.title !== nextProps.widgetEditor.title
+      && this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(nextProps.widgetEditor.title);
+    }
+
+    // Whenever the caption changes, we call the callback
+    if (this.props.widgetEditor.caption !== nextProps.widgetEditor.caption
+      && this.props.onChangeWidgetCaption) {
+      this.props.onChangeWidgetCaption(nextProps.widgetEditor.caption);
     }
   }
 
@@ -279,6 +302,10 @@ class WidgetEditor extends React.Component {
 
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(null);
+    }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(null);
     }
   }
 
@@ -352,25 +379,6 @@ class WidgetEditor extends React.Component {
   }
 
   /**
-   * Fetch the recommendations from Jiminy and save them in the
-   * state
-   * @returns {Promise<any>}
-   */
-  getJiminy(fields) {
-    this.setState({ jiminyError: false, jiminyLoaded: false });
-
-    // We get the name of the columns that we can use to build the
-    // charts
-    const fieldsSt = fields.map(elem => elem.columnName);
-
-    const querySt = `SELECT ${fieldsSt} FROM ${this.props.datasetId} LIMIT 300`;
-    return DatasetService.getJiminySuggestions(querySt)
-      .then(jiminy => new Promise(resolve => this.setState({ jiminy, jiminyError: typeof jiminy === 'undefined' }, resolve)))
-      .catch(() => new Promise(resolve => this.setState({ jiminyError: true }, resolve)))
-      .then(() => new Promise(resolve => this.setState({ jiminyLoaded: true }, resolve)));
-  }
-
-  /**
    * Fetch the name of the table, the aliases and descriptions
    * of the columns and save all of that in the store
    * Return the info about the fields
@@ -418,6 +426,8 @@ class WidgetEditor extends React.Component {
           const defaultWidget = attributes.widget && attributes.widget.length &&
             attributes.widget.find(w => w.attributes.defaultEditableWidget);
 
+          const connectorUrl = attributes.connectorUrl || null;
+
           this.props.setTableName(attributes.tableName);
 
           this.setState({
@@ -426,6 +436,7 @@ class WidgetEditor extends React.Component {
             hasGeoInfo: attributes.geoInfo,
             datasetType: attributes.type,
             datasetProvider: attributes.provider,
+            datasetConnectorUrl: connectorUrl,
             defaultWidget
           }, () => resolve(fieldsInfo));
         });
@@ -448,8 +459,10 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
-    const { chartType, layer, zoom, latLng, bounds, title, caption } = widgetEditor;
+    const { widgetEditor, datasetId, selectedVisualizationType, theme,
+      useLayerEditor } = this.props;
+    const { chartType, layer, zoom, latLng, bounds, title, caption,
+      visualizationType, basemapLayers } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -478,7 +491,11 @@ class WidgetEditor extends React.Component {
     }
 
     const titleCaption = (
-      <div className="chart-title">
+      <div
+        className={classnames('chart-title', {
+          '-light': visualizationType === 'map' && (basemapLayers.basemap === 'dark' || basemapLayers.basemap === 'satellite')
+        })}
+      >
         {chartTitle}
         {chartCaption}
       </div>
@@ -534,7 +551,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -555,8 +572,6 @@ class WidgetEditor extends React.Component {
             <div className="visualization">
               {titleCaption}
               <Map
-                basemap={this.state.basemap}
-                labels={this.state.labels}
                 LayerManager={LayerManager}
                 mapConfig={mapConfig}
                 layerGroups={this.state.layerGroups}
@@ -564,33 +579,26 @@ class WidgetEditor extends React.Component {
               />
 
               <MapControls>
-                <BasemapControl
-                  basemap={this.state.basemap}
-                  labels={this.state.labels}
-                  onChangeBasemap={basemap => this.setState({ basemap })}
-                  onToggleLabels={labels => this.setState({ labels })}
-                />
+                <BasemapControl />
               </MapControls>
 
-              <Legend
-                layerGroups={this.state.layerGroups}
-                className={{ color: '-dark' }}
-                toggleLayerGroupVisibility={
-                  layerGroup => this.onToggleLayerGroupVisibility(layerGroup)
-                }
-                setLayerGroupsOrder={() => {}}
-                setLayerGroupActiveLayer={() => {}}
-                readonly
-                interactionDisabled
-                expanded={false}
-              />
+              <div className="c-we-legend-map">
+                <Icons />
+                <Legend
+                  layerGroups={this.state.layerGroups}
+                  expanded={false}
+                  sortable={false}
+                  maxHeight={250}
+                  LegendItemTypes={<LegendItemTypes />}
+                />
+              </div>
             </div>
           );
         } else {
           visualization = (
             <div className="visualization">
               {titleCaption}
-              Select a layer
+              {useLayerEditor ? 'Select or create a layer' : 'Select a layer'}
             </div>
           );
         }
@@ -629,7 +637,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -774,6 +782,27 @@ class WidgetEditor extends React.Component {
   }
 
   /**
+   * Return the layer created by the user, if any
+   * NOTE: If the map isn't rendered, rejects
+   * NOTE: this method is public
+   * @returns {Promise<object>}
+   */
+  getLayer() {
+    return new Promise((resolve, reject) => {
+      const { layer } = this.props.widgetEditor;
+
+      if (layer && layer.id && layer.id.match(/^widget-editor-layer-[0-9]+/)) {
+        const res = Object.assign({}, layer);
+        delete res.id;
+        resolve(res);
+      } else {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject('Unable to retrieve the layer.');
+      }
+    });
+  }
+
+  /**
    * Fetch the Vega chart configuration and store it in
    * the state
    * NOTE: the vega chart *will* contain the whole dataset
@@ -875,18 +904,6 @@ class WidgetEditor extends React.Component {
           }
         });
 
-        // This promise basically calls this.getJiminy but makes
-        // sure that if the dataset is a raster, we don't call it
-        const getJiminy = fields => new Promise((resolve, reject) => {
-          if (this.state.datasetType === 'raster') {
-            this.setState({ jiminyLoaded: true, jiminyError: false }, resolve);
-          } else {
-            this.getJiminy(fields)
-              .then(resolve)
-              .catch(reject);
-          }
-        });
-
         const checkEditorRestoredState = () => { // eslint-disable-line no-shadow
           if (this.state.datasetType !== 'raster') {
             this.checkEditorRestoredState(fieldsInfo);
@@ -895,13 +912,12 @@ class WidgetEditor extends React.Component {
 
         Promise.all([
           getFields
-            .then((fields) => {
-              getJiminy(fields)
-                // If the editor is initially loaded, a previous state might have
-                // been restored. In such a case, we make sure the data is still
-                // up to date (for example, the aliases)
-                .then(() => checkEditorRestoredState())
-                .then(() => this.setState({ initializing: false }));
+            .then(() => {
+              // If the editor is initially loaded, a previous state might have
+              // been restored. In such a case, we make sure the data is still
+              // up to date (for example, the aliases)
+              checkEditorRestoredState();
+              this.setState({ initializing: false });
             }),
           this.getLayers()
         ])
@@ -919,10 +935,10 @@ class WidgetEditor extends React.Component {
   restoreWidget(widgetId) {
     const widgetService = new WidgetService(widgetId);
 
-    widgetService.fetchData()
+    widgetService.fetchData('metadata')
       .then((data) => {
-        const { widgetConfig, name } = data.attributes;
-        const { paramsConfig, zoom, lat, lng, bbox } = widgetConfig;
+        const { widgetConfig, name, metadata } = data.attributes;
+        const { paramsConfig, zoom, lat, lng, bbox, basemapLayers } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -936,9 +952,14 @@ class WidgetEditor extends React.Component {
           limit,
           chartType,
           layer,
-          areaIntersection,
-          caption
+          areaIntersection
         } = paramsConfig;
+
+        let caption;
+        if (metadata && metadata.length && metadata[0].attributes.info
+          && metadata[0].attributes.info.caption) {
+          caption = metadata[0].attributes.info.caption;
+        }
 
         // We restore the type of visualization
         // We default to "chart" to maintain the compatibility with previously created
@@ -951,8 +972,10 @@ class WidgetEditor extends React.Component {
           this.datasetService.getLayer(layer)
             .then(l => this.props.setLayer(Object.assign({}, l, { ...l.attributes })));
         }
-        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (value) this.props.setValue(value);
+        // NOTE: the aggregation must be restored after the value
+        // because when the value changes, the aggregation is reset
+        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (size) this.props.setSize(size);
         if (color) this.props.setColor(color);
         if (orderBy) this.props.setOrderBy(orderBy);
@@ -961,21 +984,18 @@ class WidgetEditor extends React.Component {
         if (limit) this.props.setLimit(limit);
         if (chartType) this.props.setChartType(chartType);
         if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
-        if (name) {
-          this.props.setTitle(name);
-          if (this.props.onChangeWidgetTitle) {
-            this.props.onChangeWidgetTitle(name);
-          }
-        }
-        if (caption) {
-          this.props.setCaption(caption);
-          if (this.props.onChangeWidgetCaption) {
-            this.props.onChangeWidgetCaption(caption);
-          }
-        }
+        if (name) this.props.setTitle(name);
+        if (caption) this.props.setCaption(caption);
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
+        if (basemapLayers) {
+          if (basemapLayers.basemap) this.props.setBasemap(basemapLayers.basemap);
+          if (basemapLayers.labels !== undefined) this.props.setLabels(basemapLayers.labels);
+          if (basemapLayers.boundaries !== undefined && basemapLayers.boundaries !== null) {
+            this.props.setBoundaries(basemapLayers.boundaries);
+          }
+        }
       });
   }
 
@@ -997,6 +1017,9 @@ class WidgetEditor extends React.Component {
 
     // We also reset the default map state
     this.setDefaultMapState(props);
+
+    // We contract/expand the let panel
+    this.props.setContracted(this.props.contracted);
 
     // If the there's a layer, we compute the LayerGroup
     // representation
@@ -1029,9 +1052,6 @@ class WidgetEditor extends React.Component {
   handleTitleChange(event) {
     const title = event.target.value;
     this.props.setTitle(title);
-    if (this.props.onChangeWidgetTitle) {
-      this.props.onChangeWidgetTitle(title);
-    }
   }
 
   /**
@@ -1055,7 +1075,7 @@ class WidgetEditor extends React.Component {
   isLoading() {
     return !this.state.layersLoaded
       || !this.state.fieldsLoaded
-      || (!this.state.fieldsError && !this.state.jiminyLoaded);
+      || this.state.fieldsError;
   }
 
   /**
@@ -1082,14 +1102,12 @@ class WidgetEditor extends React.Component {
   render() {
     const {
       tableName,
-      jiminy,
-      jiminyError,
-      jiminyLoaded,
       fieldsError,
       layersError,
       layers,
       datasetType,
       datasetProvider,
+      datasetConnectorUrl,
       visualizationOptions,
       hasGeoInfo,
       defaultWidget
@@ -1100,7 +1118,9 @@ class WidgetEditor extends React.Component {
       widgetId,
       saveButtonMode,
       embedButtonMode,
-      selectedVisualizationType
+      selectedVisualizationType,
+      widgetEditor,
+      useLayerEditor
     } = this.props;
 
     const editorMode = !widgetId ||
@@ -1109,6 +1129,16 @@ class WidgetEditor extends React.Component {
       || (saveButtonMode === 'auto' && !!getConfig().userToken);
     const showEmbedButton = embedButtonMode === 'always'
       || (embedButtonMode === 'auto' && !!getConfig().userToken);
+
+    const mapButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'map'
+    });
+    const tableButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'table'
+    });
+    const chartButtonClassName = classnames({
+      '-active': selectedVisualizationType === 'chart'
+    });
 
     const visualization = this.getVisualization();
 
@@ -1124,116 +1154,133 @@ class WidgetEditor extends React.Component {
       return <div className="c-we-widget-editor" />;
     }
 
-    // TODO: could be saved in the state instead of computing it
-    // each time
-    let chartOptions = CHART_TYPES;
-    if (!jiminyError && jiminyLoaded && datasetType !== 'raster') {
-      chartOptions = jiminy.general.map(val => ({ label: val, value: val }));
-    }
-
     return (
       <div className="c-we-widget-editor">
-        <div className="customize-visualization">
-          { this.isLoading() && <Spinner className="-light" isLoading /> }
-          <h2
-            className="title"
+        <div className={classnames('customize-visualization', { '-contracted': widgetEditor.contracted })}>
+          <button
+            type="button"
+            className={classnames('btn-toggle', { '-contracted': widgetEditor.contracted })}
+            onClick={() => this.props.setContracted(!widgetEditor.contracted)}
+            aria-label="Toggle panel"
           >
-            Customize Visualization
-          </h2>
-          <div className="visualization-type">
-            <div className="c-we-field">
-              <label htmlFor="visualization-type-select">
-                Visualization type
-              </label>
-              <Select
-                id="visualization-type-select"
-                properties={{
-                  className: 'visualization-type-selector',
-                  name: 'visualization-type',
-                  value: selectedVisualizationType
-                }}
-                options={visualizationOptions}
-                onChange={value => this.handleVisualizationTypeChange(value, false)}
-              />
+            <Icon name="icon-arrow-left" />
+          </button>
+          <div className="content">
+            { this.isLoading() && <Spinner className="-light" isLoading /> }
+            <h2
+              className="title"
+            >
+              Customize Visualization
+            </h2>
+            <div className="visualization-type-buttons">
+              {visualizationOptions.find(v => v.value === 'chart') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('chart', false)}
+                  className={chartButtonClassName}
+                >
+                  Chart
+                </button>
+              }
+              {visualizationOptions.find(v => v.value === 'map') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('map', false)}
+                  className={mapButtonClassName}
+                >
+                  Map
+                </button>
+              }
+              {visualizationOptions.find(v => v.value === 'table') &&
+                <button
+                  type="button"
+                  onClick={() => this.handleVisualizationTypeChange('table', false)}
+                  className={tableButtonClassName}
+                >
+                  Table
+                </button>
+              }
             </div>
+            {
+              (selectedVisualizationType === 'chart' ||
+              selectedVisualizationType === 'table')
+                && !fieldsError && tableName && datasetProvider !== 'nexgddp'
+                && (
+                  <ChartEditor
+                    datasetId={datasetId}
+                    datasetType={datasetType}
+                    datasetProvider={datasetProvider}
+                    chartOptions={CHART_TYPES}
+                    tableName={tableName}
+                    tableViewMode={selectedVisualizationType === 'table'}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    showEmbedButton={showEmbedButton}
+                    onSave={() => this.onClickSave()}
+                    onEmbed={() => this.onClickEmbed()}
+                    hasGeoInfo={hasGeoInfo}
+                  />
+                )
+            }
+            {
+              (selectedVisualizationType === 'chart' ||
+              selectedVisualizationType === 'table')
+                && !fieldsError && tableName && datasetProvider === 'nexgddp'
+                && (
+                  <NEXGDDPEditor
+                    datasetId={datasetId}
+                    datasetType={datasetType}
+                    datasetProvider={datasetProvider}
+                    chartOptions={CHART_TYPES}
+                    tableName={tableName}
+                    tableViewMode={selectedVisualizationType === 'table'}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    showEmbedButton={showEmbedButton}
+                    onSave={() => this.onClickSave()}
+                    onEmbed={() => this.onClickEmbed()}
+                    hasGeoInfo={hasGeoInfo}
+                  />
+                )
+            }
+            {
+              selectedVisualizationType === 'map'
+                && layers && layers.length > 0
+                && datasetProvider
+                && (
+                  <MapEditor
+                    datasetId={datasetId}
+                    widgetId={widgetId}
+                    tableName={tableName}
+                    provider={datasetProvider}
+                    datasetType={datasetType}
+                    connectorUrl={datasetConnectorUrl}
+                    useLayerEditor={useLayerEditor}
+                    layerGroups={this.state.layerGroups}
+                    layers={layers}
+                    mode={editorMode}
+                    showSaveButton={showSaveButton}
+                    onSave={() => this.onClickSave()}
+                  />
+                )
+            }
+            {
+              selectedVisualizationType === 'raster_chart'
+                && tableName
+                && datasetProvider
+                && (
+                  <RasterChartEditor
+                    datasetId={datasetId}
+                    tableName={tableName}
+                    provider={datasetProvider}
+                    mode={editorMode}
+                    hasGeoInfo={hasGeoInfo}
+                    showSaveButton={showSaveButton}
+                    onSave={() => this.onClickSave()}
+                  />
+                )
+            }
           </div>
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider !== 'nexgddp'
-              && (
-                <ChartEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            (selectedVisualizationType === 'chart' ||
-            selectedVisualizationType === 'table')
-              && !fieldsError && tableName && datasetProvider === 'nexgddp'
-              && (
-                <NEXGDDPEditor
-                  datasetId={datasetId}
-                  datasetType={datasetType}
-                  datasetProvider={datasetProvider}
-                  chartOptions={chartOptions}
-                  tableName={tableName}
-                  tableViewMode={selectedVisualizationType === 'table'}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  showEmbedButton={showEmbedButton}
-                  onSave={() => this.onClickSave()}
-                  onEmbed={() => this.onClickEmbed()}
-                  hasGeoInfo={hasGeoInfo}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'map'
-              && layers && layers.length > 0
-              && datasetProvider
-              && (
-                <MapEditor
-                  datasetId={datasetId}
-                  widgetId={widgetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  datasetType={datasetType}
-                  layerGroups={this.state.layerGroups}
-                  layers={layers}
-                  mode={editorMode}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
-          {
-            selectedVisualizationType === 'raster_chart'
-              && tableName
-              && datasetProvider
-              && (
-                <RasterChartEditor
-                  datasetId={datasetId}
-                  tableName={tableName}
-                  provider={datasetProvider}
-                  mode={editorMode}
-                  hasGeoInfo={hasGeoInfo}
-                  showSaveButton={showSaveButton}
-                  onSave={() => this.onClickSave()}
-                />
-              )
-          }
         </div>
         {visualization}
       </div>
@@ -1277,7 +1324,11 @@ const mapDispatchToProps = dispatch => ({
   setChartType: (...params) => dispatch(setChartType(...params)),
   setAreaIntersection: (...params) => dispatch(setAreaIntersection(...params)),
   setDatasetId: (...params) => dispatch(setDatasetId(...params)),
-  setTableName: (...params) => dispatch(setTableName(...params))
+  setTableName: (...params) => dispatch(setTableName(...params)),
+  setContracted: (...params) => dispatch(setContracted(...params)),
+  setBasemap: (...params) => dispatch(setBasemap(...params)),
+  setLabels: (...params) => dispatch(setLabels(...params)),
+  setBoundaries: (...params) => dispatch(setBoundaries(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1334,6 +1385,18 @@ WidgetEditor.propTypes = {
     lng: PropTypes.number
   }),
   /**
+   * Initially display the editor with its left panel contracted
+   */
+  contracted: PropTypes.bool,
+  /**
+   * Theme to apply to the Vega visualizations
+   */
+  theme: PropTypes.object,
+  /**
+   * Let the user creates a layer when selecting a map visualization
+   */
+  useLayerEditor: PropTypes.bool,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1346,6 +1409,11 @@ WidgetEditor.propTypes = {
    * to get the widget config
    */
   provideWidgetConfig: PropTypes.func,
+  /**
+   * Callback executed at mounting time to provide a function
+   * to get the layer created by the user, if any
+   */
+  provideLayer: PropTypes.func,
   /**
    * Callback executed when the value of the title is updated
    * The callback gets passed the new value
@@ -1385,13 +1453,20 @@ WidgetEditor.propTypes = {
   setChartType: PropTypes.func,
   setAreaIntersection: PropTypes.func,
   setDatasetId: PropTypes.func,
-  setTableName: PropTypes.func
+  setTableName: PropTypes.func,
+  setContracted: PropTypes.func,
+  setBasemap: PropTypes.func,
+  setLabels: PropTypes.func,
+  setBoundaries: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {
   saveButtonMode: 'auto',
   embedButtonMode: 'auto',
   titleMode: 'auto',
+  contracted: false,
+  theme: ChartTheme(),
+  useLayerEditor: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
