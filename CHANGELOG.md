@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.0 (not yet released)
+- Add the `useLayerEditor` prop to let the user create a Carto or GEE layer
+- Add the `provideLayer` prop to get the layer created by the user
+- Change the signature of the `saveUserWidget` and `updateUserWidget` functions of [`WidgetService`](https://github.com/resource-watch/widget-editor/blob/develop/src/services/WidgetService.js)
+
 ## v1.1.1 (not yet released)
 - Fix a bug where the title and caption wouldn't be set at the mounting of the editor
 - Sync the title of the widget with the name of the selected layer
