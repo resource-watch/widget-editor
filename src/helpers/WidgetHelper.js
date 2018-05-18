@@ -690,7 +690,6 @@ export async function getWidgetConfig(
       visualizationType,
       band,
       layer,
-      caption,
       zoom,
       latLng,
       bounds,
@@ -746,7 +745,6 @@ export async function getWidgetConfig(
       {
         paramsConfig: {
           visualizationType,
-          caption,
           limit,
           value,
           category,

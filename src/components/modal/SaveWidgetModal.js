@@ -91,10 +91,16 @@ class SaveWidgetModal extends React.Component {
         { widgetConfig }
       );
 
-      WidgetService.saveUserWidget(widgetObj, datasetId, getConfig().userToken)
-        .then((response) => {
-          if (response.errors) throw new Error(response.errors[0].detail);
-        })
+      let metadataObj = null;
+      if (widgetEditor.caption) {
+        metadataObj = {
+          info: {
+            caption: widgetEditor.caption
+          }
+        };
+      }
+
+      WidgetService.saveUserWidget(datasetId, getConfig().userToken, widgetObj, metadataObj)
         .then(() => this.setState({ saved: true, error: false }))
         .catch((err) => {
           this.setState({

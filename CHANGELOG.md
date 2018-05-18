@@ -1,12 +1,21 @@
 # Changelog
 
-## v1.0.7 - Unreleased
+## v1.1.1 (not yet released)
+- Fix a bug where the title and caption wouldn't be set at the mounting of the editor
+- Sync the title of the widget with the name of the selected layer
+
+## v1.1.0 - 23/04/2018
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
 - Display the ticks of the Y axis of the bar, line and scatter charts with the SI unit
 - Add the possibility to contract the left panel (prop `contracted`)
 - Save and restore the basemap, labels and boundaries layers for the map widgets
 - Change the color of the title and caption to white for the dark and satellite basemaps
 - Fix a bug where the size of the left panel would vary
+- Add a new prop, `theme`, to customize the visual appearance of the Vega visualizations
+- Remove Leaflet from the peer dependencies (possibility to load it from a CDN)
+- Fix a bug where the aggregation would often not be restored
+- Change the signature of the `saveUserWidget` and `updateUserWidget` functions of [`WidgetService`](https://github.com/resource-watch/widget-editor/blob/develop/src/services/WidgetService.js)
+- Save and restore the caption from the metadata of the widget instead of the `widgetConfig` object
 
 ## v1.0.6 - 10/04/2018
 - Improve the styles of the columns, especially when overflowing

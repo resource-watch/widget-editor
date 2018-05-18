@@ -1,6 +1,6 @@
 {
   "name": "widget-editor",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Widget editor used in Resource Watch and PReP",
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",
@@ -99,7 +99,6 @@
     "wri-api-components": "1.0.3"
   },
   "peerDependencies": {
-    "leaflet": "^1.2.0",
     "prop-types": "^15.6.0",
     "react": "^15.6.2",
     "react-dom": "^15.6.2",

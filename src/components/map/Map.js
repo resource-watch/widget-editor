@@ -20,9 +20,6 @@ import Spinner from 'components/ui/Spinner';
  * @typedef {{ id: string, label: string, value: string, options: any }} Label
  */
 
-// Leaflet can't be imported on the server because it's not isomorphic
-const L = (typeof window !== 'undefined') ? require('leaflet') : null;
-
 const MAP_CONFIG = {
   minZoom: 2,
   zoomControl: true

@@ -156,6 +156,18 @@ class WidgetEditor extends React.Component {
     // We set the default position of the map according
     // to the external prop
     this.setDefaultMapState(props);
+
+    // If the title is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetTitle) {
+      props.setTitle(props.widgetTitle);
+    }
+
+    // If the caption is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetCaption) {
+      props.setCaption(props.widgetCaption);
+    }
   }
 
   /**
@@ -224,6 +236,18 @@ class WidgetEditor extends React.Component {
     // its value has changed, then we update the store
     if (this.props.widgetCaption !== nextProps.widgetCaption) {
       this.props.setCaption(nextProps.widgetCaption);
+    }
+
+    // Whenever the title changes, we call the callback
+    if (this.props.widgetEditor.title !== nextProps.widgetEditor.title
+      && this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(nextProps.widgetEditor.title);
+    }
+
+    // Whenever the caption changes, we call the callback
+    if (this.props.widgetEditor.caption !== nextProps.widgetEditor.caption
+      && this.props.onChangeWidgetCaption) {
+      this.props.onChangeWidgetCaption(nextProps.widgetEditor.caption);
     }
   }
 
@@ -423,7 +447,7 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType, theme } = this.props;
     const { chartType, layer, zoom, latLng, bounds, title, caption,
       visualizationType, basemapLayers } = widgetEditor;
 
@@ -514,7 +538,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -600,7 +624,7 @@ class WidgetEditor extends React.Component {
               <VegaChart
                 reloadOnResize
                 data={this.state.chartConfig}
-                theme={ChartTheme()}
+                theme={theme}
                 toggleLoading={val => this.setState({ chartLoading: val })}
               />
             </div>
@@ -877,9 +901,9 @@ class WidgetEditor extends React.Component {
   restoreWidget(widgetId) {
     const widgetService = new WidgetService(widgetId);
 
-    widgetService.fetchData()
+    widgetService.fetchData('metadata')
       .then((data) => {
-        const { widgetConfig, name } = data.attributes;
+        const { widgetConfig, name, metadata } = data.attributes;
         const { paramsConfig, zoom, lat, lng, bbox, basemapLayers } = widgetConfig;
         const {
           visualizationType,
@@ -894,9 +918,14 @@ class WidgetEditor extends React.Component {
           limit,
           chartType,
           layer,
-          areaIntersection,
-          caption
+          areaIntersection
         } = paramsConfig;
+
+        let caption;
+        if (metadata && metadata.length && metadata[0].attributes.info
+          && metadata[0].attributes.info.caption) {
+          caption = metadata[0].attributes.info.caption;
+        }
 
         // We restore the type of visualization
         // We default to "chart" to maintain the compatibility with previously created
@@ -909,8 +938,10 @@ class WidgetEditor extends React.Component {
           this.datasetService.getLayer(layer)
             .then(l => this.props.setLayer(Object.assign({}, l, { ...l.attributes })));
         }
-        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (value) this.props.setValue(value);
+        // NOTE: the aggregation must be restored after the value
+        // because when the value changes, the aggregation is reset
+        if (aggregateFunction) this.props.setAggregateFunction(aggregateFunction);
         if (size) this.props.setSize(size);
         if (color) this.props.setColor(color);
         if (orderBy) this.props.setOrderBy(orderBy);
@@ -919,18 +950,8 @@ class WidgetEditor extends React.Component {
         if (limit) this.props.setLimit(limit);
         if (chartType) this.props.setChartType(chartType);
         if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
-        if (name) {
-          this.props.setTitle(name);
-          if (this.props.onChangeWidgetTitle) {
-            this.props.onChangeWidgetTitle(name);
-          }
-        }
-        if (caption) {
-          this.props.setCaption(caption);
-          if (this.props.onChangeWidgetCaption) {
-            this.props.onChangeWidgetCaption(caption);
-          }
-        }
+        if (name) this.props.setTitle(name);
+        if (caption) this.props.setCaption(caption);
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
@@ -997,9 +1018,6 @@ class WidgetEditor extends React.Component {
   handleTitleChange(event) {
     const title = event.target.value;
     this.props.setTitle(title);
-    if (this.props.onChangeWidgetTitle) {
-      this.props.onChangeWidgetTitle(title);
-    }
   }
 
   /**
@@ -1333,6 +1351,10 @@ WidgetEditor.propTypes = {
    */
   contracted: PropTypes.bool,
   /**
+   * Theme to apply to the Vega visualizations
+   */
+  theme: PropTypes.object,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1396,6 +1418,7 @@ WidgetEditor.defaultProps = {
   embedButtonMode: 'auto',
   titleMode: 'auto',
   contracted: false,
+  theme: ChartTheme(),
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 

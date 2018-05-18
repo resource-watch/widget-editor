@@ -11,7 +11,7 @@ const config = {
     file: 'dist/bundle.js',
     format: 'cjs'
   },
-  external: ['leaflet', 'prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega'],
+  external: ['prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega'],
   plugins: [
     babel({
       runtimeHelpers: true,
