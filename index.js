@@ -25,7 +25,7 @@ export { default as Validator } from 'components/form/Validator';
 export { default as BasemapControl } from 'components/map/controls/BasemapControl';
 export { default as Map } from 'components/map/Map';
 export { default as MapControls } from 'components/map/MapControls';
-export { default as MapEditor } from 'components/map/MapEditor';
+export { default as MapEditor } from 'components/map/editor/MapEditor';
 
 export { default as EmbedTableModal } from 'components/modal/EmbedTableModal';
 export { default as HowToWidgetEditorModal } from 'components/modal/HowToWidgetEditorModal';
