@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { toastr } from 'react-redux-toastr';
 import Flatpickr from 'react-flatpickr';
 
+// Helpers
+import { applyTimezoneOffset, revertTimezoneOffset } from 'helpers/date';
+
 // Services
 import DatasetService from 'services/DatasetService';
 
@@ -10,22 +13,6 @@ import DatasetService from 'services/DatasetService';
 import Button from 'components/ui/Button';
 
 class FilterDateTooltip extends React.Component {
-  /**
-   * Return the date shifted by the timezone offset
-   * @param {Date} date Date to offset
-   */
-  static applyTimezoneOffset(date) {
-    return new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000));
-  }
-
-  /**
-   * Return the date shifted by the opposite of the timezone offset
-   * @param {Date} date Date to offset
-   */
-  static revertTimezoneOffset(date) {
-    return new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000));
-  }
-
   constructor(props) {
     super(props);
 
@@ -52,7 +39,7 @@ class FilterDateTooltip extends React.Component {
    */
   onChangeStartDate(date) {
     this.props.onChange([
-      FilterDateTooltip.revertTimezoneOffset(date[0]),
+      revertTimezoneOffset(date[0]),
       this.props.selected[1]
     ]);
   }
@@ -65,7 +52,7 @@ class FilterDateTooltip extends React.Component {
   onChangeEndDate(date) {
     this.props.onChange([
       this.props.selected[0],
-      FilterDateTooltip.revertTimezoneOffset(date[0])
+      revertTimezoneOffset(date[0])
     ]);
   }
 
@@ -115,10 +102,10 @@ class FilterDateTooltip extends React.Component {
 
     const flatpickrConfig = {
       minDate: selected.length
-        ? FilterDateTooltip.applyTimezoneOffset(selected[0])
+        ? applyTimezoneOffset(selected[0])
         : null,
       maxDate: selected.length
-        ? FilterDateTooltip.applyTimezoneOffset(selected[1])
+        ? applyTimezoneOffset(selected[1])
         : null,
       dateFormat: timestampRange <= 24 * 3600 * 1000 // eslint-disable-line no-nested-ternary
         ? 'H:i'
@@ -140,8 +127,8 @@ class FilterDateTooltip extends React.Component {
             <Flatpickr
               id="filter-date-from"
               options={Object.assign({}, flatpickrConfig, {
-                defaultDate: FilterDateTooltip.applyTimezoneOffset(selected[0]),
-                minDate: FilterDateTooltip.applyTimezoneOffset(minDate)
+                defaultDate: applyTimezoneOffset(selected[0]),
+                minDate: applyTimezoneOffset(minDate)
               })}
               onChange={this.onChangeStartDate}
             />
@@ -154,8 +141,8 @@ class FilterDateTooltip extends React.Component {
             <Flatpickr
               id="filter-date-to"
               options={Object.assign({}, flatpickrConfig, {
-                defaultDate: FilterDateTooltip.applyTimezoneOffset(selected[1]),
-                maxDate: FilterDateTooltip.applyTimezoneOffset(maxDate)
+                defaultDate: applyTimezoneOffset(selected[1]),
+                maxDate: applyTimezoneOffset(maxDate)
               })}
               onChange={this.onChangeEndDate}
             />

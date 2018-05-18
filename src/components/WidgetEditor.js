@@ -58,7 +58,7 @@ import Icon from 'components/ui/Icon';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
-import MapEditor from 'components/map/MapEditor';
+import MapEditor from 'components/map/editor/MapEditor';
 import RasterChartEditor from 'components/raster/RasterChartEditor';
 import NEXGDDPEditor from 'components/nexgddp/NEXGDDPEditor';
 
@@ -95,6 +95,7 @@ const DEFAULT_STATE = {
   // DATASET
   datasetType: null, // Type of the dataset
   datasetProvider: null, // Name of the provider
+  datasetConnectorUrl: null, // Connector URL
 
   // FIELDS
   fieldsLoaded: false,
@@ -190,6 +191,10 @@ class WidgetEditor extends React.Component {
 
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(this.getWidgetConfig.bind(this));
+    }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(this.getLayer.bind(this));
     }
   }
 
@@ -297,6 +302,10 @@ class WidgetEditor extends React.Component {
 
     if (this.props.provideWidgetConfig) {
       this.props.provideWidgetConfig(null);
+    }
+
+    if (this.props.provideLayer) {
+      this.props.provideLayer(null);
     }
   }
 
@@ -417,6 +426,8 @@ class WidgetEditor extends React.Component {
           const defaultWidget = attributes.widget && attributes.widget.length &&
             attributes.widget.find(w => w.attributes.defaultEditableWidget);
 
+          const connectorUrl = attributes.connectorUrl || null;
+
           this.props.setTableName(attributes.tableName);
 
           this.setState({
@@ -425,6 +436,7 @@ class WidgetEditor extends React.Component {
             hasGeoInfo: attributes.geoInfo,
             datasetType: attributes.type,
             datasetProvider: attributes.provider,
+            datasetConnectorUrl: connectorUrl,
             defaultWidget
           }, () => resolve(fieldsInfo));
         });
@@ -447,7 +459,8 @@ class WidgetEditor extends React.Component {
       datasetProvider
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType, theme } = this.props;
+    const { widgetEditor, datasetId, selectedVisualizationType, theme,
+      useLayerEditor } = this.props;
     const { chartType, layer, zoom, latLng, bounds, title, caption,
       visualizationType, basemapLayers } = widgetEditor;
 
@@ -585,7 +598,7 @@ class WidgetEditor extends React.Component {
           visualization = (
             <div className="visualization">
               {titleCaption}
-              Select a layer
+              {useLayerEditor ? 'Select or create a layer' : 'Select a layer'}
             </div>
           );
         }
@@ -766,6 +779,27 @@ class WidgetEditor extends React.Component {
     }
 
     return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+  }
+
+  /**
+   * Return the layer created by the user, if any
+   * NOTE: If the map isn't rendered, rejects
+   * NOTE: this method is public
+   * @returns {Promise<object>}
+   */
+  getLayer() {
+    return new Promise((resolve, reject) => {
+      const { layer } = this.props.widgetEditor;
+
+      if (layer && layer.id && layer.id.match(/^widget-editor-layer-[0-9]+/)) {
+        const res = Object.assign({}, layer);
+        delete res.id;
+        resolve(res);
+      } else {
+        // eslint-disable-next-line prefer-promise-reject-errors
+        reject('Unable to retrieve the layer.');
+      }
+    });
   }
 
   /**
@@ -1073,6 +1107,7 @@ class WidgetEditor extends React.Component {
       layers,
       datasetType,
       datasetProvider,
+      datasetConnectorUrl,
       visualizationOptions,
       hasGeoInfo,
       defaultWidget
@@ -1084,7 +1119,8 @@ class WidgetEditor extends React.Component {
       saveButtonMode,
       embedButtonMode,
       selectedVisualizationType,
-      widgetEditor
+      widgetEditor,
+      useLayerEditor
     } = this.props;
 
     const editorMode = !widgetId ||
@@ -1218,6 +1254,8 @@ class WidgetEditor extends React.Component {
                     tableName={tableName}
                     provider={datasetProvider}
                     datasetType={datasetType}
+                    connectorUrl={datasetConnectorUrl}
+                    useLayerEditor={useLayerEditor}
                     layerGroups={this.state.layerGroups}
                     layers={layers}
                     mode={editorMode}
@@ -1355,6 +1393,10 @@ WidgetEditor.propTypes = {
    */
   theme: PropTypes.object,
   /**
+   * Let the user creates a layer when selecting a map visualization
+   */
+  useLayerEditor: PropTypes.bool,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1367,6 +1409,11 @@ WidgetEditor.propTypes = {
    * to get the widget config
    */
   provideWidgetConfig: PropTypes.func,
+  /**
+   * Callback executed at mounting time to provide a function
+   * to get the layer created by the user, if any
+   */
+  provideLayer: PropTypes.func,
   /**
    * Callback executed when the value of the title is updated
    * The callback gets passed the new value
@@ -1419,6 +1466,7 @@ WidgetEditor.defaultProps = {
   titleMode: 'auto',
   contracted: false,
   theme: ChartTheme(),
+  useLayerEditor: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 
