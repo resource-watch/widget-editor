@@ -5,6 +5,10 @@
 - Add the `provideLayer` prop to get the layer created by the user
 - Change the signature of the `saveUserWidget` and `updateUserWidget` functions of [`WidgetService`](https://github.com/resource-watch/widget-editor/blob/develop/src/services/WidgetService.js)
 
+## v1.1.1 (not yet released)
+- Fix a bug where the title and caption wouldn't be set at the mounting of the editor
+- Sync the title of the widget with the name of the selected layer
+
 ## v1.1.0 - 23/04/2018
 - Use the [wri-api-components](http://github.com/resource-watch/wri-api-components/)'s `Legend` component for the map
 - Display the ticks of the Y axis of the bar, line and scatter charts with the SI unit

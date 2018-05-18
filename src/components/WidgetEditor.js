@@ -157,6 +157,18 @@ class WidgetEditor extends React.Component {
     // We set the default position of the map according
     // to the external prop
     this.setDefaultMapState(props);
+
+    // If the title is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetTitle) {
+      props.setTitle(props.widgetTitle);
+    }
+
+    // If the caption is controlled from the outside and
+    // has a value, then we set it in the store
+    if (props.widgetCaption) {
+      props.setCaption(props.widgetCaption);
+    }
   }
 
   /**
@@ -229,6 +241,18 @@ class WidgetEditor extends React.Component {
     // its value has changed, then we update the store
     if (this.props.widgetCaption !== nextProps.widgetCaption) {
       this.props.setCaption(nextProps.widgetCaption);
+    }
+
+    // Whenever the title changes, we call the callback
+    if (this.props.widgetEditor.title !== nextProps.widgetEditor.title
+      && this.props.onChangeWidgetTitle) {
+      this.props.onChangeWidgetTitle(nextProps.widgetEditor.title);
+    }
+
+    // Whenever the caption changes, we call the callback
+    if (this.props.widgetEditor.caption !== nextProps.widgetEditor.caption
+      && this.props.onChangeWidgetCaption) {
+      this.props.onChangeWidgetCaption(nextProps.widgetEditor.caption);
     }
   }
 
@@ -960,18 +984,8 @@ class WidgetEditor extends React.Component {
         if (limit) this.props.setLimit(limit);
         if (chartType) this.props.setChartType(chartType);
         if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
-        if (name) {
-          this.props.setTitle(name);
-          if (this.props.onChangeWidgetTitle) {
-            this.props.onChangeWidgetTitle(name);
-          }
-        }
-        if (caption) {
-          this.props.setCaption(caption);
-          if (this.props.onChangeWidgetCaption) {
-            this.props.onChangeWidgetCaption(caption);
-          }
-        }
+        if (name) this.props.setTitle(name);
+        if (caption) this.props.setCaption(caption);
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
@@ -1038,9 +1052,6 @@ class WidgetEditor extends React.Component {
   handleTitleChange(event) {
     const title = event.target.value;
     this.props.setTitle(title);
-    if (this.props.onChangeWidgetTitle) {
-      this.props.onChangeWidgetTitle(title);
-    }
   }
 
   /**

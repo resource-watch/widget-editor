@@ -5,7 +5,7 @@ import Autobind from 'autobind-decorator';
 // Redux
 import { connect } from 'react-redux';
 
-import { showLayer, setBounds } from 'reducers/widgetEditor';
+import { showLayer, setBounds, setTitle } from 'reducers/widgetEditor';
 
 // Components
 /* eslint-disable no-unused-vars */
@@ -166,7 +166,10 @@ MapEditor.propTypes = {
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
 const mapDispatchToProps = dispatch => ({
-  showLayer: layer => dispatch(showLayer(layer)),
+  showLayer: (layer) => {
+    dispatch(showLayer(layer));
+    dispatch(setTitle((layer && layer.name) || ''));
+  },
   setBounds: (...params) => dispatch(setBounds(...params))
 });
 
