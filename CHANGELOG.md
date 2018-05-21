@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.1 (not released yet)
+## v1.2.1 - 21/05/2018
 - Fix a bug preventing the user from creating a layer
 
 ## v1.2.0 - 18/05/2018
