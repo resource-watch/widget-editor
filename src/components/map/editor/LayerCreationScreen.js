@@ -61,7 +61,7 @@ class LayerCreationScreen extends React.Component {
          * Name of the account
          * @type {string} account
          */
-        account: props.connectorUrl && props.connectorUrl.match(/^https?:\/\/(.*).carto.com/).length > 1
+        account: props.connectorUrl && props.connectorUrl.match(/^https?:\/\/(.*).carto.com/) && props.connectorUrl.match(/^https?:\/\/(.*).carto.com/).length > 1
           ? props.connectorUrl.match(/^https?:\/\/(.*).carto.com/)[1]
           : '',
         /**

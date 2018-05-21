@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.1 (not released yet)
+- Fix a bug preventing the user from creating a layer
+
 ## v1.2.0 - 18/05/2018
 - Fix a bug where the title and caption wouldn't be set at the mounting of the editor
 - Sync the title of the widget with the name of the selected layer
