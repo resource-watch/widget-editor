@@ -87,6 +87,7 @@
       flex-direction: column;
       padding: #{$margin-size-small - 5px};
       overflow-x: hidden;
+      width: 100%;
 
     > .title {
       color: $color-dark-pink;
