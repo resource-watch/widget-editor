@@ -54,7 +54,8 @@ class App extends React.Component {
       previewWidgetId: undefined,
       previewConfig: undefined,
       widgetTitle: '',
-      widgetCaption: ''
+      widgetCaption: '',
+      widgetTheme: JSON.stringify(getVegaTheme(), null, 2)
     };
   }
 
@@ -97,6 +98,13 @@ class App extends React.Component {
   }
 
   render() {
+    let theme;
+    try {
+      theme = JSON.parse(this.state.widgetTheme);
+    } catch (err) {
+      theme = getVegaTheme();
+    }
+
     return (
       <div>
         <h1>Test WidgetEditor</h1>
@@ -139,6 +147,14 @@ class App extends React.Component {
               value={this.state.widgetCaption}
               onChange={({ target }) => this.setState({ widgetCaption: target.value })}
             />
+            <br />
+            <label htmlFor="theme">Theme (optional):</label>
+            <textarea
+              placeholder="Theme of the widget"
+              id="theme"
+              value={this.state.widgetTheme}
+              onChange={({ target }) => this.setState({ widgetTheme: target.value })}
+            />
           </p>
         </div>
         <Icons />
@@ -152,6 +168,7 @@ class App extends React.Component {
           saveButtonMode="always"
           embedButtonMode="always"
           titleMode="always"
+          theme={theme}
           useLayerEditor
           onSave={() => this.onSave()}
           onEmbed={() => this.onEmbed()}
