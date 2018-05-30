@@ -87,7 +87,9 @@ class SaveWidgetModal extends React.Component {
         try {
           layer = await getLayer();
         } catch (err) {
-          console.error(err);
+          // eslint-disable-line no-empty
+          // If the widget isn't a map, getLayer will
+          // reject, so we just ignore it
         }
       }
 

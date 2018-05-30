@@ -63,7 +63,7 @@ export default class WidgetService {
         return;
       }
 
-      resolve(null);
+      resolve({});
     })
       .then((res) => {
         if (layer) {
@@ -161,7 +161,7 @@ export default class WidgetService {
         return;
       }
 
-      resolve(null);
+      resolve({});
     })
       .then((res) => {
         if (layer) {
