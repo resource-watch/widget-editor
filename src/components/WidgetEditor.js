@@ -328,6 +328,7 @@ class WidgetEditor extends React.Component {
    * Handler for when the save/update button of the editors
    * is clicked
    */
+  @Autobind
   onClickSave() {
     if (this.props.onSave) this.props.onSave();
   }
@@ -336,6 +337,7 @@ class WidgetEditor extends React.Component {
    * Handler for when the embed button of the editors is
    * clicked
    */
+  @Autobind
   onClickEmbed() {
     if (this.props.onEmbed) this.props.onEmbed();
   }
@@ -1217,8 +1219,8 @@ class WidgetEditor extends React.Component {
                     mode={editorMode}
                     showSaveButton={showSaveButton}
                     showEmbedButton={showEmbedButton}
-                    onSave={() => this.onClickSave()}
-                    onEmbed={() => this.onClickEmbed()}
+                    onSave={this.onClickSave}
+                    onEmbed={this.onClickEmbed}
                     hasGeoInfo={hasGeoInfo}
                   />
                 )
@@ -1238,8 +1240,8 @@ class WidgetEditor extends React.Component {
                     mode={editorMode}
                     showSaveButton={showSaveButton}
                     showEmbedButton={showEmbedButton}
-                    onSave={() => this.onClickSave()}
-                    onEmbed={() => this.onClickEmbed()}
+                    onSave={this.onClickSave}
+                    onEmbed={this.onClickEmbed}
                     hasGeoInfo={hasGeoInfo}
                   />
                 )
@@ -1261,7 +1263,7 @@ class WidgetEditor extends React.Component {
                     layers={layers}
                     mode={editorMode}
                     showSaveButton={showSaveButton}
-                    onSave={() => this.onClickSave()}
+                    onSave={this.onClickSave}
                   />
                 )
             }
@@ -1277,7 +1279,7 @@ class WidgetEditor extends React.Component {
                     mode={editorMode}
                     hasGeoInfo={hasGeoInfo}
                     showSaveButton={showSaveButton}
-                    onSave={() => this.onClickSave()}
+                    onSave={this.onClickSave}
                   />
                 )
             }

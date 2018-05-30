@@ -55,8 +55,17 @@ class App extends React.Component {
       previewConfig: undefined,
       widgetTitle: '',
       widgetCaption: '',
-      widgetTheme: JSON.stringify(getVegaTheme(), null, 2)
+      widgetTheme: JSON.stringify(getVegaTheme(), null, 2),
+      _theme: getVegaTheme() // Internal
     };
+
+    this.onSave = this.onSave.bind(this);
+    this.onEmbed = this.onEmbed.bind(this);
+    this.onChangeWidgetTitle = this.onChangeWidgetTitle.bind(this);
+    this.onChangeWidgetCaption = this.onChangeWidgetCaption.bind(this);
+    this.onProvideWidgetConfig = this.onProvideWidgetConfig.bind(this);
+    this.onProvideLayer = this.onProvideLayer.bind(this);
+    this.onChangeTheme = this.onChangeTheme.bind(this);
   }
 
   componentWillMount() {
@@ -97,14 +106,39 @@ class App extends React.Component {
       .then(data => this.setState({ previewConfig: data.attributes.widgetConfig }));
   }
 
-  render() {
-    let theme;
+  onChangeWidgetTitle(title) {
+    this.setState({ widgetTitle: title });
+  }
+
+  onChangeWidgetCaption(caption) {
+    this.setState({ widgetCaption: caption });
+  }
+
+  onProvideWidgetConfig(func) {
+    this.getWidgetConfig = func;
+  }
+
+  onProvideLayer(func) {
+    this.getLayer = func;
+  }
+
+  onChangeTheme({ target }) {
+    const theme = target.value;
+
+    let unserializedTheme;
     try {
-      theme = JSON.parse(this.state.widgetTheme);
+      unserializedTheme = JSON.parse(theme);
     } catch (err) {
-      theme = getVegaTheme();
+      unserializedTheme = getVegaTheme();
     }
 
+    this.setState({
+      widgetTheme: theme,
+      _theme: unserializedTheme
+    });
+  }
+
+  render() {
     return (
       <div>
         <h1>Test WidgetEditor</h1>
@@ -153,7 +187,7 @@ class App extends React.Component {
               placeholder="Theme of the widget"
               id="theme"
               value={this.state.widgetTheme}
-              onChange={({ target }) => this.setState({ widgetTheme: target.value })}
+              onChange={this.onChangeTheme}
             />
           </p>
         </div>
@@ -168,14 +202,15 @@ class App extends React.Component {
           saveButtonMode="always"
           embedButtonMode="always"
           titleMode="always"
-          theme={theme}
+          // eslint-disable-next-line no-underscore-dangle
+          theme={this.state._theme}
           useLayerEditor
-          onSave={() => this.onSave()}
-          onEmbed={() => this.onEmbed()}
-          onChangeWidgetTitle={title => this.setState({ widgetTitle: title })}
-          onChangeWidgetCaption={caption => this.setState({ widgetCaption: caption })}
-          provideWidgetConfig={(func) => { this.getWidgetConfig = func; }}
-          provideLayer={(func) => { this.getLayer = func; }}
+          onSave={this.onSave}
+          onEmbed={this.onEmbed}
+          onChangeWidgetTitle={this.onChangeWidgetTitle}
+          onChangeWidgetCaption={this.onChangeWidgetCaption}
+          provideWidgetConfig={this.onProvideWidgetConfig}
+          provideLayer={this.onProvideLayer}
         />
         <div style={{ border: '1px solid black', margin: '40px 0', padding: '0 10px' }}>
           <p>

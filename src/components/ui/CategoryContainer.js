@@ -19,18 +19,8 @@ const boxTarget = {
   canDrop: monitor.canDrop()
 }))
 class CategoryContainer extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      category: null
-    };
-  }
-
-
   render() {
-    const { canDrop, connectDropTarget, widgetEditor } = this.props;
-    const { category, chartType } = widgetEditor;
+    const { canDrop, connectDropTarget, category, chartType } = this.props;
 
     const containerDivClass = classNames({
       '-release': canDrop,
@@ -74,13 +64,14 @@ class CategoryContainer extends React.Component {
 
 CategoryContainer.propTypes = {
   connectDropTarget: PropTypes.func,
-  isOver: PropTypes.bool,
   canDrop: PropTypes.bool,
-  widgetEditor: PropTypes.object
+  category: PropTypes.object,
+  chartType: PropTypes.string
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  category: widgetEditor.category,
+  chartType: widgetEditor.chartType
 });
 
 const mapDispatchToProps = dispatch => ({

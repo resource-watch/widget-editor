@@ -28,7 +28,7 @@ class ChartEditor extends React.Component {
   constructor(props) {
     super(props);
 
-    if (!props.widgetEditor.chartType && props.chartOptions.length) {
+    if (!props.chartType && props.chartOptions.length) {
       props.setChartType(props.chartOptions[0].value);
     }
   }
@@ -51,19 +51,18 @@ class ChartEditor extends React.Component {
   render() {
     const {
       datasetId,
-      datasetProvider,
+      canSave,
       tableName,
       chartOptions,
-      widgetEditor,
+      chartType,
+      fields,
       tableViewMode,
       mode,
       showSaveButton,
       hasGeoInfo,
       showEmbedButton
     } = this.props;
-    const { chartType, fields } = widgetEditor;
 
-    const canSave = canRenderChart(widgetEditor, datasetProvider);
     const canShowSaveButton = showSaveButton && canSave && !tableViewMode;
     const canShowEmbedButton = showEmbedButton && canSave && tableViewMode;
 
@@ -179,13 +178,20 @@ ChartEditor.propTypes = {
    */
   onEmbed: PropTypes.func,
   // Store
-  widgetEditor: PropTypes.object.isRequired,
+  chartType: PropTypes.string,
+  fields: PropTypes.array,
+  canSave: PropTypes.bool.isRequired,
   setChartType: PropTypes.func.isRequired,
   toggleModal: PropTypes.func.isRequired,
   setModalOptions: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
+const mapStateToProps = ({ widgetEditor }, ownProps) => ({
+  chartType: widgetEditor.chartType,
+  fields: widgetEditor.fields,
+  canSave: canRenderChart(widgetEditor, ownProps.datasetProvider)
+});
+
 const mapDispatchToProps = dispatch => ({
   setChartType: (type) => {
     dispatch(setChartType(type));

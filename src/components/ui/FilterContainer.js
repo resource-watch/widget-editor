@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
+import Autobind from 'autobind-decorator';
 
 import { addFilter, setFilterValue } from 'reducers/widgetEditor';
 import ColumnBox from 'components/ui/ColumnBox';
@@ -19,22 +20,13 @@ const boxTarget = {
   canDrop: monitor.canDrop()
 }))
 class FilterContainer extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      fields: []
-    };
-  }
-
+  @Autobind
   setFilter({ name, value, notNull }) {
     this.props.setFilterValue(name, value, notNull);
   }
 
-
   render() {
-    const { canDrop, connectDropTarget, widgetEditor } = this.props;
-    const filters = widgetEditor.filters;
+    const { canDrop, connectDropTarget, filters } = this.props;
 
     const containerDivClass = classNames({
       'filter-box': true,
@@ -63,7 +55,7 @@ class FilterContainer extends React.Component {
               closable
               configurable
               isA="filter"
-              onConfigure={filter => this.setFilter(filter)}
+              onConfigure={this.setFilter}
             />
           ))}
         </div>
@@ -75,8 +67,8 @@ class FilterContainer extends React.Component {
 FilterContainer.propTypes = {
   connectDropTarget: PropTypes.func,
   canDrop: PropTypes.bool,
-  widgetEditor: PropTypes.object.isRequired,
   // Redux
+  filters: PropTypes.array,
   setFilterValue: PropTypes.func.isRequired
 };
 
@@ -85,8 +77,8 @@ FilterContainer.defaultProps = {
   canDrop: true
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  filters: widgetEditor.filters
 });
 
 const mapDispatchToProps = dispatch => ({

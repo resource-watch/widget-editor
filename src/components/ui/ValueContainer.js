@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
+import Autobind from 'autobind-decorator';
 
 import { setValue, setAggregateFunction } from 'reducers/widgetEditor';
 import ColumnBox from 'components/ui/ColumnBox';
@@ -20,19 +21,11 @@ const boxTarget = {
   canDrop: monitor.canDrop()
 }))
 class DimensionYContainer extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      value: null
-    };
-  }
-
   componentWillReceiveProps(nextProps) {
-    const currentValue = this.props.widgetEditor.value
-      && this.props.widgetEditor.value.name;
-    const nextValue = nextProps.widgetEditor.value
-      && nextProps.widgetEditor.value.name;
+    const currentValue = this.props.value
+      && this.props.value.name;
+    const nextValue = nextProps.value
+      && nextProps.value.name;
 
     // If the column changes, we reset the aggregate function
     if (currentValue !== nextValue) {
@@ -40,13 +33,13 @@ class DimensionYContainer extends React.Component {
     }
   }
 
+  @Autobind
   setAggregateFunction({ value }) {
     this.props.setAggregateFunction(value);
   }
 
   render() {
-    const { canDrop, connectDropTarget, widgetEditor } = this.props;
-    const { value, chartType } = widgetEditor;
+    const { canDrop, connectDropTarget, value, chartType } = this.props;
 
     const containerDivClass = classNames({
       '-release': canDrop,
@@ -78,7 +71,7 @@ class DimensionYContainer extends React.Component {
               type={value.type}
               closable
               configurable
-              onConfigure={aggregateFunction => this.setAggregateFunction(aggregateFunction)}
+              onConfigure={this.setAggregateFunction}
               isA="value"
             />
           }
@@ -90,15 +83,16 @@ class DimensionYContainer extends React.Component {
 
 DimensionYContainer.propTypes = {
   connectDropTarget: PropTypes.func,
-  isOver: PropTypes.bool,
   canDrop: PropTypes.bool,
-  widgetEditor: PropTypes.object,
   // Redux
+  value: PropTypes.object,
+  chartType: PropTypes.string,
   setAggregateFunction: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  value: widgetEditor.value,
+  chartType: widgetEditor.chartType
 });
 
 const mapDispatchToProps = dispatch => ({

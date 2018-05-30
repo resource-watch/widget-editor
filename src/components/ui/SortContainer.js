@@ -30,8 +30,7 @@ class SortContainer extends React.Component {
   }
 
   render() {
-    const { canDrop, connectDropTarget, widgetEditor } = this.props;
-    const orderBy = widgetEditor.orderBy;
+    const { canDrop, connectDropTarget, orderBy } = this.props;
 
     const containerDivClass = classNames({
       '-release': canDrop,
@@ -71,7 +70,7 @@ SortContainer.propTypes = {
   canDrop: PropTypes.bool,
   // Store
   setOrderBy: PropTypes.func.isRequired,
-  widgetEditor: PropTypes.object.isRequired
+  orderBy: PropTypes.object
 };
 
 SortContainer.defaultProps = {
@@ -79,8 +78,8 @@ SortContainer.defaultProps = {
   canDrop: true
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  orderBy: widgetEditor.orderBy
 });
 
 const mapDispatchToProps = dispatch => ({

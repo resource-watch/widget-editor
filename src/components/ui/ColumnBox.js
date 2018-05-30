@@ -92,7 +92,7 @@ class ColumnBox extends React.Component {
     // inside the filters container
     if (this.props.isA === 'filter') {
       const columnName = this.props.name;
-      const filters = this.props.widgetEditor.filters;
+      const filters = this.props.filters;
       const filter = filters.find(f => f.name === columnName);
       // We assume that a filter is considered as "just been
       // dropped" if it still haven't been assigned a value
@@ -119,14 +119,14 @@ class ColumnBox extends React.Component {
       this.props.toggleTooltip(false);
     }
 
-    this.setState({ aggregateFunction: nextProps.widgetEditor.aggregateFunction });
+    this.setState({ aggregateFunction: nextProps.aggregateFunction });
 
-    const sizeAggregateFunc = nextProps.widgetEditor.size &&
-      nextProps.widgetEditor.size.aggregateFunction;
+    const sizeAggregateFunc = nextProps.size &&
+      nextProps.size.aggregateFunction;
     this.setState({ aggregateFunctionSize: sizeAggregateFunc });
 
-    const colorAggregateFunc = nextProps.widgetEditor.color &&
-      nextProps.widgetEditor.color.aggregateFunction;
+    const colorAggregateFunc = nextProps.color &&
+      nextProps.color.aggregateFunction;
     this.setState({ aggregateFunctionColor: colorAggregateFunc });
   }
 
@@ -305,8 +305,7 @@ class ColumnBox extends React.Component {
 
   @Autobind
   triggerConfigure(event) {
-    const { isA, name, type, datasetID, tableName, widgetEditor } = this.props;
-    const { orderBy, aggregateFunction } = widgetEditor;
+    const { isA, name, type, datasetID, tableName, aggregateFunction, orderBy } = this.props;
 
     switch (isA) {
       case 'color':
@@ -394,9 +393,8 @@ class ColumnBox extends React.Component {
       closable,
       configurable,
       isA,
-      widgetEditor
+      orderBy
     } = this.props;
-    const { orderBy } = widgetEditor;
 
     const orderType = orderBy ? orderBy.orderType : null;
     let iconName;
@@ -499,7 +497,11 @@ ColumnBox.propTypes = {
   onConfigure: PropTypes.func,
   onSetOrderType: PropTypes.func,
   // Store
-  widgetEditor: PropTypes.object.isRequired,
+  filters: PropTypes.array,
+  aggregateFunction: PropTypes.string,
+  size: PropTypes.object,
+  color: PropTypes.object,
+  orderBy: PropTypes.object,
   // Injected by React DnD:
   isDragging: PropTypes.bool.isRequired,
   connectDragSource: PropTypes.func.isRequired,
@@ -525,8 +527,12 @@ ColumnBox.defaultProps = {
   tableName: undefined
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  filters: widgetEditor.filters,
+  aggregateFunction: widgetEditor.aggregateFunction,
+  size: widgetEditor.size,
+  color: widgetEditor.color,
+  orderBy: widgetEditor.orderBy
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import classNames from 'classnames';
+import Autobind from 'autobind-decorator';
 
 // Redux
 import { connect } from 'react-redux';
@@ -28,6 +29,7 @@ const boxTarget = {
   canDrop: monitor.canDrop()
 }))
 class SizeContainer extends React.Component {
+  @Autobind
   setAggregateFunction(value) {
     const newSize = Object.assign(
       {},
@@ -64,7 +66,7 @@ class SizeContainer extends React.Component {
               type={size.type}
               closable
               configurable
-              onConfigure={aggregateFunction => this.setAggregateFunction(aggregateFunction)}
+              onConfigure={this.setAggregateFunction}
               isA="size"
             />
           }

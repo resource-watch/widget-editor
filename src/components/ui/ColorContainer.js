@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { DropTarget } from 'react-dnd';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
+import Autobind from 'autobind-decorator';
 
 import { setColor } from 'reducers/widgetEditor';
 import ColumnBox from 'components/ui/ColumnBox';
@@ -24,6 +25,7 @@ const boxTarget = {
   canDrop: monitor.canDrop()
 }))
 class ColorContainer extends React.Component {
+  @Autobind
   setAggregateFunction(value) {
     const newColor = Object.assign(
       {},
@@ -60,7 +62,7 @@ class ColorContainer extends React.Component {
               type={color.type}
               closable
               configurable
-              onConfigure={aggregateFunction => this.setAggregateFunction(aggregateFunction)}
+              onConfigure={this.setAggregateFunction}
               isA="color"
             />
           }

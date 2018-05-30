@@ -119,9 +119,8 @@ class AreaContainer extends React.Component {
   }
 
   render() {
-    const { widgetEditor, required } = this.props;
+    const { required, areaIntersection } = this.props;
     const { loading, areaOptions } = this.state;
-    const { areaIntersection } = widgetEditor;
 
     // We retrieve the selected option
     let selectedArea = areaIntersection && !loading
@@ -150,7 +149,7 @@ class AreaContainer extends React.Component {
 AreaContainer.propTypes = {
   required: PropTypes.bool,
   // Store
-  widgetEditor: PropTypes.object.isRequired,
+  areaIntersection: PropTypes.string,
   toggleModal: PropTypes.func.isRequired,
   setAreaIntersection: PropTypes.func.isRequired
 };
@@ -159,8 +158,8 @@ AreaContainer.defaultProps = {
   required: false
 };
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = ({ widgetEditor }) => ({
+  areaIntersection: widgetEditor.areaIntersection
 });
 
 const mapDispatchToProps = dispatch => ({
