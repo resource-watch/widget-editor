@@ -3,6 +3,7 @@
 ## v1.2.3 (not yet released)
 - Fix a bug where changing the theme wouldn't re-render the visualization
 - Fix a style issue where the content of the map editor wouldn't be centered
+- Allow up to 500 results (the default limit stays at 50)
 
 ## v1.2.2 - 30/05/2018
 - Fix an issue that would prevent the creation of widgets through `SaveWidgetModal`
