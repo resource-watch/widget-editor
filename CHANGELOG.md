@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.2 (not released yet)
+## v1.2.2 - 30/05/2018
 - Fix an issue that would prevent the creation of widgets through `SaveWidgetModal`
 
 ## v1.2.1 - 21/05/2018
