@@ -38,7 +38,8 @@ import {
   setContracted,
   setBasemap,
   setLabels,
-  setBoundaries
+  setBoundaries,
+  setTheme
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -72,7 +73,6 @@ import {
   getWidgetConfig
 } from 'helpers/WidgetHelper';
 import { getConfig } from 'helpers/ConfigHelper';
-import ChartTheme from 'helpers/theme';
 import LayerManager from 'helpers/LayerManager';
 
 const VISUALIZATION_TYPES = [
@@ -775,13 +775,13 @@ class WidgetEditor extends React.Component {
    */
   getWidgetConfig() {
     const { tableName, datasetType, datasetProvider, datasetInfoLoaded } = this.state;
-    const { widgetEditor, datasetId } = this.props;
+    const { widgetEditor, datasetId, theme } = this.props;
 
     if (!datasetInfoLoaded || !canRenderChart(widgetEditor, datasetProvider)) {
       return new Promise((_, reject) => reject());
     }
 
-    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor);
+    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor, theme);
   }
 
   /**
@@ -999,6 +999,7 @@ class WidgetEditor extends React.Component {
             this.props.setBoundaries(basemapLayers.boundaries);
           }
         }
+        if (widgetConfig.config) this.props.setTheme(widgetConfig.config);
       });
   }
 
@@ -1291,10 +1292,13 @@ class WidgetEditor extends React.Component {
   }
 }
 
-const mapStateToProps = ({ widgetEditor }) => ({
+const mapStateToProps = ({ widgetEditor }, ownProps) => ({
   widgetEditor,
   selectedVisualizationType: widgetEditor.visualizationType,
-  band: widgetEditor.band
+  band: widgetEditor.band,
+  // We use the theme passed through the props or
+  // the one of the restored widget, if any
+  theme: ownProps.theme || widgetEditor.theme
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1331,7 +1335,8 @@ const mapDispatchToProps = dispatch => ({
   setContracted: (...params) => dispatch(setContracted(...params)),
   setBasemap: (...params) => dispatch(setBasemap(...params)),
   setLabels: (...params) => dispatch(setLabels(...params)),
-  setBoundaries: (...params) => dispatch(setBoundaries(...params))
+  setBoundaries: (...params) => dispatch(setBoundaries(...params)),
+  setTheme: (...params) => dispatch(setTheme(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1460,7 +1465,8 @@ WidgetEditor.propTypes = {
   setContracted: PropTypes.func,
   setBasemap: PropTypes.func,
   setLabels: PropTypes.func,
-  setBoundaries: PropTypes.func
+  setBoundaries: PropTypes.func,
+  setTheme: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {
@@ -1468,7 +1474,6 @@ WidgetEditor.defaultProps = {
   embedButtonMode: 'auto',
   titleMode: 'auto',
   contracted: false,
-  theme: ChartTheme(),
   useLayerEditor: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
