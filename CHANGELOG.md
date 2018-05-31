@@ -6,6 +6,7 @@
 - Allow up to 500 results (the default limit stays at 50)
 - Fix an issue where the limit filter may not be restored correctly
 - Improve the performance by preventing useless re-renders
+- Change how `VegaChart` chooses the theme: the `theme` props takes precedence over the widget's embedded theme (i.e. `config` object, if any), which also takes precedence over the default theme
 
 ## v1.2.2 - 30/05/2018
 - Fix an issue that would prevent the creation of widgets through `SaveWidgetModal`

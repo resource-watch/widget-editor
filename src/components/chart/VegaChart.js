@@ -11,6 +11,9 @@ import VegaChartLegend from 'components/chart/VegaChartLegend';
 // Utils
 import { fetchRasterData } from 'helpers/WidgetHelper';
 
+// Helpers
+import ChartTheme from 'helpers/theme';
+
 class VegaChart extends React.Component {
   constructor(props) {
     super(props);
@@ -167,15 +170,16 @@ class VegaChart extends React.Component {
   }
 
   parseVega() {
-    const theme = this.props.theme || {};
     const vegaConfig = this.state.vegaConfig;
+    vegaConfig.config = this.props.theme
+      || (vegaConfig.config ? vegaConfig.config : ChartTheme());
 
     // While Vega parses the configuration and renders the chart
     // we display a loader
     this.toggleLoading(true);
 
     try {
-      const runtime = vega.parse(vegaConfig, theme);
+      const runtime = vega.parse(vegaConfig);
       this.view = new vega.View(runtime)
         .initialize(this.chart)
         .renderer('canvas')
