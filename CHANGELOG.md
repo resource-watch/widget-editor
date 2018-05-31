@@ -1,12 +1,13 @@
 # Changelog
 
-## v1.2.3 (not yet released)
+## v1.3.0 (not yet released)
 - Fix a bug where changing the theme wouldn't re-render the visualization
 - Fix a style issue where the content of the map editor wouldn't be centered
 - Allow up to 500 results (the default limit stays at 50)
 - Fix an issue where the limit filter may not be restored correctly
 - Improve the performance by preventing useless re-renders
 - Change how `VegaChart` chooses the theme: the `theme` props takes precedence over the widget's embedded theme (i.e. `config` object, if any), which also takes precedence over the default theme
+- Store the theme of the widget in `widgetConfig` and restore it in the editor (the `theme` prop takes precendence over it)
 
 ## v1.2.2 - 30/05/2018
 - Fix an issue that would prevent the creation of widgets through `SaveWidgetModal`

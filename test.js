@@ -23,7 +23,8 @@ setConfig({
   env: 'production,preproduction',
   applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
-  assetsPath: '/images/'
+  assetsPath: '/images/',
+  userToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4NzhjMTNiNWIyZWE3N2MxMWUxYmMxZCIsInJvbGUiOiJBRE1JTiIsInByb3ZpZGVyIjoibG9jYWwiLCJlbWFpbCI6ImNsZW1lbnQucHJvZGhvbW1lQHZpenp1YWxpdHkuY29tIiwiZXh0cmFVc2VyRGF0YSI6eyJhcHBzIjpbInJ3IiwiZ2Z3IiwiZ2Z3LWNsaW1hdGUiLCJwcmVwIiwiYXF1ZWR1Y3QiLCJmb3Jlc3QtYXRsYXMiLCJkYXRhNHNkZ3MiXX0sImNyZWF0ZWRBdCI6MTUxNzkzODc4MzQ0MCwiaWF0IjoxNTE3OTM4NzgzfQ._lU1C1dwTv6qFFZsuW6C8t-yc9fvdK7uQOt4V88k2HM'
 });
 
 class App extends React.Component {
@@ -50,7 +51,7 @@ class App extends React.Component {
     this.state = {
       datasetId: 'a86d906d-9862-4783-9e30-cdb68cd808b8',
       // datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
-      widgetId: undefined,
+      widgetId: 'd6e00a49-1e0b-4c7e-8f01-6f7fb65dcacc',
       previewWidgetId: undefined,
       previewConfig: undefined,
       widgetTitle: '',

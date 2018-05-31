@@ -37,6 +37,7 @@ const SET_CONTRACTED = 'WIDGET_EDITOR/SET_CONTRACTED';
 const SET_BASEMAP = 'WIDGET_EDITOR/SET_BASEMAP';
 const SET_LABELS = 'WIDGET_EDITOR/SET_LABELS';
 const SET_BOUNDARIES = 'WIDGET_EDITOR/SET_BOUNDARIES';
+const SET_THEME = 'WIDGET_EDITOR/SET_THEME';
 
 /**
  * REDUCER
@@ -72,7 +73,9 @@ const initialState = {
     labels: null,
     /** @type {boolean} boundaries */
     boundaries: false
-  }
+  },
+  /** @type {object} theme */
+  theme: null // Theme of the restored widget as in the API
 };
 
 export default function (state = initialState, action) {
@@ -316,6 +319,12 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_THEME: {
+      return Object.assign({}, state, {
+        theme: action.payload
+      });
+    }
+
     default:
       return state;
   }
@@ -478,4 +487,8 @@ export function setLabels(labels) {
 
 export function setBoundaries(boundaries) {
   return dispatch => dispatch({ type: SET_BOUNDARIES, payload: boundaries });
+}
+
+export function setTheme(theme) {
+  return dispatch => dispatch({ type: SET_THEME, payload: theme });
 }

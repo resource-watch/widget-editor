@@ -666,6 +666,7 @@ export function checkEditorRestoredState(widgetEditor, attrToSetter) {
  * @param {string} datasetProvider - Name of the provider
  * @param {string} tableName - Name of the table
  * @param {object} widgetEditor - Store object
+ * @param {object} theme - Theme of the widget
  * @returns {Promise<object>}
  */
 export async function getWidgetConfig(
@@ -673,7 +674,8 @@ export async function getWidgetConfig(
   datasetType,
   datasetProvider,
   tableName,
-  widgetEditor
+  widgetEditor,
+  theme
 ) {
   return new Promise(async (resolve, reject) => {
     const {
@@ -759,7 +761,10 @@ export async function getWidgetConfig(
           layer: layer && layer.id
         }
       },
-      chartConfig
+      chartConfig,
+      {
+        config: theme
+      }
     ));
   });
 }
