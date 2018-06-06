@@ -762,7 +762,10 @@ class WidgetEditor extends React.Component {
         this.props.setFields(filteredFields);
         resolve(filteredFields);
       })
-      .catch(() => this.setState({ fieldsError: true, fieldsLoaded: true }, resolve([])));
+      .catch((e) => {
+        console.error(e);
+        this.setState({ fieldsError: true, fieldsLoaded: true }, resolve([]));
+      });
 
     return promise;
   }

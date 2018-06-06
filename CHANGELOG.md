@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.1 (not yet released)
+- When the dataset doesn't have any field, display the error in the console
+
 ## v1.3.0 - 01/06/2018
 - Fix a bug where changing the theme wouldn't re-render the visualization
 - Fix a style issue where the content of the map editor wouldn't be centered
