@@ -46,7 +46,7 @@ const defaultChart = {
       "encode": {
         "labels": {
           "update": {
-            "text": { "signal": "data('table')[datum.value - 1].x" },
+            "text": { "signal": "width < 300 || extent[1] > 10 ? truncate(data('table')[datum.value - 1].x, 12) : data('table')[datum.value - 1].x" },
             "align": { "signal": "width < 300 || extent[1] > 10 ? 'right' : 'center'" },
             "baseline": { "signal": "width < 300 || extent[1] > 10 ? 'middle' : 'top'" },
             "angle": { "signal": "width < 300 || extent[1] > 10 ? -90 :0 " }
