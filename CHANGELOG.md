@@ -3,6 +3,7 @@
 ## v1.3.1 (not yet released)
 - When the dataset doesn't have any field, display the error in the console
 - For the bar chart, truncate the labels of the x axis to 12 characters when they are vertical
+- For the bar chart, display the ticks vertically if the widget is small or if there are more than 10 bars
 
 ## v1.3.0 - 01/06/2018
 - Fix a bug where changing the theme wouldn't re-render the visualization

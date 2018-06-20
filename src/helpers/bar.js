@@ -9,14 +9,8 @@ const defaultChart = {
     {
       "name": "table",
       "transform": [
-        { "type": "identifier", "as": "id" }
-      ]
-    },
-    {
-      "name":"stats",
-      "source":"table",
-      "transform": [
-        { "type": "extent", "field": "x", "signal": "extent" }
+        { "type": "identifier", "as": "id" },
+        { "type": "joinaggregate", "as": ["count"] }
       ]
     }
   ],
@@ -46,10 +40,10 @@ const defaultChart = {
       "encode": {
         "labels": {
           "update": {
-            "text": { "signal": "width < 300 || extent[1] > 10 ? truncate(data('table')[datum.value - 1].x, 12) : data('table')[datum.value - 1].x" },
-            "align": { "signal": "width < 300 || extent[1] > 10 ? 'right' : 'center'" },
-            "baseline": { "signal": "width < 300 || extent[1] > 10 ? 'middle' : 'top'" },
-            "angle": { "signal": "width < 300 || extent[1] > 10 ? -90 :0 " }
+            "text": { "signal": "width < 300 || data('table')[0].count > 10 ? truncate(data('table')[datum.value - 1].x, 12) : data('table')[datum.value - 1].x" },
+            "align": { "signal": "width < 300 || data('table')[0].count > 10 ? 'right' : 'center'" },
+            "baseline": { "signal": "width < 300 || data('table')[0].count > 10 ? 'middle' : 'top'" },
+            "angle": { "signal": "width < 300 || data('table')[0].count > 10 ? -90 :0 " }
           }
         }
       }
