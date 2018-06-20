@@ -83,7 +83,8 @@ const VISUALIZATION_TYPES = [
 ];
 
 const CHART_TYPES = [
-  { label: 'Bar', value: 'bar' },
+  { label: 'Bar (vertical)', value: 'bar' },
+  { label: 'Bar (horizontal)', value: 'bar-horizontal' },
   { label: 'Line', value: 'line' },
   { label: 'Pie', value: 'pie' },
   { label: 'Scatter', value: 'scatter' }

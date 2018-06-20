@@ -3,6 +3,7 @@ import { format } from 'd3-format';
 
 // Components
 import BarChart from 'helpers/bar';
+import HorizontalBarChart from 'helpers/bar-horizontal';
 import LineChart from 'helpers/line';
 import PieChart from 'helpers/pie';
 // import OneDScatterChart from 'helpers/1d_scatter';
@@ -18,6 +19,7 @@ import RasterService from 'services/RasterService';
 
 const CHART_TYPES = {
   bar: BarChart,
+  'bar-horizontal': HorizontalBarChart,
   line: LineChart,
   pie: PieChart,
   scatter: ScatterChart
@@ -332,7 +334,7 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
   if (!orderByColumn.length) {
     if (chartInfo.chartType === 'line') {
       orderByColumn.push({ name: chartInfo.x.name });
-    } else if (chartInfo.chartType === 'pie' || chartInfo.chartType === 'bar') {
+    } else if (chartInfo.chartType === 'pie' || chartInfo.chartType === 'bar' || chartInfo.chartType === 'bar-horizontal') {
       orderByColumn.push({ name: chartInfo.y.name });
     }
   }
