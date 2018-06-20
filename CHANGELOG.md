@@ -5,6 +5,7 @@
 - For the bar chart, truncate the labels of the x axis to 12 characters when they are vertical
 - For the bar chart, display the ticks vertically if the widget is small or if there are more than 10 bars
 - Rename the visualization "Bar" by "Bar (vertical)" and add a new "Bar (horizontal)" one
+- Update the URL of the basemaps, labels and boundaries layers
 
 ## v1.3.0 - 01/06/2018
 - Fix a bug where changing the theme wouldn't re-render the visualization
