@@ -25,8 +25,20 @@ class FilterTooltip extends React.Component {
     this.state = {
       selected: (filter && filter.value) || [],
       notNullSelected: filter && filter.notNull,
-      loading: true
+      loading: true,
+      timeoutExpired: false
     };
+
+    // After 10s, if we're still loading the data, we let
+    // the user know it's normal
+    this.timeout = setTimeout(() => {
+      if (this.state.loading) {
+        this.setState({ timeoutExpired: true });
+        if (this.props.onResize) {
+          this.props.onResize();
+        }
+      }
+    }, 10000);
 
     // DatasetService
     this.datasetService = new DatasetService(props.datasetID);
@@ -43,6 +55,10 @@ class FilterTooltip extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('mousedown', this.onScreenClick);
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
   }
 
   onChange(selected) {
@@ -80,7 +96,26 @@ class FilterTooltip extends React.Component {
   }
 
   onToggleLoading(loading) {
-    this.setState({ loading });
+    this.setState({
+      loading,
+      timeoutExpired: false
+    });
+
+    // After 10s, if we're still loading the data, we let
+    // the user know it's normal
+    if (loading && !this.timeout) {
+      setTimeout(() => {
+        if (this.state.loading) {
+          this.setState({ timeoutExpired: true });
+          if (this.props.onResize) {
+            this.props.onResize();
+          }
+        }
+      }, 10000);
+    } else if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
   }
 
   handleNotNullSelection(value) {
@@ -113,16 +148,26 @@ class FilterTooltip extends React.Component {
 
   render() {
     const { type } = this.props;
-    const { loading, notNullSelected } = this.state;
+    const { loading, timeoutExpired, notNullSelected } = this.state;
 
     return (
       <div className="c-we-filter-tooltip">
-        {!!loading &&
+        { !!loading && !timeoutExpired && (
           <Spinner
             className="-light -small"
             isLoading={loading}
           />
-        }
+        )}
+
+        {!!loading && timeoutExpired && (
+          <div className="spinner-container">
+            <Spinner
+              className="-light -small -inline"
+              isLoading={loading}
+            />
+            <p>Results may take some time to load...</p>
+          </div>
+        )}
 
         {!loading &&
           <div className="c-we-checkbox">

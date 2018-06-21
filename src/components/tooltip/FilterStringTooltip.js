@@ -89,19 +89,23 @@ class FilterStringTooltip extends React.Component {
 
     return (
       <div className="c-we-filter-string-tooltip">
-        <div className="search-input">
-          <input
-            placeholder="Search"
-            onChange={event => this.handleSearch(event.target.value)}
-          />
-        </div>
-        <div className="filter-tooltip-content">
-          <CheckboxGroup
-            selected={selected}
-            options={filteredValues}
-            onChange={vals => this.props.onChange(vals)}
-          />
-        </div>
+        { !loading && (
+          <div className="search-input">
+            <input
+              placeholder="Search"
+              onChange={event => this.handleSearch(event.target.value)}
+            />
+          </div>
+        )}
+        { !loading && (
+          <div className="filter-tooltip-content">
+            <CheckboxGroup
+              selected={selected}
+              options={filteredValues}
+              onChange={vals => this.props.onChange(vals)}
+            />
+          </div>
+        )}
 
         {!loading &&
           <div className="buttons">
