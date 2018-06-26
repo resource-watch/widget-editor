@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.2 (not released yet)
+- Don't filter out the columns of type "long" and "double" (internal types)
+
 ## v1.3.1 - 21/06/2018
 - When the dataset doesn't have any field, display the error in the console
 - For the bar chart, truncate the labels of the x axis to 12 characters when they are vertical

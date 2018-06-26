@@ -38,6 +38,8 @@ export const ALLOWED_FIELD_TYPES = [
   { name: 'int', type: 'number', provider: 'psql' },
   { name: 'integer', type: 'number', provider: 'psql' },
   { name: 'float', type: 'number', provider: 'sql' },
+  { name: 'long', type: 'number', provider: 'sql' },
+  { name: 'double', type: 'number', provider: 'sql' },
   { name: 'real', type: 'number', provider: 'sql' },
   { name: 'decimal', type: 'number', provider: 'sql' },
   // ----- TEXT -----
