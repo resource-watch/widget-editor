@@ -56,7 +56,9 @@ class App extends React.Component {
       widgetTitle: '',
       widgetCaption: '',
       widgetTheme: JSON.stringify(getVegaTheme(), null, 2),
-      _theme: getVegaTheme() // Internal
+      _theme: getVegaTheme(), // Internal
+      previewWidgetTheme: JSON.stringify(getVegaTheme(true), null, 2),
+      _previewWidgetTheme: getVegaTheme(true) // Internal
     };
 
     this.onSave = this.onSave.bind(this);
@@ -66,6 +68,7 @@ class App extends React.Component {
     this.onProvideWidgetConfig = this.onProvideWidgetConfig.bind(this);
     this.onProvideLayer = this.onProvideLayer.bind(this);
     this.onChangeTheme = this.onChangeTheme.bind(this);
+    this.onChangePreviewWidgetTheme = this.onChangePreviewWidgetTheme.bind(this);
   }
 
   componentWillMount() {
@@ -135,6 +138,22 @@ class App extends React.Component {
     this.setState({
       widgetTheme: theme,
       _theme: unserializedTheme
+    });
+  }
+
+  onChangePreviewWidgetTheme({ target }) {
+    const theme = target.value;
+
+    let unserializedTheme;
+    try {
+      unserializedTheme = JSON.parse(theme);
+    } catch (err) {
+      unserializedTheme = getVegaTheme(true);
+    }
+
+    this.setState({
+      previewWidgetTheme: theme,
+      _previewWidgetTheme: unserializedTheme
     });
   }
 
@@ -225,6 +244,14 @@ class App extends React.Component {
               value={this.state.previewWidgetId}
               onChange={({ target }) => this.onChangePreviewWidgetId(target.value)}
             />
+            <br />
+            <label htmlFor="preview_widget_theme">Theme (optional):</label>
+            <textarea
+              placeholder="Theme of the widget"
+              id="preview_widget_theme"
+              value={this.state.previewWidgetTheme}
+              onChange={this.onChangePreviewWidgetTheme}
+            />
           </p>
         </div>
         { this.state.previewWidgetId && this.state.previewConfig && (
@@ -232,7 +259,8 @@ class App extends React.Component {
             width={250}
             height={180}
             data={this.state.previewConfig}
-            theme={getVegaTheme(true)}
+            // eslint-disable-next-line no-underscore-dangle
+            theme={this.state._previewWidgetTheme}
             reloadOnResize
           />
         )}

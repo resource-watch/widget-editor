@@ -46,12 +46,17 @@ class VegaChart extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return !isEqual(nextProps.data, this.props.data)
-    || !isEqual(nextState.vegaConfig, this.state.vegaConfig);
+    || !isEqual(nextState.vegaConfig, this.state.vegaConfig)
+    || nextProps.theme !== this.props.theme;
   }
 
   componentDidUpdate(prevProps) {
     if (!isEqual(this.props.data, prevProps.data)) {
       this.renderChart();
+    }
+
+    if (prevProps.theme !== this.props.theme) {
+      this.parseVega();
     }
   }
 
