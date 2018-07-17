@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.3 - not yet released
+- Fix an issue where the legend wouldn't respect the theme colors
+
 ## v1.3.2 - 26/06/2018
 - Don't filter out the columns of type "long" and "double" (internal types)
 

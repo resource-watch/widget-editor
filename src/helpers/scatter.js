@@ -97,7 +97,7 @@ const defaultChart = {
  * @export
  * @param {any} { columns, data, url, embedData }
  */
-export default function ({ columns, data, url, embedData }) {
+export default function ({ columns, data, url, embedData, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
@@ -148,7 +148,7 @@ export default function ({ columns, data, url, embedData }) {
 
   if (columns.size.present) {
     const sizeScaleType = 'linear';
-    const sizeScaleRange = defaultTheme.range.dotSize;
+    const sizeScaleRange = (theme || defaultTheme).range.dotSize;
 
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10
@@ -181,11 +181,13 @@ export default function ({ columns, data, url, embedData }) {
         values: [
           {
             label: Math.max(...sizeDate),
-            value: getCircleRadius(sizeScaleRange[1])
+            value: getCircleRadius(sizeScaleRange[1]),
+            color: (theme || defaultTheme).symbol.fill
           },
           {
             label: Math.min(...sizeDate),
-            value: getCircleRadius(sizeScaleRange[0])
+            value: getCircleRadius(sizeScaleRange[0]),
+            color: (theme || defaultTheme).symbol.fill
           }
         ]
       }

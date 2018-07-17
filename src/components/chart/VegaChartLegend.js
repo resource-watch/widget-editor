@@ -84,7 +84,8 @@ class VegaChartLegend extends React.Component {
                   className={`shape -${config.shape || 'square'}`}
                   style={{
                     width: `${2 * value.value}px`,
-                    height: `${2 * value.value}px`
+                    height: `${2 * value.value}px`,
+                    backgroundColor: value.color
                   }}
                 />
               </div>

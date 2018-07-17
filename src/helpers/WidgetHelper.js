@@ -496,6 +496,7 @@ export function parseRasterData(data, band, provider) {
  * Band (in case of a raster dataset)
  * @param {string} provider - Name of the provider
  * @param {ChartInfo} chartInfo
+ * @param {any} theme - Theme of the widget
  * @param {boolean} [embedData=false] Whether the configuration should
  * be saved with the data in it or just its URL
  */
@@ -506,6 +507,7 @@ export async function getChartConfig(
   band,
   provider,
   chartInfo,
+  theme,
   embedData = false
 ) {
   // URL of the data needed to display the chart
@@ -583,7 +585,8 @@ export async function getChartConfig(
     embedData,
     url,
     provider,
-    band
+    band,
+    theme
   });
 }
 
@@ -718,7 +721,8 @@ export async function getWidgetConfig(
           tableName,
           band,
           datasetProvider,
-          chartInfo
+          chartInfo,
+          theme
         );
       } catch (err) {
         console.error(err);

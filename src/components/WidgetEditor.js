@@ -846,6 +846,7 @@ class WidgetEditor extends React.Component {
       band,
       datasetProvider,
       chartInfo,
+      this.props.theme,
       true
     )
       .then(chartConfig => new Promise((resolve) => {

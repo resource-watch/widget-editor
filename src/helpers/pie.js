@@ -91,7 +91,7 @@ const defaultChart = {
  * @export
  * @param {any} { columns, data, url, embedData }
  */
-export default function ({ columns, data, url, embedData }) {
+export default function ({ columns, data, url, embedData, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
@@ -120,7 +120,7 @@ export default function ({ columns, data, url, embedData }) {
  }
 
   // We add a default legend to the chart
-  const colorRange = defaultTheme.range.category;
+  const colorRange = (theme || defaultTheme).range.category;
   const values = data.slice(0, 6)
     .map((d, i) => ({ label: i === 5 ? 'Others' : d.x, value: colorRange[i % 6], type: columns.x.type }));
 
