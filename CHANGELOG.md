@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.3 - not yet released
+## v1.3.3 - 17/07/2018
 - Fix an issue where the legend wouldn't respect the theme colors
 - Fix an issue where `VegaChart` wouldn't re-render when the theme would be dynamically updated
 - Add a button on the map to let the user see and modify its bounds
