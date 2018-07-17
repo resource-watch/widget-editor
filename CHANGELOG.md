@@ -3,6 +3,7 @@
 ## v1.3.3 - not yet released
 - Fix an issue where the legend wouldn't respect the theme colors
 - Fix an issue where `VegaChart` wouldn't re-render when the theme would be dynamically updated
+- Add a button on the map to let the user see and modify its bounds
 
 ## v1.3.2 - 26/06/2018
 - Don't filter out the columns of type "long" and "double" (internal types)

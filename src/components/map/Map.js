@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
 import pick from 'lodash/pick';
 import { BASEMAPS, LABELS, BOUNDARIES } from 'components/map/constants';
+import { connect } from 'react-redux';
 
 // Redux
-import { connect } from 'react-redux';
+import { setZoom, setLatLng, setBounds } from 'reducers/widgetEditor';
 
 // Components
 import Spinner from 'components/ui/Spinner';
@@ -36,6 +37,11 @@ class Map extends React.Component {
   componentDidMount() {
     this.hasBeenMounted = true;
     this.instantiateMap();
+
+    // If the bounds are not defined, we set them in the store
+    if (!this.props.mapConfig.bounds) {
+      this.onMapChange();
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -105,7 +111,17 @@ class Map extends React.Component {
     if ((!this.props.mapConfig.bounds && nextProps.mapConfig.bounds)
       || (nextProps.mapConfig && this.props.mapConfig.bounds !== nextProps.mapConfig.bounds
       && nextProps.mapConfig.bounds)) {
-      this.map.fitBounds(nextProps.mapConfig.bounds);
+      this.map.fitBounds(nextProps.mapConfig.bounds, { animate: false });
+
+      // If only the bounds were updated, we make sure the store
+      // also has the correct center and zoom
+      if (this.props.mapConfig.latLng.lat === nextProps.mapConfig.latLng.lat
+        && this.props.mapConfig.latLng.lng === nextProps.mapConfig.latLng.lng
+        && this.props.mapConfig.zoom === nextProps.mapConfig.zoom) {
+        const mapParams = this.getMapParams();
+        this.props.setLatLng(mapParams.latLng);
+        this.props.setZoom(mapParams.zoom);
+      }
     } else if (this.props.editorContracted !== nextProps.editorContracted) {
       // The size of the map container has changed so we tell
       // Leaflet about it
@@ -374,7 +390,9 @@ Map.propTypes = {
    * each time its state is updated
    * @type {function({ zoom: number, latLng: number[], bounds: number[][] }): any} setMapParams
    */
-  setMapParams: PropTypes.func
+  setMapParams: PropTypes.func,
+  setLatLng: PropTypes.func,
+  setZoom: PropTypes.func
 };
 
 Map.defaultProps = {
@@ -385,7 +403,22 @@ const mapStateToProps = ({ widgetEditor }) => ({
   basemap: BASEMAPS[widgetEditor.basemapLayers.basemap],
   labels: LABELS[widgetEditor.basemapLayers.labels || 'none'],
   boundaries: widgetEditor.basemapLayers.boundaries,
-  editorContracted: widgetEditor.contracted
+  editorContracted: widgetEditor.contracted,
+  mapConfig: {
+    zoom: widgetEditor.zoom,
+    latLng: widgetEditor.latLng,
+    bounds: widgetEditor.bounds
+  }
 });
 
-export default connect(mapStateToProps, null)(Map);
+const mapDispatchToProps = dispatch => ({
+  setMapParams: ({ zoom, latLng, bounds }) => {
+    dispatch(setZoom(zoom));
+    dispatch(setLatLng(latLng));
+    if (bounds) dispatch(setBounds(bounds));
+  },
+  setLatLng: latLng => dispatch(setLatLng(latLng)),
+  setZoom: zoom => dispatch(setZoom(zoom))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);

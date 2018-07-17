@@ -1,0 +1,32 @@
+.c-we-position-control {
+  h3 {
+    margin: 0 0 10px;
+    font-size: $font-size-medium;
+    font-family: $base-font-family;
+    font-weight: $font-weight-bold;
+  }
+
+  label {
+    display: block;
+    font-size: $font-size-default;
+    font-family: $base-font-family;
+    font-weight: $font-weight-bold;
+    color: $base-font-color;
+    border-bottom: 1px solid $border-color-2;
+
+    &:not(:last-of-type) {
+      margin-bottom: 12px;
+    }
+
+    input {
+      display: inline-block;
+      margin-left: 5px;
+      box-sizing: border-box !important;
+      padding: 0;
+      border: 0;
+      font-family: $body-font-family;
+      font-size: $font-size-default;
+      color: $base-font-color;
+    }
+  }
+}

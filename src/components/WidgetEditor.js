@@ -54,6 +54,7 @@ import VegaChart from 'components/chart/VegaChart';
 import Map from 'components/map/Map';
 import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
+import PositionControl from 'components/map/controls/PositionControl';
 import TableView from 'components/table/TableView';
 import Icon from 'components/ui/Icon';
 
@@ -465,7 +466,7 @@ class WidgetEditor extends React.Component {
 
     const { widgetEditor, datasetId, selectedVisualizationType, theme,
       useLayerEditor } = this.props;
-    const { chartType, layer, zoom, latLng, bounds, title, caption,
+    const { chartType, layer, title, caption,
       visualizationType, basemapLayers } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
@@ -566,24 +567,17 @@ class WidgetEditor extends React.Component {
       // Leaflet map
       case 'map':
         if (layer) {
-          const mapConfig = {
-            zoom,
-            latLng,
-            bounds
-          };
-
           visualization = (
             <div className="visualization">
               {titleCaption}
               <Map
                 LayerManager={LayerManager}
-                mapConfig={mapConfig}
                 layerGroups={this.state.layerGroups}
-                setMapParams={params => this.props.setMapParams(params)}
               />
 
               <MapControls>
                 <BasemapControl />
+                <PositionControl />
               </MapControls>
 
               <div className="c-we-legend-map">

@@ -195,6 +195,10 @@ export default class Icons extends React.Component {
             <title>widget-saved</title>
             <path d="M140.058 16l-2 2H5a3 3 0 0 0-3 3v91a3 3 0 0 0 3 3h139a3 3 0 0 0 3-3V23.2l2-2V112a5 5 0 0 1-5 5H5a5 5 0 0 1-5-5V21a5 5 0 0 1 5-5h135.058zM34.793 49.707l1.414-1.414 36.486 36.486a3 3 0 0 0 4.243 0L161.5 0l1.5 1.5-84.65 84.693a5 5 0 0 1-7.071 0L34.793 49.707z" fillRule="nonzero" fill="#65B60D" />
           </symbol>
+          <symbol id="editor-icon-position" viewBox="0 0 16 16">
+            <title>position</title>
+            <path d="M2.083 7A6.005 6.005 0 0 1 7 2.083V0h2v2.083A6.005 6.005 0 0 1 13.917 7H16v2h-2.083A6.005 6.005 0 0 1 9 13.917V16H7v-2.083A6.005 6.005 0 0 1 2.083 9H0V7h2.083zm2.043 0H6v2H4.126A4.007 4.007 0 0 0 7 11.874V10h2v1.874A4.007 4.007 0 0 0 11.874 9H10V7h1.874A4.007 4.007 0 0 0 9 4.126V6H7V4.126A4.007 4.007 0 0 0 4.126 7z" />
+          </symbol>
         </defs>
       </svg>
     );
