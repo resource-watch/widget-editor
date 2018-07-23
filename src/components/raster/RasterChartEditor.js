@@ -191,7 +191,7 @@ class RasterChartEditor extends React.Component {
             ) }
           </div>
         </div>
-        <div className="buttons">
+        <div className="c-we-buttons">
           <span /> {/* Help align the button to the right */}
           {
             canShowSaveButton &&

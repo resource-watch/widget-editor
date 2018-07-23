@@ -108,7 +108,7 @@ class FilterStringTooltip extends React.Component {
         )}
 
         {!loading &&
-          <div className="buttons">
+          <div className="c-we-buttons">
             {type === 'string' &&
               <Button
                 properties={{ type: 'button', className: ' -compressed' }}

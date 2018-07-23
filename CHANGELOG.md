@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.4 (not released yet)
+- Fix an issue where the `.buttons` class wouldn't be scoped (now it starts with `c-we-`)
+
 ## v1.3.3 - 17/07/2018
 - Fix an issue where the legend wouldn't respect the theme colors
 - Fix an issue where `VegaChart` wouldn't re-render when the theme would be dynamically updated

@@ -150,7 +150,7 @@ class FilterDateTooltip extends React.Component {
         }
 
         {!loading &&
-          <div className="buttons">
+          <div className="c-we-buttons">
             <Button
               properties={{ type: 'button', className: '-primary -compressed' }}
               onClick={() => this.props.onApply()}
