@@ -96,7 +96,7 @@
     "react-tether": "^0.6.0",
     "toastr": "^2.1.2",
     "vega-tooltip": "^0.5.1",
-    "wri-api-components": "1.0.3"
+    "wri-api-components": "2.0.0"
   },
   "peerDependencies": {
     "prop-types": "^15.6.0",
