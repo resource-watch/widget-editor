@@ -224,6 +224,7 @@ class App extends React.Component {
           // eslint-disable-next-line no-underscore-dangle
           theme={this.state._theme}
           useLayerEditor
+          allowBoundsCopyPaste
           onSave={this.onSave}
           onEmbed={this.onEmbed}
           onChangeWidgetTitle={this.onChangeWidgetTitle}

@@ -10,16 +10,42 @@ import { setBounds } from 'reducers/widgetEditor';
 // Components
 import Icon from 'components/ui/Icon';
 
+const COPY_MSG = {
+  default: 'Copy all',
+  success: 'Copied!',
+  error: 'Error!'
+};
+
+const PASTE_MSG = {
+  default: 'Paste',
+  success: 'Pasted!',
+  error: 'Error!'
+};
+
+const CLIPBOARD_KEY = 'widget-editor-clipboard';
+
 class PositionControl extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      visible: false
+      visible: false,
+      copyStatus: COPY_MSG.default,
+      pasteStatus: PASTE_MSG.default,
+      canPaste: false
     };
   }
 
+  componentWillMount() {
+    this.checkStorage();
+  }
+
+  componentDidMount() {
+    window.addEventListener('storage', this.checkStorage);
+  }
+
   componentWillUnmount() {
+    window.removeEventListener('storage', this.checkStorage);
     document.removeEventListener('click', this.onClickScreen);
   }
 
@@ -56,6 +82,55 @@ class PositionControl extends React.Component {
   }
 
   /**
+   * Event handler executed when the user clicks the copy button
+   */
+  @Autobind
+  onClickCopy() {
+    if (this.copyStatusTimeout) {
+      clearTimeout(this.copyStatusTimeout);
+      this.copyStatusTimeout = null;
+    }
+
+    try {
+      localStorage.setItem(CLIPBOARD_KEY, JSON.stringify({
+        bounds: this.props.bounds
+      }));
+      this.setState({ copyStatus: COPY_MSG.success, canPaste: true });
+    } catch (e) {
+      this.setState({ copyStatus: COPY_MSG.error });
+    }
+
+    this.copyStatusTimeout = setTimeout(
+      () => this.setState({ copyStatus: COPY_MSG.default }),
+      3000
+    );
+  }
+
+  /**
+   * Event handler executed when the user clicks the paste button
+   */
+  @Autobind
+  onClickPaste() {
+    if (this.pasteStatusTimeout) {
+      clearTimeout(this.pasteStatusTimeout);
+      this.pasteStatusTimeout = null;
+    }
+
+    try {
+      const bounds = JSON.parse(localStorage.getItem(CLIPBOARD_KEY)).bounds;
+      this.onChangeBounds(bounds);
+      this.setState({ pasteStatus: PASTE_MSG.success });
+    } catch (e) {
+      this.setState({ pasteStatus: PASTE_MSG.error });
+    }
+
+    this.pasteStatusTimeout = setTimeout(
+      () => this.setState({ pasteStatus: PASTE_MSG.default }),
+      3000
+    );
+  }
+
+  /**
    * Toggle the visibility of the dropdown
    * @param {boolean} visible Whether the dropdown should be visible
    */
@@ -65,11 +140,32 @@ class PositionControl extends React.Component {
       () => {
         if (visible) {
           window.addEventListener('click', this.onClickScreen);
+          this.checkStorage();
         } else {
           window.removeEventListener('click', this.onClickScreen);
         }
       }
     );
+  }
+
+  /**
+   * Check the state of the clipboard in the localStorage and
+   * update the "canPaste" state property accordingly
+   */
+  @Autobind
+  checkStorage() {
+    try {
+      const clipboard = localStorage.getItem(CLIPBOARD_KEY);
+
+      if (clipboard) {
+        const bounds = JSON.parse(clipboard).bounds;
+        this.setState({ canPaste: !!bounds });
+      } else {
+        this.setState({ canPaste: false });
+      }
+    } catch (e) {
+      this.setState({ canPaste: false });
+    }
   }
 
   render() {
@@ -153,6 +249,24 @@ class PositionControl extends React.Component {
                 ])}
               />
             </label>
+            <div className="c-we-buttons">
+              <button
+                type="button"
+                className="c-we-button -tertiary -compressed"
+                onClick={this.onClickCopy}
+              >
+                {this.state.copyStatus}
+              </button>
+              { this.state.canPaste && (
+                <button
+                  type="button"
+                  className="c-we-button -tertiary -compressed"
+                  onClick={this.onClickPaste}
+                >
+                  {this.state.pasteStatus}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </TetherComponent>

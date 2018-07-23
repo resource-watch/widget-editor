@@ -2,6 +2,8 @@
 
 ## v1.3.4 (not released yet)
 - Fix an issue where the `.buttons` class wouldn't be scoped (now it starts with `c-we-`)
+- Add the prop `allowBoundsCopyPaste` to display the bounds of the map (previously, it was always available)
+- Let the user copy and paste the bounds of the map (using the localStorage) if `allowBoundsCopyPaste` is present
 
 ## v1.3.3 - 17/07/2018
 - Fix an issue where the legend wouldn't respect the theme colors

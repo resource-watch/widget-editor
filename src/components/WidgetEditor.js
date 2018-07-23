@@ -577,7 +577,7 @@ class WidgetEditor extends React.Component {
 
               <MapControls>
                 <BasemapControl />
-                <PositionControl />
+                { this.props.allowBoundsCopyPaste && <PositionControl /> }
               </MapControls>
 
               <div className="c-we-legend-map">
@@ -1404,6 +1404,10 @@ WidgetEditor.propTypes = {
    */
   useLayerEditor: PropTypes.bool,
   /**
+   * Let the user copy and paste the bounds of the map
+   */
+  allowBoundsCopyPaste: PropTypes.bool,
+  /**
    * Callback executed when the user clicks the save/update button
    */
   onSave: PropTypes.func,
@@ -1474,6 +1478,7 @@ WidgetEditor.defaultProps = {
   titleMode: 'auto',
   contracted: false,
   useLayerEditor: false,
+  allowBoundsCopyPaste: false,
   availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
 };
 

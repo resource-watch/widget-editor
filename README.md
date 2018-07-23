@@ -141,6 +141,7 @@ Name | Default value | Mandatory | Description
 `contracted: boolean` | `false` | No | Initially display the editor with its left panel contracted
 `theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
 `useLayerEditor: boolean`| `false` | No | Let the user create a layer when selecting a map visualization
+`allowBoundsCopyPaste: boolean`| `false` | No | Let the user copy and paste the bounds of the map **(3)**
 `onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
 `onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
 `onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
@@ -151,6 +152,8 @@ Name | Default value | Mandatory | Description
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
 
 **(2)** The button is currently only available for the table visualization.
+
+**(3)** The bounds are copied within the `localStorage`, so the feature only work within the same site and as long as the browser's data is not cleared.
 
 ### Get the widget config
 
