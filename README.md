@@ -128,26 +128,26 @@ export default App;
 
 Below is the list of props the `WidgetEditor` component takes:
 
-Name | Default value | Mandatory | Description
------|---------------|-----------|------------
-`datasetId: string` | `undefined` | Yes | The ID of the dataset to load the data from
-`widgetId: string` | `undefined` | No | If provided, the ID of the widget to edit
-`widgetTitle: string` | `undefined` | No | If provided, the title of the widget to edit. Use in conjunction with `onChangeWidgetTitle` to get a controlled input.
-`widgetCaption: string` | `undefined` | No | If provided, the caption of the widget to edit. Use in conjunction with `onChangeWidgetCaption` to get a controlled input.
-`saveButtonMode: string` | `"auto"` | No | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(1)**
-`embedButtonMode: string` | `"auto"` | No | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
-`titleMode: string` | `"auto"` | No | If `"auto"`, the title _and_ caption are only editable if a user token is passed to the configuration. If `"always"`, the title _and_ caption are always editable. If `"never"`, they are always fixed.
-`mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
-`contracted: boolean` | `false` | No | Initially display the editor with its left panel contracted
-`theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
-`useLayerEditor: boolean`| `false` | No | Let the user create a layer when selecting a map visualization
-`allowBoundsCopyPaste: boolean`| `false` | No | Let the user copy and paste the bounds of the map **(3)**
-`onSave: function` | `undefined` | No | Callback executed when the user clicks the save/update button.
-`onEmbed: function` | `undefined` | No | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
-`onChangeWidgetTitle: function` | `undefined` | No | Callback executed when the title of the widget is changed. The first argument is the new value.
-`onChangeWidgetCaption: function` | `undefined` | No | Callback executed when the caption of the widget is changed. The first argument is the new value.
-`provideWidgetConfig: function` | `undefined` | No | Callback which is passed a function to get the widget configuration (see below)
-`provideLayer: function` | `undefined` | No | Callback which is passed a function to get the layer created by the user, if any (see below)
+Name | Default value | Mandatory | Version | Description
+-----|---------------|-----------|---------|------------
+`datasetId: string` | `undefined` | Yes | 0.0.1+ | The ID of the dataset to load the data from
+`widgetId: string` | `undefined` | No | 0.0.1+ | If provided, the ID of the widget to edit
+`widgetTitle: string` | `undefined` | No | 0.1.1+ | If provided, the title of the widget to edit. Use in conjunction with `onChangeWidgetTitle` to get a controlled input.
+`widgetCaption: string` | `undefined` | No | 0.1.1+ | If provided, the caption of the widget to edit. Use in conjunction with `onChangeWidgetCaption` to get a controlled input.
+`saveButtonMode: string` | `"auto"` | No | 0.0.1+ | If `"auto"`, the save/update button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(1)**
+`embedButtonMode: string` | `"auto"` | No | 0.0.6+ | If `"auto"`, the embed button only appears if a user token is passed to the configuration. If `"always"`, the button is always shown. If `"never"`, the button never appears. **(2)**
+`titleMode: string` | `"auto"` | No | 0.0.1+ | If `"auto"`, the title _and_ caption are only editable if a user token is passed to the configuration. If `"always"`, the title _and_ caption are always editable. If `"never"`, they are always fixed.
+`mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | 0.0.4+ | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
+`contracted: boolean` | `false` | No | 1.1.0+ | Initially display the editor with its left panel contracted
+`theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | 1.1.0+ | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
+`useLayerEditor: boolean`| `false` | No | 1.2.0+ | Let the user create a layer when selecting a map visualization
+`allowBoundsCopyPaste: boolean`| `false` | No | 1.3.4+ | Let the user copy and paste the bounds of the map **(3)**
+`onSave: function` | `undefined` | No | 0.0.1+ | Callback executed when the user clicks the save/update button.
+`onEmbed: function` | `undefined` | No | 0.0.6+ | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
+`onChangeWidgetTitle: function` | `undefined` | No | 0.1.1+ | Callback executed when the title of the widget is changed. The first argument is the new value.
+`onChangeWidgetCaption: function` | `undefined` | No | 0.1.1+ | Callback executed when the caption of the widget is changed. The first argument is the new value.
+`provideWidgetConfig: function` | `undefined` | No | 0.0.1+ | Callback which is passed a function to get the widget configuration (see below)
+`provideLayer: function` | `undefined` | No | 1.2.0+ | Callback which is passed a function to get the layer created by the user, if any (see below)
 
 **(1)** The button is **never** shown a widget hasn't been rendered yet.
 
