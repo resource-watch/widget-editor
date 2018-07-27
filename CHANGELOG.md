@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.5 (not released yet)
+## v1.3.5 - 27/07/2018
 - Accept React 15 and 16 as peer dependency
 
 ## v1.3.4 - 24/07/2018
