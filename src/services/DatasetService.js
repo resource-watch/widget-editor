@@ -113,7 +113,7 @@ export default class DatasetService {
    * @returns {{ min: number, max: number }}
    */
   getColumnMinAndMax(columnName, tableName, geostore) {
-    const query = `SELECT min(${columnName}) AS min, max(${columnName}) AS max FROM ${tableName}`;
+    const query = `SELECT MIN(${columnName}) AS min, MAX(${columnName}) AS max FROM ${tableName}`;
     const qGeostore = geostore ? `&geostore=${geostore}` : '';
 
     return this.fetchFilteredData(`sql=${query}${qGeostore}`)
