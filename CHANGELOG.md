@@ -2,7 +2,7 @@
 
 ## v1.3.6 - 14/08/2018
 - Fix an issue where the numerical filters wouldn't work with "featureservice" datasets (workaround of an API bug)
-- Fix an issue where the legend of the map woudln't work
+- Fix an issue where the legend of the map wouldn't work
 
 ## v1.3.5 - 27/07/2018
 - Accept React 15 and 16 as peer dependency
