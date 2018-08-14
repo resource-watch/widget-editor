@@ -7,7 +7,7 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 import classnames from 'classnames';
-import { Legend, LegendItemTypes, Icons } from 'wri-api-components';
+import { Legend, LegendListItem, LegendItemTypes, Icons } from 'wri-api-components';
 
 // Redux
 import { connect } from 'react-redux';
@@ -583,12 +583,20 @@ class WidgetEditor extends React.Component {
               <div className="c-we-legend-map">
                 <Icons />
                 <Legend
-                  layerGroups={this.state.layerGroups}
                   expanded={false}
                   sortable={false}
                   maxHeight={250}
-                  LegendItemTypes={<LegendItemTypes />}
-                />
+                >
+                  {this.state.layerGroups.map((layerGroup, i) => (
+                    <LegendListItem
+                      index={i}
+                      key={layerGroup.dataset}
+                      layerGroup={layerGroup}
+                    >
+                      <LegendItemTypes />
+                    </LegendListItem>
+                  ))}
+                </Legend>
               </div>
             </div>
           );

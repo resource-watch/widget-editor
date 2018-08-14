@@ -24,7 +24,7 @@ const config = {
     commonjs({
       namedExports: {
         'react-dnd/lib/index.js': ['DragDropContext', 'DropTarget', 'DragSource'],
-        'wri-api-components': ['Legend', 'LegendItemTypes', 'Icons']
+        'wri-api-components': ['Legend', 'LegendItemTypes', 'LegendListItem', 'Icons']
       }
     }),
     filesize()
