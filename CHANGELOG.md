@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.6 (not released yet)
+## v1.3.6 - 14/08/2018
 - Fix an issue where the numerical filters wouldn't work with "featureservice" datasets (workaround of an API bug)
 - Fix an issue where the legend of the map woudln't work
 
