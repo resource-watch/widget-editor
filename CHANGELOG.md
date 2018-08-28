@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.7 (not released yet)
+- Workaround a bug of [react-select v1](https://github.com/JedWatson/react-select/issues/2025) which could crash the host app
+
 ## v1.3.6 - 14/08/2018
 - Fix an issue where the numerical filters wouldn't work with "featureservice" datasets (workaround of an API bug)
 - Fix an issue where the legend of the map wouldn't work

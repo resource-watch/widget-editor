@@ -50,6 +50,7 @@ class SelectInput extends FormElement {
     return (
       <Select
         {...properties}
+        joinValues
         options={options}
         id={`select-${properties.name}`}
         value={this.state.value}
