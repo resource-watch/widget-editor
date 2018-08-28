@@ -1,6 +1,6 @@
 {
   "name": "widget-editor",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "Widget editor used in Resource Watch and PReP",
   "main": "dist/bundle.js",
   "module": "dist/bundle.js",

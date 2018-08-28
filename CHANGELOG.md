@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.7 (not released yet)
+## v1.3.7 - 28/08/2018
 - Workaround a bug of [react-select v1](https://github.com/JedWatson/react-select/issues/2025) which could crash the host app
 
 ## v1.3.6 - 14/08/2018
