@@ -1,6 +1,7 @@
 import deepClone from 'lodash/cloneDeep';
 
 export const defaultTheme = {
+  $schema: 'https://vega.github.io/schema/vega/v3.json',
   range: {
     dotSize: [20, 250],
     category: [

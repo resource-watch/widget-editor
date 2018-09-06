@@ -57,7 +57,7 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "uglifyjs-webpack-plugin": "^1.1.0",
-    "vega": "^3.2.1",
+    "vega": "^4.2.0",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.4",
     "webpack-merge": "^4.1.1"
@@ -95,6 +95,7 @@
     "react-sortable-hoc": "^0.6.8",
     "react-tether": "^0.6.0",
     "toastr": "^2.1.2",
+    "vega-lib": "^4.2.0",
     "vega-tooltip": "^0.5.1",
     "wri-api-components": "2.0.17"
   },
