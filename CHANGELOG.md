@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.3.8 (Not yet released)
+- Fix a bug where the external title and caption would be overriden when the component would fetch the widget
+
 ## v1.3.7 - 28/08/2018
 - Workaround a bug of [react-select v1](https://github.com/JedWatson/react-select/issues/2025) which could crash the host app
 

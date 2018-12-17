@@ -943,6 +943,7 @@ class WidgetEditor extends React.Component {
    * @param {string} widgetId Widget ID
    */
   restoreWidget(widgetId) {
+    const { widgetTitle, widgetCaption } = this.props;
     const widgetService = new WidgetService(widgetId);
 
     widgetService.fetchData('metadata')
@@ -994,8 +995,12 @@ class WidgetEditor extends React.Component {
         if (limit) this.props.setLimit(limit);
         if (chartType) this.props.setChartType(chartType);
         if (areaIntersection) this.props.setAreaIntersection(areaIntersection);
-        if (name) this.props.setTitle(name);
-        if (caption) this.props.setCaption(caption);
+        // If the user has provided an external title, we don't want
+        // to override it
+        if (!widgetTitle && name) this.props.setTitle(name);
+        // If the user has provided an external caption, we don't want
+        // to override it
+        if (!widgetCaption && caption) this.props.setCaption(caption);
         if (zoom) this.props.setZoom(zoom);
         if (lat && lng) this.props.setLatLng({ lat, lng });
         if (bbox) this.props.setBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]]);
