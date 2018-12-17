@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.8 (Not yet released)
+## v1.3.8 - 17/12/2018
 - Fix a bug where the external title and caption would be overriden when the component would fetch the widget
 
 ## v1.3.7 - 28/08/2018
