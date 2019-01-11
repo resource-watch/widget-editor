@@ -10,7 +10,10 @@ import ColumnBox from 'components/ui/ColumnBox';
 
 const boxTarget = {
   drop(props, monitor) {
-    props.addFilter(monitor.getItem());
+    props.addFilter({
+      name: monitor.getItem().name,
+      type: monitor.getItem().type
+    });
   }
 };
 
@@ -48,10 +51,7 @@ class FilterContainer extends React.Component {
             <ColumnBox
               key={val.name}
               name={val.name}
-              alias={val.alias}
               type={val.type}
-              datasetID={val.datasetID}
-              tableName={val.tableName}
               closable
               configurable
               isA="filter"

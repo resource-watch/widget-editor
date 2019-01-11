@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ColumnBox from 'components/ui/ColumnBox';
 
 const FieldsContainer = (props) => {
-  const { dataset, tableName, fields } = props;
+  const { fields } = props;
   return (
     <div className="c-we-fields-container">
       {
@@ -12,10 +12,7 @@ const FieldsContainer = (props) => {
             <ColumnBox
               key={val.columnName}
               name={val.columnName}
-              alias={val.alias}
               type={val.columnType}
-              datasetID={dataset}
-              tableName={tableName}
               description={val.description}
             />
           )
@@ -26,8 +23,6 @@ const FieldsContainer = (props) => {
 };
 
 FieldsContainer.propTypes = {
-  dataset: PropTypes.string.isRequired,
-  tableName: PropTypes.string.isRequired,
   fields: PropTypes.array.isRequired
 };
 

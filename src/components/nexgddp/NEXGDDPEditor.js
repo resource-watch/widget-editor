@@ -86,11 +86,7 @@ class NEXGDDPEditor extends React.Component {
         { areaIntersection && (
           <div className="actions-div">
             {fields &&
-              <FieldsContainer
-                dataset={datasetId}
-                tableName={tableName}
-                fields={fields}
-              />
+              <FieldsContainer fields={fields} />
             }
             <Icon name="icon-column-arrow" />
             <div className="customization-container">

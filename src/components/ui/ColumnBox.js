@@ -485,10 +485,7 @@ class ColumnBox extends React.Component {
 }
 
 ColumnBox.propTypes = {
-  tableName: PropTypes.string,
-  datasetID: PropTypes.string,
   name: PropTypes.string.isRequired,
-  alias: PropTypes.string,
   description: PropTypes.string,
   type: PropTypes.string.isRequired,
   isA: PropTypes.string,
@@ -497,6 +494,9 @@ ColumnBox.propTypes = {
   onConfigure: PropTypes.func,
   onSetOrderType: PropTypes.func,
   // Store
+  tableName: PropTypes.string,
+  datasetID: PropTypes.string,
+  alias: PropTypes.string,
   filters: PropTypes.array,
   aggregateFunction: PropTypes.string,
   size: PropTypes.object,
@@ -527,13 +527,19 @@ ColumnBox.defaultProps = {
   tableName: undefined
 };
 
-const mapStateToProps = ({ widgetEditor }) => ({
-  filters: widgetEditor.filters,
-  aggregateFunction: widgetEditor.aggregateFunction,
-  size: widgetEditor.size,
-  color: widgetEditor.color,
-  orderBy: widgetEditor.orderBy
-});
+const mapStateToProps = ({ widgetEditor }, { name }) => {
+  const field = widgetEditor.fields.find(f => f.columnName === name);
+  return {
+    filters: widgetEditor.filters,
+    aggregateFunction: widgetEditor.aggregateFunction,
+    size: widgetEditor.size,
+    color: widgetEditor.color,
+    orderBy: widgetEditor.orderBy,
+    tableName: widgetEditor.tableName,
+    datasetID: widgetEditor.datasetId,
+    alias: field ? field.alias : undefined
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   removeFilter: (filter) => {

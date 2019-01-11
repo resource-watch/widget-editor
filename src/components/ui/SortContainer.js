@@ -51,7 +51,6 @@ class SortContainer extends React.Component {
           {orderBy &&
             <ColumnBox
               name={orderBy.name}
-              alias={orderBy.alias}
               type={orderBy.type}
               closable
               configurable

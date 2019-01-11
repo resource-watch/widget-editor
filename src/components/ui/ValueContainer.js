@@ -67,7 +67,6 @@ class DimensionYContainer extends React.Component {
           {value &&
             <ColumnBox
               name={value.name}
-              alias={value.alias}
               type={value.type}
               closable
               configurable

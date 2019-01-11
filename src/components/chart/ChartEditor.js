@@ -92,11 +92,7 @@ class ChartEditor extends React.Component {
         <p>Drag and drop elements from the list to the boxes:</p>
         <div className="actions-div">
           {fields &&
-            <FieldsContainer
-              dataset={datasetId}
-              tableName={tableName}
-              fields={fields}
-            />
+            <FieldsContainer fields={fields} />
           }
           <Icon name="icon-column-arrow" />
           <div className="customization-container">
