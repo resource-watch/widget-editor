@@ -13,6 +13,7 @@ import DatasetService from 'services/DatasetService';
 
 // Components
 import Button from 'components/ui/Button';
+import Checkbox from 'components/form/Checkbox';
 import { Range } from 'rc-slider';
 
 class FilterNumberTooltip extends React.Component {
@@ -33,7 +34,7 @@ class FilterNumberTooltip extends React.Component {
   }
 
   componentDidMount() {
-    this.getFilter();
+    this.getFilterInfo();
   }
 
   /**
@@ -43,7 +44,7 @@ class FilterNumberTooltip extends React.Component {
    */
   onChangeRangeMin(e) {
     const newValue = +e.target.value;
-    this.props.onChange([newValue, this.props.selected[1]]);
+    this.props.onChange({ value: [newValue, this.props.value[1]] });
   }
 
   /**
@@ -53,17 +54,17 @@ class FilterNumberTooltip extends React.Component {
    */
   onChangeRangeMax(e) {
     const newValue = +e.target.value;
-    this.props.onChange([this.props.selected[0], newValue]);
+    this.props.onChange({ value: [this.props.value[0], newValue] });
   }
 
   /**
    * Fetch the data about the column and update the state
    * consequently
    */
-  getFilter() {
-    const { selected } = this.props;
+  getFilterInfo() {
+    const { value } = this.props;
 
-    this.props.getFilter()
+    this.props.getFilterInfo()
       .then(({ min, max }) => {
         this.setState({
           // We round the values to have a nicer UI
@@ -71,15 +72,17 @@ class FilterNumberTooltip extends React.Component {
           max: Math.ceil(max)
         });
 
-        if (this.props.onChange && !selected.length) {
-          this.props.onChange([
-            Math.floor(min),
-            Math.ceil(max)
-          ]);
+        if (this.props.onChange && !value.length) {
+          this.props.onChange({
+            value: [
+              Math.floor(min),
+              Math.ceil(max)
+            ]
+          });
         }
 
-        if (this.props.onToggleLoading) {
-          this.props.onToggleLoading(false);
+        if (this.props.toggleLoading) {
+          this.props.toggleLoading(false);
         }
 
         // We let the tooltip know that the component has been resized
@@ -88,7 +91,7 @@ class FilterNumberTooltip extends React.Component {
         }
       })
       .catch((errors) => {
-        this.props.onToggleLoading(false);
+        this.props.toggleLoading(false);
 
         try {
           errors.forEach(er => toastr.error('Error', er.detail));
@@ -104,16 +107,28 @@ class FilterNumberTooltip extends React.Component {
    * @param {number[]} range Range of values
    */
   updateRange(range) {
-    this.props.onChange(range);
+    this.props.onChange({ value: range });
   }
 
 
   render() {
     const { min, max } = this.state;
-    const { selected, loading } = this.props;
+    const { value, loading, notNull, onChange } = this.props;
 
     return (
       <div className="c-we-filter-string-tooltip">
+        {!loading &&
+          <div className="c-we-checkbox">
+            <Checkbox
+              properties={{
+                title: 'Not null values',
+                checked: notNull,
+                default: false
+              }}
+              onChange={e => onChange({ notNull: e.checked })}
+            />
+          </div>
+        }
 
         {!loading
           && min !== null && typeof min !== 'undefined'
@@ -123,21 +138,21 @@ class FilterNumberTooltip extends React.Component {
               allowCross={false}
               max={max}
               min={min}
-              value={selected}
+              value={value}
               onChange={range => this.updateRange(range)}
             />
           </div>
         }
 
-        {!loading && !!selected.length &&
+        {!loading && !!value.length &&
           <div className="text-inputs-container">
-            <input className="-first" type="number" min={min} max={selected[1]} value={selected[0]} onChange={this.onChangeRangeMin} />
+            <input className="-first" type="number" min={min} max={value[1]} value={value[0]} onChange={this.onChangeRangeMin} />
             -
-            <input className="-last" type="number" min={selected[0]} max={max} value={selected[1]} onChange={this.onChangeRangeMax} />
+            <input className="-last" type="number" min={value[0]} max={max} value={value[1]} onChange={this.onChangeRangeMax} />
           </div>
         }
 
-        {!loading && !!selected.length &&
+        {!loading && !!value.length &&
           <div className="c-we-buttons">
             <Button
               properties={{ type: 'button', className: '-primary -compressed' }}
@@ -155,19 +170,21 @@ class FilterNumberTooltip extends React.Component {
 
 FilterNumberTooltip.propTypes = {
   datasetID: PropTypes.string.isRequired,
-  selected: PropTypes.array,
+  value: PropTypes.array,
+  notNull: PropTypes.bool,
+  operation: PropTypes.string,
   loading: PropTypes.bool.isRequired,
   /**
    * Get the filter value or min/max values
    */
-  getFilter: PropTypes.func.isRequired,
+  getFilterInfo: PropTypes.func.isRequired,
   onResize: PropTypes.func.isRequired, // Passed from the tooltip component
   onChange: PropTypes.func.isRequired,
-  onToggleLoading: PropTypes.func.isRequired,
+  toggleLoading: PropTypes.func.isRequired,
   onApply: PropTypes.func.isRequired
 };
 
-FilterNumberTooltip.defaultProps = { selected: [] };
+FilterNumberTooltip.defaultProps = { value: [] };
 
 const mapDispatchToProps = dispatch => ({
   toggleTooltip: (opened, opts) => {

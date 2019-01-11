@@ -12,6 +12,7 @@ import DatasetService from 'services/DatasetService';
 
 // Components
 import CheckboxGroup from 'components/form/CheckboxGroup';
+import Checkbox from 'components/form/Checkbox';
 import Button from 'components/ui/Button';
 
 class FilterStringTooltip extends React.Component {
@@ -30,30 +31,30 @@ class FilterStringTooltip extends React.Component {
   }
 
   componentDidMount() {
-    this.getFilter();
+    this.getFilterInfo();
   }
 
   onClearAll() {
-    this.props.onChange([]);
+    this.props.onChange({ value: [] });
   }
 
   onSelectAll() {
-    this.props.onChange(this.state.values.map(value => value.value));
+    this.props.onChange({ value: this.state.values.map(value => value.value) });
   }
 
   /**
    * Fetch the data about the column and update the state
    * consequently
    */
-  getFilter() {
-    this.props.getFilter()
+  getFilterInfo() {
+    this.props.getFilterInfo()
       .then((arr) => {
         const values = arr.map(val => ({ name: val, label: val, value: val }));
 
         this.setState({ values, filteredValues: values });
 
-        if (this.props.onToggleLoading) {
-          this.props.onToggleLoading(false);
+        if (this.props.toggleLoading) {
+          this.props.toggleLoading(false);
         }
 
         // We let the tooltip know that the component has been resized
@@ -62,7 +63,7 @@ class FilterStringTooltip extends React.Component {
         }
       })
       .catch((errors) => {
-        this.props.onToggleLoading(false);
+        this.props.toggleLoading(false);
 
         try {
           errors.forEach(er =>
@@ -85,10 +86,23 @@ class FilterStringTooltip extends React.Component {
 
   render() {
     const { filteredValues } = this.state;
-    const { selected, loading, type } = this.props;
+    const { value, loading, notNull, onChange } = this.props;
 
     return (
       <div className="c-we-filter-string-tooltip">
+        {!loading &&
+          <div className="c-we-checkbox">
+            <Checkbox
+              properties={{
+                title: 'Not null values',
+                checked: notNull,
+                default: false
+              }}
+              onChange={e => onChange({ notNull: e.checked })}
+            />
+          </div>
+        }
+
         { !loading && (
           <div className="search-input">
             <input
@@ -100,31 +114,27 @@ class FilterStringTooltip extends React.Component {
         { !loading && (
           <div className="filter-tooltip-content">
             <CheckboxGroup
-              selected={selected}
+              selected={value}
               options={filteredValues}
-              onChange={vals => this.props.onChange(vals)}
+              onChange={vals => this.props.onChange({ value: vals })}
             />
           </div>
         )}
 
         {!loading &&
           <div className="c-we-buttons">
-            {type === 'string' &&
-              <Button
-                properties={{ type: 'button', className: ' -compressed' }}
-                onClick={() => this.onSelectAll()}
-              >
-                Select all
-              </Button>
-            }
-            {type === 'string' &&
-              <Button
-                properties={{ type: 'button', className: ' -compressed' }}
-                onClick={() => this.onClearAll()}
-              >
-                Clear
-              </Button>
-            }
+            <Button
+              properties={{ type: 'button', className: ' -compressed' }}
+              onClick={() => this.onSelectAll()}
+            >
+              Select all
+            </Button>
+            <Button
+              properties={{ type: 'button', className: ' -compressed' }}
+              onClick={() => this.onClearAll()}
+            >
+              Clear
+            </Button>
             <Button
               properties={{ type: 'button', className: '-primary -compressed' }}
               onClick={() => this.props.onApply()}
@@ -139,19 +149,18 @@ class FilterStringTooltip extends React.Component {
 }
 
 FilterStringTooltip.propTypes = {
-  tableName: PropTypes.string.isRequired,
   datasetID: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  selected: PropTypes.array.isRequired,
+  value: PropTypes.array.isRequired,
+  notNull: PropTypes.bool,
+  operation: PropTypes.string,
   loading: PropTypes.bool,
   /**
    * Get the filter value or min/max values
    */
-  getFilter: PropTypes.func.isRequired,
+  getFilterInfo: PropTypes.func.isRequired,
   onResize: PropTypes.func, // Passed from the tooltip component
   onChange: PropTypes.func,
-  onToggleLoading: PropTypes.func,
+  toggleLoading: PropTypes.func,
   onApply: PropTypes.func,
   // store
   widgetEditor: PropTypes.object.isRequired

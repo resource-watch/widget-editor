@@ -10,7 +10,6 @@ import DatasetService from 'services/DatasetService';
 
 // Components
 import Spinner from 'components/ui/Spinner';
-import Checkbox from 'components/form/Checkbox';
 import FilterStringTooltip from 'components/tooltip/FilterStringTooltip';
 import FilterNumberTooltip from 'components/tooltip/FilterNumberTooltip';
 import FilterDateTooltip from 'components/tooltip/FilterDateTooltip';
@@ -23,8 +22,9 @@ class FilterTooltip extends React.Component {
     const filter = filters && filters.find(f => f.name === props.name);
 
     this.state = {
-      selected: (filter && filter.value) || [],
-      notNullSelected: filter && filter.notNull,
+      value: (filter && filter.value) || [],
+      operation: null,
+      notNull: !!(filter && filter.notNull),
       loading: true,
       timeoutExpired: false
     };
@@ -46,7 +46,7 @@ class FilterTooltip extends React.Component {
     this.onScreenClick = this.onScreenClick.bind(this);
     this.onChange = this.onChange.bind(this);
     this.onApply = this.onApply.bind(this);
-    this.onToggleLoading = this.onToggleLoading.bind(this);
+    this.toggleLoading = this.toggleLoading.bind(this);
   }
 
   componentDidMount() {
@@ -61,21 +61,28 @@ class FilterTooltip extends React.Component {
     }
   }
 
-  onChange(selected) {
-    this.setState({ selected });
+  /**
+   * Event handler executed when the filter has changed
+   * @param {any} state State of the filter
+   */
+  onChange(state) {
+    this.setState(state);
   }
 
+  /**
+   * Event handler executed when the user clicks
+   * the apply button of the tooltip
+   */
   onApply() {
     const { type } = this.props;
-    const { selected, notNullSelected } = this.state;
+    const { value, notNull } = this.state;
 
     // We save the date filter values as ISO strings
-    let value = selected;
-    if (type === 'date') {
-      value = selected.map(d => d.toISOString());
-    }
+    const serializedValue = type === 'date'
+      ? value.map(d => d.toISOString())
+      : value;
 
-    this.props.onApply(value, notNullSelected);
+    this.props.onApply(serializedValue, notNull);
 
     // We close the tooltip
     requestAnimationFrame(() => {
@@ -95,7 +102,29 @@ class FilterTooltip extends React.Component {
     }
   }
 
-  onToggleLoading(loading) {
+  /**
+   * Get the min and max values for numeric and temporal columns or the
+   * list of distinct values
+   * @returns {Promise<any>}
+   */
+  getFilterInfo() {
+    if (this.props.type === 'number' || this.props.type === 'date') {
+      return this.datasetService.getColumnMinAndMax(
+        this.props.name,
+        this.props.tableName,
+        this.props.widgetEditor.areaIntersection
+      );
+    }
+
+    return this.datasetService.getColumnValues(
+      this.props.name,
+      this.props.tableName,
+      true,
+      this.props.widgetEditor.areaIntersection
+    );
+  }
+
+  toggleLoading(loading) {
     this.setState({
       loading,
       timeoutExpired: false
@@ -118,37 +147,9 @@ class FilterTooltip extends React.Component {
     }
   }
 
-  handleNotNullSelection(value) {
-    this.setState({
-      notNullSelected: value
-    });
-  }
-
-  /**
-   * Get the min and max values for numeric and temporal columns or the
-   * list of distinct values
-   * @returns {Promise<any>}
-   */
-  getFilter() {
-    if (this.props.type === 'number' || this.props.type === 'date') {
-      return this.datasetService.getColumnMinAndMax(
-        this.props.name,
-        this.props.tableName,
-        this.props.widgetEditor.areaIntersection
-      );
-    }
-
-    return this.datasetService.getColumnValues(
-      this.props.name,
-      this.props.tableName,
-      true,
-      this.props.widgetEditor.areaIntersection
-    );
-  }
-
   render() {
     const { type } = this.props;
-    const { loading, timeoutExpired, notNullSelected } = this.state;
+    const { loading, value, operation, timeoutExpired, notNull } = this.state;
 
     return (
       <div className="c-we-filter-tooltip">
@@ -169,55 +170,48 @@ class FilterTooltip extends React.Component {
           </div>
         )}
 
-        {!loading &&
-          <div className="c-we-checkbox">
-            <Checkbox
-              properties={{
-                title: 'Not null values',
-                checked: notNullSelected,
-                default: false
-              }}
-              onChange={elem => this.handleNotNullSelection(elem.checked)}
-            />
-          </div>
-        }
-
         {type === 'string' &&
           <FilterStringTooltip
             {...this.props}
-            getFilter={() => this.getFilter()}
-            loading={this.state.loading}
-            selected={this.state.selected}
+            getFilterInfo={() => this.getFilterInfo()}
+            loading={loading}
+            value={value}
+            notNull={notNull}
+            operation={operation}
             onChange={this.onChange}
-            onToggleLoading={this.onToggleLoading}
             onApply={this.onApply}
+            toggleLoading={this.toggleLoading}
           />
         }
 
         {type === 'number' &&
           <FilterNumberTooltip
             {...this.props}
-            getFilter={() => this.getFilter()}
-            loading={this.state.loading}
-            selected={this.state.selected}
+            getFilterInfo={() => this.getFilterInfo()}
+            loading={loading}
+            value={value}
+            notNull={notNull}
+            operation={operation}
             onChange={this.onChange}
-            onToggleLoading={this.onToggleLoading}
             onApply={this.onApply}
+            toggleLoading={this.toggleLoading}
           />
         }
 
         {type === 'date' &&
           <FilterDateTooltip
             {...this.props}
-            getFilter={() => this.getFilter()}
-            loading={this.state.loading}
-            selected={
+            getFilterInfo={() => this.getFilterInfo()}
+            loading={loading}
+            value={
               // We parse the timestamps as dates
-              this.state.selected.map(d => new Date(d))
+              value.map(d => new Date(d))
             }
+            notNull={notNull}
+            operation={operation}
             onChange={this.onChange}
-            onToggleLoading={this.onToggleLoading}
             onApply={this.onApply}
+            toggleLoading={this.toggleLoading}
           />
         }
       </div>
