@@ -23,7 +23,7 @@ class FilterTooltip extends React.Component {
 
     this.state = {
       value: (filter && filter.value) || [],
-      operation: null,
+      operation: (filter && filter.operation) || null,
       notNull: !!(filter && filter.notNull),
       loading: true,
       timeoutExpired: false
@@ -74,20 +74,18 @@ class FilterTooltip extends React.Component {
    * the apply button of the tooltip
    */
   onApply() {
-    const { type } = this.props;
-    const { value, notNull } = this.state;
+    const { type, onApply, toggleTooltip } = this.props;
+    const { operation, value, notNull } = this.state;
 
     // We save the date filter values as ISO strings
     const serializedValue = type === 'date'
       ? value.map(d => d.toISOString())
       : value;
 
-    this.props.onApply(serializedValue, notNull);
+    onApply(operation, serializedValue, notNull);
 
     // We close the tooltip
-    requestAnimationFrame(() => {
-      this.props.toggleTooltip(false);
-    });
+    requestAnimationFrame(() => toggleTooltip(false));
   }
 
   onScreenClick(e) {
@@ -98,6 +96,12 @@ class FilterTooltip extends React.Component {
       && (!flatpicker || !flatpicker.contains(e.target));
 
     if (clickOutside) {
+      // If the tooltip contains a select input, the option
+      // disappears when clicked so the element disappears
+      // from the DOM
+      const inBody = document.body.contains(e.target);
+      if (!inBody) return;
+
       this.props.toggleTooltip(false);
     }
   }

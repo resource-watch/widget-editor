@@ -131,8 +131,13 @@ class ColumnBox extends React.Component {
   }
 
   @Autobind
-  onApplyFilter(filter, notNullSelected) {
-    this.props.onConfigure({ name: this.props.name, value: filter, notNull: notNullSelected });
+  onApplyFilter(operation, value, notNull) {
+    this.props.onConfigure({
+      name: this.props.name,
+      operation,
+      value,
+      notNull
+    });
   }
 
   @Autobind

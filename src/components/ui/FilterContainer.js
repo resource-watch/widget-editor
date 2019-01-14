@@ -24,8 +24,8 @@ const boxTarget = {
 }))
 class FilterContainer extends React.Component {
   @Autobind
-  setFilter({ name, value, notNull }) {
-    this.props.setFilterValue(name, value, notNull);
+  setFilter({ name, operation, value, notNull }) {
+    this.props.setFilterValue(name, operation, value, notNull);
   }
 
   render() {

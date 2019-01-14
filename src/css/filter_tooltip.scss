@@ -2,8 +2,7 @@
   position: relative;
   transform: translate(0, 0);
   min-height: 80px;
-  min-width: 200px;
-  max-width: 502px;
+  width: 250px;
 
   .spinner-container {
     text-align: center;
@@ -31,12 +30,16 @@
     }
   }
 
+  .Select {
+    margin-bottom: 10px;
+  }
+
   .range {
-    width: calc(100% - 40px);
+    width: calc(100% - 14px);
     position: relative;
     top: 0;
-    left: 20px;
-    margin: 20px 0;
+    left: 7.5px;
+    margin-bottom: 10px;
 
     .input-range {
       // We hide the min and max values
@@ -72,14 +75,17 @@
     margin-bottom: 10px;
 
     input {
-      width: 100%;
+      flex-basis: 100%;
+      flex-shrink: 1;
+      min-width: 0; // Prevent overflowing
+      height: 30px;
+      border: 1px solid $border-color-2;
+      border-radius: 4px;
+      font-size: $font-size-default;
+      padding: 0 $space-1;
 
       &.-first {
         margin-right: 10px;
-      }
-
-      &.-last {
-        margin-left: 10px;
       }
     }
   }

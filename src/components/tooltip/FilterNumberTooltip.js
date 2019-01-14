@@ -14,7 +14,19 @@ import DatasetService from 'services/DatasetService';
 // Components
 import Button from 'components/ui/Button';
 import Checkbox from 'components/form/Checkbox';
+import Select from 'components/form/SelectInput';
 import { Range } from 'rc-slider';
+
+const FILTER_OPERATION_OPTIONS = [
+  { label: 'Between', value: 'between' },
+  { label: 'Not between', value: 'not-between' },
+  { label: 'Greater than', value: '>' },
+  { label: 'Greater than or equal to', value: '>=' },
+  { label: 'Less than', value: '<' },
+  { label: 'Less than or equal to', value: '<=' },
+  { label: 'Is equal to', value: '=' },
+  { label: 'Is not equal to', value: '!=' }
+];
 
 class FilterNumberTooltip extends React.Component {
   constructor(props) {
@@ -28,6 +40,7 @@ class FilterNumberTooltip extends React.Component {
     // DatasetService
     this.datasetService = new DatasetService(props.datasetID);
 
+    this.onChangeOperation = this.onChangeOperation.bind(this);
     this.updateRange = debounce(this.updateRange.bind(this), 10);
     this.onChangeRangeMin = this.onChangeRangeMin.bind(this);
     this.onChangeRangeMax = this.onChangeRangeMax.bind(this);
@@ -35,6 +48,26 @@ class FilterNumberTooltip extends React.Component {
 
   componentDidMount() {
     this.getFilterInfo();
+  }
+
+  /**
+   * Event handler executed when the user changes the operation
+   * @param {string} operation Operation
+   */
+  onChangeOperation(operation) {
+    const { onChange, onResize } = this.props;
+    const { min, max } = this.state;
+
+    onChange({
+      operation,
+      value: operation === 'between' || operation === 'not-between'
+        ? [min, max]
+        : min
+    });
+
+    if (onResize) {
+      setTimeout(() => onResize(), 0);
+    }
   }
 
   /**
@@ -62,7 +95,7 @@ class FilterNumberTooltip extends React.Component {
    * consequently
    */
   getFilterInfo() {
-    const { value } = this.props;
+    const { value, operation, toggleLoading, onChange, onResize } = this.props;
 
     this.props.getFilterInfo()
       .then(({ min, max }) => {
@@ -72,26 +105,30 @@ class FilterNumberTooltip extends React.Component {
           max: Math.ceil(max)
         });
 
-        if (this.props.onChange && !value.length) {
-          this.props.onChange({
-            value: [
-              Math.floor(min),
-              Math.ceil(max)
-            ]
-          });
+        if (operation === 'between' || operation === 'not-between') {
+          if (!value.length) {
+            onChange({
+              value: [
+                Math.floor(min),
+                Math.ceil(max)
+              ]
+            });
+          }
+        } else if (value === null || value === undefined) {
+          onChange({ value: Math.floor(min) });
         }
 
-        if (this.props.toggleLoading) {
-          this.props.toggleLoading(false);
+        if (toggleLoading) {
+          toggleLoading(false);
         }
 
         // We let the tooltip know that the component has been resized
-        if (this.props.onResize) {
-          this.props.onResize();
+        if (onResize) {
+          onResize();
         }
       })
       .catch((errors) => {
-        this.props.toggleLoading(false);
+        toggleLoading(false);
 
         try {
           errors.forEach(er => toastr.error('Error', er.detail));
@@ -113,10 +150,56 @@ class FilterNumberTooltip extends React.Component {
 
   render() {
     const { min, max } = this.state;
-    const { value, loading, notNull, onChange } = this.props;
+    const { value, loading, notNull, operation, onChange } = this.props;
+
+    const canApply = !loading && (
+      ((operation === 'between' || operation === 'not-between') && !!value.length) ||
+      (value !== null && value !== undefined)
+    );
 
     return (
       <div className="c-we-filter-string-tooltip">
+        {!loading && (
+          <Select
+            id="filter-condition-select"
+            properties={{
+              name: 'filter-condition',
+              value: operation,
+              default: operation
+            }}
+            options={FILTER_OPERATION_OPTIONS}
+            onChange={val => this.onChangeOperation(val)}
+          />
+        )}
+
+        {!loading
+          && min !== null && typeof min !== 'undefined'
+          && max !== null && typeof max !== 'undefined'
+          && (operation === 'between' || operation === 'not-between') && (
+            <div className="range">
+              <Range
+                allowCross={false}
+                max={max}
+                min={min}
+                value={value}
+                onChange={range => this.updateRange(range)}
+              />
+            </div>
+        )}
+
+        {!loading && (operation === 'between' || operation === 'not-between') && (
+          <div className="text-inputs-container">
+            <input className="-first" type="number" min={min} max={value[1]} value={value[0]} onChange={this.onChangeRangeMin} />
+            <input className="-last" type="number" min={value[0]} max={max} value={value[1]} onChange={this.onChangeRangeMax} />
+          </div>
+        )}
+
+        {!loading && operation !== 'between' && operation !== 'not-between' && (
+          <div className="text-inputs-container">
+            <input type="number" min={min} max={max} value={value} onChange={({ target }) => onChange({ value: +target.value })} />
+          </div>
+        )}
+
         {!loading &&
           <div className="c-we-checkbox">
             <Checkbox
@@ -130,29 +213,7 @@ class FilterNumberTooltip extends React.Component {
           </div>
         }
 
-        {!loading
-          && min !== null && typeof min !== 'undefined'
-          && max !== null && typeof max !== 'undefined' &&
-          <div className="range">
-            <Range
-              allowCross={false}
-              max={max}
-              min={min}
-              value={value}
-              onChange={range => this.updateRange(range)}
-            />
-          </div>
-        }
-
-        {!loading && !!value.length &&
-          <div className="text-inputs-container">
-            <input className="-first" type="number" min={min} max={value[1]} value={value[0]} onChange={this.onChangeRangeMin} />
-            -
-            <input className="-last" type="number" min={value[0]} max={max} value={value[1]} onChange={this.onChangeRangeMax} />
-          </div>
-        }
-
-        {!loading && !!value.length &&
+        {canApply && (
           <div className="c-we-buttons">
             <Button
               properties={{ type: 'button', className: '-primary -compressed' }}
@@ -161,7 +222,7 @@ class FilterNumberTooltip extends React.Component {
               Done
             </Button>
           </div>
-        }
+        )}
 
       </div>
     );
@@ -170,7 +231,7 @@ class FilterNumberTooltip extends React.Component {
 
 FilterNumberTooltip.propTypes = {
   datasetID: PropTypes.string.isRequired,
-  value: PropTypes.array,
+  value: PropTypes.oneOfType([PropTypes.array, PropTypes.number]),
   notNull: PropTypes.bool,
   operation: PropTypes.string,
   loading: PropTypes.bool.isRequired,
@@ -192,6 +253,9 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const mapStateToProps = () => ({});
+const mapStateToProps = (_, { operation }) => ({
+  // We just give operation a default value
+  operation: operation || 'between'
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilterNumberTooltip);

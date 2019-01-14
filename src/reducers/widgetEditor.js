@@ -97,8 +97,9 @@ export default function (state = initialState, action) {
       const filters = state.filters.map((filter, i) => {
         if (i !== index) return filter;
         return Object.assign({}, filter, {
+          operation: action.payload.operation,
           value: action.payload.value,
-          notNull: action.payload.notNull
+          notNull: !!action.payload.notNull
         });
       });
       return Object.assign({}, state, { filters });
@@ -357,8 +358,8 @@ export default function (state = initialState, action) {
 export function addFilter(filter) {
   return dispatch => dispatch({ type: ADD_FILTER, payload: filter });
 }
-export function setFilterValue(name, value, notNull) {
-  return dispatch => dispatch({ type: SET_FILTER_VALUE, payload: { name, value, notNull } });
+export function setFilterValue(name, operation, value, notNull) {
+  return dispatch => dispatch({ type: SET_FILTER_VALUE, payload: { name, operation, value, notNull } });
 }
 export function setFilters(filters) {
   return dispatch => dispatch({ type: SET_FILTERS, payload: filters });

@@ -26,15 +26,48 @@ export default function getQueryByFilters(
   // We compute the WHERE part of the query which corresponds
   // to the filters
   const filtersQuery = filters.map((filter) => {
-    if (!filter.value || !filter.value.length) return null;
-
     if (filter.type === 'string') {
       const whereClause = `${filter.name} IN ('${filter.value.join('\', \'')}')`;
       return filter.notNull ? `${whereClause} AND ${filter.name} IS NOT NULL` : whereClause;
     }
 
     if (filter.type === 'number') {
-      const whereClause = `${filter.name} >= ${filter.value[0]} AND ${filter.name} <= ${filter.value[1]}`;
+      let whereClause;
+      switch (filter.operation) {
+        case 'not-between':
+          whereClause = `${filter.name} < ${filter.value[0]} OR ${filter.name} > ${filter.value[1]}`;
+          break;
+
+        case '>':
+          whereClause = `${filter.name} > ${filter.value}`;
+          break;
+
+        case '>=':
+          whereClause = `${filter.name} >= ${filter.value}`;
+          break;
+
+        case '<':
+          whereClause = `${filter.name} < ${filter.value}`;
+          break;
+
+        case '<=':
+          whereClause = `${filter.name} <= ${filter.value}`;
+          break;
+
+        case '=':
+          whereClause = `${filter.name} = ${filter.value}`;
+          break;
+
+        case '!=':
+          whereClause = `${filter.name} <> ${filter.value}`;
+          break;
+
+        case 'between':
+        default:
+          whereClause = `${filter.name} >= ${filter.value[0]} AND ${filter.name} <= ${filter.value[1]}`;
+          break;
+      }
+
       return filter.notNull ? `${whereClause} AND ${filter.name} IS NOT NULL` : whereClause;
     }
 
