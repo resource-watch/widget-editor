@@ -78,9 +78,12 @@ class FilterTooltip extends React.Component {
     const { operation, value, notNull } = this.state;
 
     // We save the date filter values as ISO strings
-    const serializedValue = type === 'date'
-      ? value.map(d => d.toISOString())
-      : value;
+    let serializedValue = value;
+    if (type === 'date') {
+      serializedValue = value instanceof Date
+        ? value.toISOString()
+        : value.map(d => d.toISOString())
+    }
 
     onApply(operation, serializedValue, notNull);
 
@@ -209,7 +212,9 @@ class FilterTooltip extends React.Component {
             loading={loading}
             value={
               // We parse the timestamps as dates
-              value.map(d => new Date(d))
+              typeof value === 'object' && !(value instanceof Date)
+                ? value.map(d => new Date(d))
+                : new Date(value)
             }
             notNull={notNull}
             operation={operation}

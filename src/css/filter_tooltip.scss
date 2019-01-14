@@ -31,6 +31,8 @@
   }
 
   .Select {
+    width: 100%;
+    max-width: none;
     margin-bottom: 10px;
   }
 
@@ -73,20 +75,32 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
+    width: 100%;
 
-    input {
+    > * {
       flex-basis: 100%;
       flex-shrink: 1;
+
+      &.-first {
+        margin-right: 10px;
+      }
+
+      > input {
+        width: 100%;
+      }
+    }
+
+    input {
       min-width: 0; // Prevent overflowing
       height: 30px;
       border: 1px solid $border-color-2;
       border-radius: 4px;
       font-size: $font-size-default;
       padding: 0 $space-1;
+    }
 
-      &.-first {
-        margin-right: 10px;
-      }
+    label {
+      font-size: $font-size-default;
     }
   }
 
