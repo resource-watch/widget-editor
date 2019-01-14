@@ -14,6 +14,11 @@
   .filter-tooltip-content {
     max-height: 200px;
     overflow-y: auto;
+    margin-bottom: 15px;
+
+    .c-we-checkbox-box {
+      padding: 0;
+    }
   }
 
   .c-we-buttons {

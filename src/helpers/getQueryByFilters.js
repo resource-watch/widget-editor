@@ -31,7 +31,38 @@ export default function getQueryByFilters(
     }
 
     if (filter.type === 'string') {
-      const whereClause = `${filter.name} IN ('${filter.value.join('\', \'')}')`;
+      let whereClause;
+      switch (filter.operation) {
+        case 'contains':
+          whereClause = `${filter.name} LIKE '%${filter.value}%'`;
+          break;
+
+        case 'not-contain':
+          whereClause = `${filter.name} NOT LIKE '%${filter.value}%'`;
+          break;
+
+        case 'starts-with':
+          whereClause = `${filter.name} LIKE '${filter.value}%'`;
+          break;
+
+        case 'ends-with':
+          whereClause = `${filter.name} LIKE '%${filter.value}'`;
+          break;
+
+        case '=':
+          whereClause = `${filter.name} LIKE '${filter.value}'`;
+          break;
+
+        case '!=':
+          whereClause = `${filter.name} NOT LIKE '${filter.value}'`;
+          break;
+
+        case 'by-values':
+        default:
+          whereClause = `${filter.name} IN ('${filter.value.join('\', \'')}')`;
+          break;
+      }
+
       return filter.notNull ? `${whereClause} AND ${filter.name} IS NOT NULL` : whereClause;
     }
 

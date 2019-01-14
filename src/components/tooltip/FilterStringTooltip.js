@@ -13,7 +13,18 @@ import DatasetService from 'services/DatasetService';
 // Components
 import CheckboxGroup from 'components/form/CheckboxGroup';
 import Checkbox from 'components/form/Checkbox';
+import Select from 'components/form/SelectInput';
 import Button from 'components/ui/Button';
+
+const FILTER_OPERATION_OPTIONS = [
+  { label: 'Filter by values', value: 'by-values' },
+  { label: 'Text contains', value: 'contains' },
+  { label: 'Text does not contain', value: 'not-contain' },
+  { label: 'Text starts with', value: 'starts-with' },
+  { label: 'Text ends with', value: 'ends-with' },
+  { label: 'Text is exactly', value: '=' },
+  { label: 'Text is not', value: '!=' }
+];
 
 class FilterStringTooltip extends React.Component {
   constructor(props) {
@@ -27,11 +38,32 @@ class FilterStringTooltip extends React.Component {
     // DatasetService
     this.datasetService = new DatasetService(props.datasetID);
 
-    this.handleSearch = debounce(this.handleSearch.bind(this), 10);
+    this.onSearch = debounce(this.onSearch.bind(this), 10);
   }
 
   componentDidMount() {
     this.getFilterInfo();
+  }
+
+  /**
+   * Event handler executed when the user changes the operation
+   * @param {string} operation Operation
+   */
+  onChangeOperation(operation) {
+    const { values } = this.state;
+    const { onChange, onResize } = this.props;
+
+    onChange({
+      operation,
+      value: operation === 'by-values'
+        ? []
+        : null,
+      filteredValues: values
+    });
+
+    if (onResize) {
+      setTimeout(() => onResize(), 0);
+    }
   }
 
   onClearAll() {
@@ -40,6 +72,18 @@ class FilterStringTooltip extends React.Component {
 
   onSelectAll() {
     this.props.onChange({ value: this.state.values.map(value => value.value) });
+  }
+
+  // We debounce the method to avoid having to update the state
+  // too often (around 60 FPS)
+  onSearch(value) {
+    const { values } = this.state;
+
+    const filteredValues = values.filter(
+      elem => elem.label.toLowerCase().match(value.toLowerCase())
+    );
+
+    this.setState({ filteredValues });
   }
 
   /**
@@ -66,31 +110,59 @@ class FilterStringTooltip extends React.Component {
         this.props.toggleLoading(false);
 
         try {
-          errors.forEach(er =>
-            toastr.error('Error', er.detail)
-          );
+          errors.forEach(er => toastr.error('Error', er.detail));
         } catch (e) {
           toastr.error('Error', 'Oops');
         }
       });
   }
 
-  // We debounce the method to avoid having to update the state
-  // too often (around 60 FPS)
-  handleSearch(value) {
-    const filteredValues = this.state.values.filter(elem =>
-      elem.label.toLowerCase().match(value.toLowerCase()));
-    this.setState({ filteredValues });
-  }
-
 
   render() {
     const { filteredValues } = this.state;
-    const { value, loading, notNull, onChange } = this.props;
+    const { value, operation, loading, notNull, onChange } = this.props;
 
     return (
       <div className="c-we-filter-string-tooltip">
-        {!loading &&
+        {!loading && (
+          <Select
+            id="filter-condition-select"
+            properties={{
+              name: 'filter-condition',
+              value: operation,
+              default: operation
+            }}
+            options={FILTER_OPERATION_OPTIONS}
+            onChange={val => this.onChangeOperation(val)}
+          />
+        )}
+
+        { !loading && operation === 'by-values' && (
+          <div className="text-inputs-container">
+            <input
+              aria-label="Search a value"
+              placeholder="Search a value"
+              onChange={event => this.onSearch(event.target.value)}
+            />
+          </div>
+        )}
+        { !loading && operation === 'by-values' && (
+          <div className="filter-tooltip-content">
+            <CheckboxGroup
+              selected={value}
+              options={filteredValues}
+              onChange={vals => this.props.onChange({ value: vals })}
+            />
+          </div>
+        )}
+
+        { !loading && operation !== 'by-values' && (
+          <div className="text-inputs-container">
+            <input type="text" aria-label="Value" placeholder="Type here" value={value || ''} onChange={({ target }) => onChange({ value: target.value })} />
+          </div>
+        )}
+
+        {!loading && (
           <div className="c-we-checkbox">
             <Checkbox
               properties={{
@@ -101,27 +173,9 @@ class FilterStringTooltip extends React.Component {
               onChange={e => onChange({ notNull: e.checked })}
             />
           </div>
-        }
-
-        { !loading && (
-          <div className="search-input">
-            <input
-              placeholder="Search"
-              onChange={event => this.handleSearch(event.target.value)}
-            />
-          </div>
-        )}
-        { !loading && (
-          <div className="filter-tooltip-content">
-            <CheckboxGroup
-              selected={value}
-              options={filteredValues}
-              onChange={vals => this.props.onChange({ value: vals })}
-            />
-          </div>
         )}
 
-        {!loading &&
+        {!loading && operation === 'by-values' && (
           <div className="c-we-buttons">
             <Button
               properties={{ type: 'button', className: ' -compressed' }}
@@ -142,7 +196,18 @@ class FilterStringTooltip extends React.Component {
               Done
             </Button>
           </div>
-        }
+        )}
+
+        {!loading && operation !== 'by-values' && (
+          <div className="c-we-buttons">
+            <Button
+              properties={{ type: 'button', className: '-primary -compressed' }}
+              onClick={() => this.props.onApply()}
+            >
+              Done
+            </Button>
+          </div>
+        )}
       </div>
     );
   }
@@ -150,7 +215,7 @@ class FilterStringTooltip extends React.Component {
 
 FilterStringTooltip.propTypes = {
   datasetID: PropTypes.string.isRequired,
-  value: PropTypes.array.isRequired,
+  value: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   notNull: PropTypes.bool,
   operation: PropTypes.string,
   loading: PropTypes.bool,
@@ -172,8 +237,9 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
-const mapStateToProps = state => ({
-  widgetEditor: state.widgetEditor
+const mapStateToProps = (state, { operation }) => ({
+  widgetEditor: state.widgetEditor,
+  operation: operation || 'by-values'
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilterStringTooltip);
