@@ -181,7 +181,8 @@ class FilterDateTooltip extends React.Component {
             properties={{
               name: 'filter-condition',
               value: operation,
-              default: operation
+              default: operation,
+              clearable: false
             }}
             options={FILTER_OPERATION_OPTIONS}
             onChange={val => this.onChangeOperation(val)}
