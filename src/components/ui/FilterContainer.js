@@ -85,9 +85,7 @@ const mapDispatchToProps = dispatch => ({
   addFilter: (filter) => {
     dispatch(addFilter(filter));
   },
-  setFilterValue: (name, value, notNull) => {
-    dispatch(setFilterValue(name, value, notNull));
-  }
+  setFilterValue: (...params) => dispatch(setFilterValue(...params))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FilterContainer);

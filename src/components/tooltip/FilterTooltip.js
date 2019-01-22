@@ -82,7 +82,7 @@ class FilterTooltip extends React.Component {
     if (type === 'date') {
       serializedValue = value instanceof Date
         ? value.toISOString()
-        : value.map(d => d.toISOString())
+        : value.map(d => d.toISOString());
     }
 
     onApply(operation, serializedValue, notNull);

@@ -192,5 +192,5 @@ export default function getQueryByFilters(
     groupBy = groupBy.slice(0, -1); // remove extra comma at the end
   }
 
-  return `SELECT ${columns} FROM ${tableName} ${where} ${groupBy} ${orderBy}`;
+  return encodeURIComponent(`SELECT ${columns} FROM ${tableName} ${where} ${groupBy} ${orderBy}`);
 }
