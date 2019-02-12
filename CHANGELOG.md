@@ -5,6 +5,7 @@
 - Add advanced options for the numeric filters
 - Add advanced options for the temporal filters
 - Add advanced options for the textual filters
+- Let the user add titles to the axes of the charts
 
 ## v1.3.8 - 17/12/2018
 - Fix a bug where the external title and caption would be overriden when the component would fetch the widget

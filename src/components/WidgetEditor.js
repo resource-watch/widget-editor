@@ -39,7 +39,9 @@ import {
   setBasemap,
   setLabels,
   setBoundaries,
-  setTheme
+  setTheme,
+  setXAxisTitle,
+  setYAxisTitle
 } from 'reducers/widgetEditor';
 import { toggleModal } from 'reducers/modal';
 import { toggleTooltip } from 'reducers/tooltip';
@@ -57,6 +59,7 @@ import BasemapControl from 'components/map/controls/BasemapControl';
 import PositionControl from 'components/map/controls/PositionControl';
 import TableView from 'components/table/TableView';
 import Icon from 'components/ui/Icon';
+import AxisTitle from 'components/chart/AxisTitle';
 
 // Editors
 import ChartEditor from 'components/chart/ChartEditor';
@@ -266,7 +269,7 @@ class WidgetEditor extends React.Component {
 
     // This is a list of the attributes of the widget editor
     // that don't force a re-rendering of the chart when updated
-    const staticKeys = ['title', 'caption'];
+    const staticKeys = ['title', 'caption', 'xAxisTitle', 'yAxisTitle'];
 
     // List of the attribute names of the widget editor
     const widgetEditorKeys = Object.keys(Object.assign(
@@ -553,12 +556,16 @@ class WidgetEditor extends React.Component {
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
-              <VegaChart
-                reloadOnResize
-                data={this.state.chartConfig}
-                theme={theme}
-                toggleLoading={val => this.setState({ chartLoading: val })}
-              />
+              <div className="row">
+                {chartType !== 'pie' && <AxisTitle type="y" />}
+                <VegaChart
+                  reloadOnResize
+                  data={this.state.chartConfig}
+                  theme={theme}
+                  toggleLoading={val => this.setState({ chartLoading: val })}
+                />
+              </div>
+              {chartType !== 'pie' && <AxisTitle type="x" />}
             </div>
           );
         }
@@ -577,7 +584,7 @@ class WidgetEditor extends React.Component {
 
               <MapControls>
                 <BasemapControl />
-                { this.props.allowBoundsCopyPaste && <PositionControl /> }
+                {this.props.allowBoundsCopyPaste && <PositionControl />}
               </MapControls>
 
               <div className="c-we-legend-map">
@@ -640,12 +647,16 @@ class WidgetEditor extends React.Component {
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
-              <VegaChart
-                reloadOnResize
-                data={this.state.chartConfig}
-                theme={theme}
-                toggleLoading={val => this.setState({ chartLoading: val })}
-              />
+              <div className="row">
+                {chartType !== 'pie' && <AxisTitle type="y" />}
+                <VegaChart
+                  reloadOnResize
+                  data={this.state.chartConfig}
+                  theme={theme}
+                  toggleLoading={val => this.setState({ chartLoading: val })}
+                />
+              </div>
+              {chartType !== 'pie' && <AxisTitle type="x" />}
             </div>
           );
         }
@@ -949,7 +960,7 @@ class WidgetEditor extends React.Component {
     widgetService.fetchData('metadata')
       .then((data) => {
         const { widgetConfig, name, metadata } = data.attributes;
-        const { paramsConfig, zoom, lat, lng, bbox, basemapLayers } = widgetConfig;
+        const { paramsConfig, zoom, lat, lng, bbox, basemapLayers, axes } = widgetConfig;
         const {
           visualizationType,
           band,
@@ -1012,6 +1023,11 @@ class WidgetEditor extends React.Component {
           }
         }
         if (widgetConfig.config) this.props.setTheme(widgetConfig.config);
+
+        const xAxis = axes.find(axis => axis.scale === 'x');
+        const yAxis = axes.find(axis => axis.scale === 'y');
+        if (chartType !== 'pie' && xAxis && xAxis.title) this.props.setXAxisTitle(xAxis.title);
+        if (chartType !== 'pie' && yAxis && yAxis.title) this.props.setYAxisTitle(yAxis.title);
       });
   }
 
@@ -1182,7 +1198,7 @@ class WidgetEditor extends React.Component {
             <Icon name="icon-arrow-left" />
           </button>
           <div className="content">
-            { this.isLoading() && <Spinner className="-light" isLoading /> }
+            {this.isLoading() && <Spinner className="-light" isLoading />}
             <h2
               className="title"
             >
@@ -1219,82 +1235,82 @@ class WidgetEditor extends React.Component {
             </div>
             {
               (selectedVisualizationType === 'chart' ||
-              selectedVisualizationType === 'table')
-                && !fieldsError && tableName && datasetProvider !== 'nexgddp'
-                && (
-                  <ChartEditor
-                    datasetId={datasetId}
-                    datasetType={datasetType}
-                    datasetProvider={datasetProvider}
-                    chartOptions={CHART_TYPES}
-                    tableName={tableName}
-                    tableViewMode={selectedVisualizationType === 'table'}
-                    mode={editorMode}
-                    showSaveButton={showSaveButton}
-                    showEmbedButton={showEmbedButton}
-                    onSave={this.onClickSave}
-                    onEmbed={this.onClickEmbed}
-                    hasGeoInfo={hasGeoInfo}
-                  />
-                )
+                selectedVisualizationType === 'table')
+              && !fieldsError && tableName && datasetProvider !== 'nexgddp'
+              && (
+                <ChartEditor
+                  datasetId={datasetId}
+                  datasetType={datasetType}
+                  datasetProvider={datasetProvider}
+                  chartOptions={CHART_TYPES}
+                  tableName={tableName}
+                  tableViewMode={selectedVisualizationType === 'table'}
+                  mode={editorMode}
+                  showSaveButton={showSaveButton}
+                  showEmbedButton={showEmbedButton}
+                  onSave={this.onClickSave}
+                  onEmbed={this.onClickEmbed}
+                  hasGeoInfo={hasGeoInfo}
+                />
+              )
             }
             {
               (selectedVisualizationType === 'chart' ||
-              selectedVisualizationType === 'table')
-                && !fieldsError && tableName && datasetProvider === 'nexgddp'
-                && (
-                  <NEXGDDPEditor
-                    datasetId={datasetId}
-                    datasetType={datasetType}
-                    datasetProvider={datasetProvider}
-                    chartOptions={CHART_TYPES}
-                    tableName={tableName}
-                    tableViewMode={selectedVisualizationType === 'table'}
-                    mode={editorMode}
-                    showSaveButton={showSaveButton}
-                    showEmbedButton={showEmbedButton}
-                    onSave={this.onClickSave}
-                    onEmbed={this.onClickEmbed}
-                    hasGeoInfo={hasGeoInfo}
-                  />
-                )
+                selectedVisualizationType === 'table')
+              && !fieldsError && tableName && datasetProvider === 'nexgddp'
+              && (
+                <NEXGDDPEditor
+                  datasetId={datasetId}
+                  datasetType={datasetType}
+                  datasetProvider={datasetProvider}
+                  chartOptions={CHART_TYPES}
+                  tableName={tableName}
+                  tableViewMode={selectedVisualizationType === 'table'}
+                  mode={editorMode}
+                  showSaveButton={showSaveButton}
+                  showEmbedButton={showEmbedButton}
+                  onSave={this.onClickSave}
+                  onEmbed={this.onClickEmbed}
+                  hasGeoInfo={hasGeoInfo}
+                />
+              )
             }
             {
               selectedVisualizationType === 'map'
-                && layers && layers.length > 0
-                && datasetProvider
-                && (
-                  <MapEditor
-                    datasetId={datasetId}
-                    widgetId={widgetId}
-                    tableName={tableName}
-                    provider={datasetProvider}
-                    datasetType={datasetType}
-                    connectorUrl={datasetConnectorUrl}
-                    useLayerEditor={useLayerEditor}
-                    layerGroups={this.state.layerGroups}
-                    layers={layers}
-                    mode={editorMode}
-                    showSaveButton={showSaveButton}
-                    onSave={this.onClickSave}
-                  />
-                )
+              && layers && layers.length > 0
+              && datasetProvider
+              && (
+                <MapEditor
+                  datasetId={datasetId}
+                  widgetId={widgetId}
+                  tableName={tableName}
+                  provider={datasetProvider}
+                  datasetType={datasetType}
+                  connectorUrl={datasetConnectorUrl}
+                  useLayerEditor={useLayerEditor}
+                  layerGroups={this.state.layerGroups}
+                  layers={layers}
+                  mode={editorMode}
+                  showSaveButton={showSaveButton}
+                  onSave={this.onClickSave}
+                />
+              )
             }
             {
               selectedVisualizationType === 'raster_chart'
-                && tableName
-                && datasetProvider
-                && (
-                  <RasterChartEditor
-                    datasetId={datasetId}
-                    tableName={tableName}
-                    provider={datasetProvider}
-                    mode={editorMode}
-                    hasGeoInfo={hasGeoInfo}
-                    showSaveButton={showSaveButton}
-                    onSave={this.onClickSave}
-                  />
-                )
+              && tableName
+              && datasetProvider
+              && (
+                <RasterChartEditor
+                  datasetId={datasetId}
+                  tableName={tableName}
+                  provider={datasetProvider}
+                  mode={editorMode}
+                  hasGeoInfo={hasGeoInfo}
+                  showSaveButton={showSaveButton}
+                  onSave={this.onClickSave}
+                />
+              )
             }
           </div>
         </div>
@@ -1348,7 +1364,9 @@ const mapDispatchToProps = dispatch => ({
   setBasemap: (...params) => dispatch(setBasemap(...params)),
   setLabels: (...params) => dispatch(setLabels(...params)),
   setBoundaries: (...params) => dispatch(setBoundaries(...params)),
-  setTheme: (...params) => dispatch(setTheme(...params))
+  setTheme: (...params) => dispatch(setTheme(...params)),
+  setXAxisTitle: (...params) => dispatch(setXAxisTitle(...params)),
+  setYAxisTitle: (...params) => dispatch(setYAxisTitle(...params))
 });
 
 WidgetEditor.propTypes = {
@@ -1482,7 +1500,9 @@ WidgetEditor.propTypes = {
   setBasemap: PropTypes.func,
   setLabels: PropTypes.func,
   setBoundaries: PropTypes.func,
-  setTheme: PropTypes.func
+  setTheme: PropTypes.func,
+  setXAxisTitle: PropTypes.func,
+  setYAxisTitle: PropTypes.func
 };
 
 WidgetEditor.defaultProps = {

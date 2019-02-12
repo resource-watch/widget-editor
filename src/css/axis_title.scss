@@ -1,0 +1,50 @@
+$axis-title-height: 30px;
+
+.c-we-axis-title {
+  display: flex;
+  align-items: center;
+  height: 30px;
+
+  &.-x {
+    margin-top: $space-1;
+  }
+
+  &.-y {
+    width: 30px;
+    height: auto;
+    margin-right: $space-1;
+
+    .content {
+      transform-origin: top left;
+      transform: rotate(-90deg) translateX(calc(-50% - #{$axis-title-height / 2}));
+    }
+  }
+
+  .content {
+    flex-shrink: 0;
+  }
+
+  input,
+  button {
+    display: inline-block;
+    height: $axis-title-height;
+    padding: 0 $space-1;
+    border: 1px solid $border-color-2;
+    border-radius: 4px;
+    font-size: $font-size-small-medium;
+    font-family: $base-font-family;
+    color: $color-text-3;
+    background: none;
+  }
+
+  input {
+    // The input has a "content-box" box-sizing (needed
+    // by the library) so we need to subtract the width
+    // of the border
+    height: #{$axis-title-height - 2px};
+  }
+
+  button {
+    border-color: transparent;
+  }
+}

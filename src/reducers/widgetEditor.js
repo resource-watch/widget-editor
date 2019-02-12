@@ -27,6 +27,8 @@ const SET_BAND = 'WIDGET_EDITOR/SET_BAND';
 const SET_LAYER = 'WIDGET_EDITOR/SET_LAYER';
 const SET_TITLE = 'WIDGET_EDITOR/SET_TITLE';
 const SET_CAPTION = 'WIDGET_EDITOR/SET_CAPTION';
+const SET_X_AXIS_TITLE = 'WIDGET_EDITOR/SET_X_AXIS_TITLE';
+const SET_Y_AXIS_TITLE = 'WIDGET_EDITOR/SET_Y_AXIS_TITLE';
 const SET_BANDS_INFO = 'WIDGET_EDITOR/SET_BANDS_INFO';
 const SET_ZOOM = 'WIDGET_EDITOR/SET_ZOOM';
 const SET_LATLNG = 'WIDGET_EDITOR/SET_LATLNG';
@@ -56,6 +58,8 @@ const initialState = {
   visualizationType: null,
   title: null, // Title of the widget / graph
   caption: null, // Caption of the widget
+  xAxisTitle: null,
+  yAxisTitle: null,
   limit: 50,
   areaIntersection: null, // ID of the geostore object
   band: null, // Band of the raster dataset
@@ -266,6 +270,18 @@ export default function (state = initialState, action) {
       });
     }
 
+    case SET_X_AXIS_TITLE: {
+      return Object.assign({}, state, {
+        xAxisTitle: action.payload
+      });
+    }
+
+    case SET_Y_AXIS_TITLE: {
+      return Object.assign({}, state, {
+        yAxisTitle: action.payload
+      });
+    }
+
     case SET_ZOOM: {
       return Object.assign({}, state, {
         zoom: action.payload
@@ -452,6 +468,14 @@ export function setTitle(title) {
 
 export function setCaption(caption) {
   return dispatch => dispatch({ type: SET_CAPTION, payload: caption });
+}
+
+export function setXAxisTitle(title) {
+  return dispatch => dispatch({ type: SET_X_AXIS_TITLE, payload: title });
+}
+
+export function setYAxisTitle(title) {
+  return dispatch => dispatch({ type: SET_Y_AXIS_TITLE, payload: title });
 }
 
 export function setZoom(zoom) {

@@ -560,7 +560,7 @@ export async function getChartConfig(
         name: xLabel,
         alias: chartInfo.x.alias
           ? chartInfo.x.alias[0].toUpperCase()
-              + chartInfo.x.alias.slice(1, chartInfo.x.alias.length)
+          + chartInfo.x.alias.slice(1, chartInfo.x.alias.length)
           : null
       },
       y: {
@@ -569,7 +569,7 @@ export async function getChartConfig(
         name: yLabel,
         alias: chartInfo.y && chartInfo.y.alias
           ? chartInfo.y.alias[0].toUpperCase()
-            + chartInfo.y.alias.slice(1, chartInfo.y.alias.length)
+          + chartInfo.y.alias.slice(1, chartInfo.y.alias.length)
           : null
       },
       color: {
@@ -728,6 +728,21 @@ export async function getWidgetConfig(
         console.error(err);
         reject('Unable to generate the chart config.');
         return;
+      }
+
+      const { xAxisTitle, yAxisTitle } = widgetEditor;
+      if (xAxisTitle && chartType !== 'pie' && chartConfig.axes) {
+        const xAxis = chartConfig.axes.find(axis => axis.scale === 'x');
+        if (xAxis) {
+          xAxis.title = xAxisTitle;
+        }
+      }
+
+      if (yAxisTitle && chartType !== 'pie' && chartConfig.axes) {
+        const yAxis = chartConfig.axes.find(axis => axis.scale === 'y');
+        if (yAxis) {
+          yAxis.title = yAxisTitle;
+        }
       }
     }
 
