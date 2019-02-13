@@ -56,14 +56,14 @@ const defaultChart = {
         "update": {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
-           "strokeOpacity": { "value": 0 },
-           "zindex":{"value":0},
-           "opacity":{"value":0.5}
+          "strokeOpacity": { "value": 0 },
+          "zindex": { "value": 0 },
+          "opacity": { "value": 0.5 }
         },
         "hover": {
           "strokeOpacity": { "value": 1 },
-          "zindex":{"value":1},
-           "opacity":{"value":1}
+          "zindex": { "value": 1 },
+          "opacity": { "value": 1 }
         }
       }
     }
@@ -130,21 +130,21 @@ export default function ({ columns, data, url, embedData, theme }) {
     }
   }
 
-  if (columns.color.present) {
-    // We add the color scale
-    config.scales.push({
-      "name": "c",
-      "type": "ordinal",
-      "domain": { "data": "table", "field": "color" },
-      "range": { "scheme": "category20" }
-    });
+  // if (columns.color.present) {
+  //   // We add the color scale
+  //   config.scales.push({
+  //     "name": "c",
+  //     "type": "ordinal",
+  //     "domain": { "data": "table", "field": "color" },
+  //     "range": { "scheme": "category20" }
+  //   });
 
-    // We update the marks
-    config.marks[0].encode.enter.fill = {
-      "scale": "c",
-      "field": "color"
-    };
-  }
+  //   // We update the marks
+  //   config.marks[0].encode.enter.fill = {
+  //     "scale": "c",
+  //     "field": "color"
+  //   };
+  // }
 
   if (columns.size.present) {
     const sizeScaleType = 'linear';

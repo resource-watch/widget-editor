@@ -3,8 +3,13 @@ import { format } from 'd3-format';
 
 // Components
 import BarChart from 'helpers/bar';
+import GroupedBarChart from 'helpers/grouped-bar';
+import StackedBarChart from 'helpers/stacked-bar';
 import HorizontalBarChart from 'helpers/bar-horizontal';
+import HorizontalGroupedBarChart from 'helpers/grouped-bar-horizontal';
+import HorizontalStackedBarChart from 'helpers/stacked-bar-horizontal';
 import LineChart from 'helpers/line';
+import MultiLineChart from 'helpers/multi-line';
 import PieChart from 'helpers/pie';
 // import OneDScatterChart from 'helpers/1d_scatter';
 // import OneDTickChart from 'helpers/1d_tick';
@@ -17,15 +22,27 @@ import { getConfig } from 'helpers/ConfigHelper';
 // Services
 import RasterService from 'services/RasterService';
 
-const CHART_TYPES = {
-  bar: BarChart,
-  'bar-horizontal': HorizontalBarChart,
-  line: LineChart,
+const GET_CHART_TYPES = columns => ({
+  bar: columns.color.present
+    ? GroupedBarChart
+    : BarChart,
+  'stacked-bar': columns.color.present
+    ? StackedBarChart
+    : BarChart,
+  'bar-horizontal': columns.color.present
+    ? HorizontalGroupedBarChart
+    : HorizontalBarChart,
+  'stacked-bar-horizontal': columns.color.present
+    ? HorizontalStackedBarChart
+    : HorizontalBarChart,
+  line: columns.color.present
+    ? MultiLineChart
+    : LineChart,
   pie: PieChart,
   scatter: ScatterChart
   // '1d_scatter': OneDScatterChart,
   // '1d_tick': OneDTickChart
-};
+});
 
 export const ALLOWED_FIELD_TYPES = [
   // --- NUMBER ----
@@ -108,8 +125,8 @@ export function getSimplifiedFieldType(type) {
   return simplifiedType ? simplifiedType.type : null;
 }
 
-export function getChartType(type) {
-  return CHART_TYPES[type];
+export function getChartType(type, columns) {
+  return GET_CHART_TYPES(columns)[type];
 }
 
 /**
@@ -210,6 +227,7 @@ export function getChartInfo(dataset, datasetType, datasetProvider, widgetEditor
   if (color) {
     chartInfo.color = {
       name: color.name,
+      type: color.type,
       alias: fields.length && fields.find(f => f.columnName === color.name).alias,
       aggregateFunction: color.aggregateFunction
     };
@@ -336,7 +354,7 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
   if (!orderByColumn.length) {
     if (chartInfo.chartType === 'line') {
       orderByColumn.push({ name: chartInfo.x.name });
-    } else if (chartInfo.chartType === 'pie' || chartInfo.chartType === 'bar' || chartInfo.chartType === 'bar-horizontal') {
+    } else if (['pie', 'bar', 'stacked-bar', 'bar-horizontal', 'stacked-bar-horizontal'].indexOf(chartInfo.chartType) !== -1) {
       orderByColumn.push({ name: chartInfo.y.name });
     }
   }
@@ -545,7 +563,48 @@ export async function getChartConfig(
     }
   }
 
-  const chart = getChartType(chartInfo.chartType);
+  // We compute the name of the color column
+  let colorLabel = chartInfo.color && chartInfo.color.name;
+  if (colorLabel) {
+    colorLabel = chartInfo.color.name[0].toUpperCase()
+      + chartInfo.color.name.slice(1, chartInfo.color.name.length);
+  }
+
+  const columns = {
+    x: {
+      present: true,
+      type: chartInfo.x.type,
+      name: xLabel,
+      alias: chartInfo.x.alias
+        ? chartInfo.x.alias[0].toUpperCase()
+        + chartInfo.x.alias.slice(1, chartInfo.x.alias.length)
+        : null
+    },
+    y: {
+      present: !!chartInfo.y,
+      type: chartInfo.y && chartInfo.y.type,
+      name: yLabel,
+      alias: chartInfo.y && chartInfo.y.alias
+        ? chartInfo.y.alias[0].toUpperCase()
+        + chartInfo.y.alias.slice(1, chartInfo.y.alias.length)
+        : null
+    },
+    color: {
+      present: !!chartInfo.color,
+      type: chartInfo.color && chartInfo.color.type,
+      name: colorLabel,
+      alias: chartInfo.color && chartInfo.color.alias
+        ? chartInfo.color.alias[0].toUpperCase()
+        + chartInfo.color.alias.slice(1, chartInfo.color.alias.length)
+        : null
+    },
+    size: {
+      present: !!chartInfo.size,
+      alias: chartInfo.size && chartInfo.size.alias
+    }
+  };
+
+  const chart = getChartType(chartInfo.chartType, columns);
   if (!chart) {
     throw new Error('This chart is currently not supported.');
   }
@@ -553,34 +612,7 @@ export async function getChartConfig(
   return chart({
     // In the future, we could pass the type of the columns so the chart
     // could select the right scale
-    columns: {
-      x: {
-        present: true,
-        type: chartInfo.x.type,
-        name: xLabel,
-        alias: chartInfo.x.alias
-          ? chartInfo.x.alias[0].toUpperCase()
-          + chartInfo.x.alias.slice(1, chartInfo.x.alias.length)
-          : null
-      },
-      y: {
-        present: !!chartInfo.y,
-        type: chartInfo.y && chartInfo.y.type,
-        name: yLabel,
-        alias: chartInfo.y && chartInfo.y.alias
-          ? chartInfo.y.alias[0].toUpperCase()
-          + chartInfo.y.alias.slice(1, chartInfo.y.alias.length)
-          : null
-      },
-      color: {
-        present: !!chartInfo.color,
-        alias: chartInfo.color && chartInfo.color.alias
-      },
-      size: {
-        present: !!chartInfo.size,
-        alias: chartInfo.size && chartInfo.size.alias
-      }
-    },
+    columns,
     data,
     embedData,
     url,

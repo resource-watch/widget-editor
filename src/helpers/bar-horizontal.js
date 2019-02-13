@@ -35,12 +35,12 @@ const defaultChart = {
     {
       "orient": "left",
       "scale": "y",
-      "ticks":false,
+      "ticks": false,
       "grid": false,
       "encode": {
         "labels": {
           "update": {
-            "text": { "signal": "truncate(data('table')[datum.value - 1].x, 12)" },
+            "text": { "signal": "truncate(data('table')[datum.value - 1].x, 12)" },
             "align": { "signal": "'right'" },
             "baseline": { "signal": "'middle'" }
           }
@@ -69,14 +69,14 @@ const defaultChart = {
       "from": { "data": "table" },
       "encode": {
         "update": {
-          "opacity":{"value":1},
+          "opacity": { "value": 1 },
           "x": { "scale": "x", "value": 0 },
           "width": { "scale": "x", "field": "y" },
           "y": { "scale": "y", "field": "id" },
           "height": { "scale": "y", "band": 1 },
         },
-        "hover":{
-          "opacity":{"value":0.8}
+        "hover": {
+          "opacity": { "value": 0.8 }
         }
       }
     }
@@ -110,7 +110,7 @@ const defaultChart = {
  * @export
  * @param {any} { columns, data, url, embedData, provider, band }
  */
-export default function ({ columns, data, url, embedData, provider, band  }) {
+export default function ({ columns, data, url, embedData, provider, band }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
@@ -130,22 +130,6 @@ export default function ({ columns, data, url, embedData, provider, band  }) {
     if (provider && band) {
       config.data[0].format = { provider, band };
     }
-  }
-
-  if (columns.color.present) {
-    // We add the color scale
-    config.scales.push({
-      "name": "c",
-      "type": "ordinal",
-      "domain": { "data": "table", "field": "color" },
-      "range": { "scheme": "category20" }
-    });
-
-    // We update the marks
-    config.marks[0].encode.enter.fill = {
-      "scale": "c",
-      "field": "color"
-    };
   }
 
   // We save the name of the columns for the tooltip

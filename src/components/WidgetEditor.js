@@ -87,9 +87,11 @@ const VISUALIZATION_TYPES = [
 ];
 
 const CHART_TYPES = [
-  { label: 'Bar (vertical)', value: 'bar' },
-  { label: 'Bar (horizontal)', value: 'bar-horizontal' },
-  { label: 'Line', value: 'line' },
+  { label: 'Columns', value: 'bar' },
+  { label: 'Stacked columns', value: 'stacked-bar' },
+  { label: 'Bars', value: 'bar-horizontal' },
+  { label: 'Stacked bars', value: 'stacked-bar-horizontal' },
+  { label: 'Lines', value: 'line' },
   { label: 'Pie', value: 'pie' },
   { label: 'Scatter', value: 'scatter' }
   // { label: '1d_scatter', value: '1d_scatter' },
@@ -544,7 +546,7 @@ class WidgetEditor extends React.Component {
               Select a type of chart and columns
             </div>
           );
-        } else if (!getChartType(chartType)) {
+        } else if (!CHART_TYPES.find(({ value }) => value === chartType)) {
           visualization = (
             <div className="visualization -chart">
               {titleCaption}

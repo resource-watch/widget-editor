@@ -1,3 +1,8 @@
+/**
+ * THIS CHART IS NOT IMPLEMENTED YET, IT IS A COPY OF
+ * THE BAR CHART
+ */
+
 import deepClone from 'lodash/cloneDeep';
 
 // Helpers

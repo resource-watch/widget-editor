@@ -26,8 +26,8 @@ const defaultChart = {
         {
           "type": "pie",
           "field": "value",
-          "startAngle":  0,
-          "endAngle":  6.29
+          "startAngle": 0,
+          "endAngle": 6.29
         }
       ]
     }
@@ -57,8 +57,8 @@ const defaultChart = {
           "innerRadius": { "signal": "width > height ? height / 3 : width / 3" },
           "outerRadius": { "signal": "width > height ? height / 2 : width / 2" }
         },
-        "hover":{
-          "opacity":{"value":0.8}
+        "hover": {
+          "opacity": { "value": 0.8 }
         }
       }
     }
@@ -114,10 +114,10 @@ export default function ({ columns, data, url, embedData, theme }) {
     yField.property = columns.y.alias || columns.y.name;
   }
 
- if (columns.color.present) {
-   const colorScale = config.scales.find(scale => scale.name === 'c');
-   colorScale.domain.field = 'color';
- }
+  //  if (columns.color.present) {
+  //    const colorScale = config.scales.find(scale => scale.name === 'c');
+  //    colorScale.domain.field = 'color';
+  //  }
 
   // We add a default legend to the chart
   const colorRange = (theme || defaultTheme).range.category;
