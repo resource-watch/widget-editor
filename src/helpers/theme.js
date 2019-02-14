@@ -67,7 +67,6 @@ export const defaultTheme = {
     stroke: '#fff'
   },
   rect: {
-    cornerRadius: 3,
     fill: '#3BB2D0'
   },
   line: {
@@ -102,9 +101,6 @@ export default function (thumbnail = false) {
       grid: false,
       domainWidth: 0
     };
-
-    // We simplify the rect marks
-    theme.rect.cornerRadius = 0;
   }
 
   return theme;
