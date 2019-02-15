@@ -1,9 +1,6 @@
-/**
- * THIS CHART IS NOT IMPLEMENTED YET, IT IS A COPY OF
- * THE HORIZONTAL BAR CHART
- */
-
 import deepClone from 'lodash/cloneDeep';
+import sortBy from 'lodash/sortBy';
+import uniqBy from 'lodash/uniqBy';
 
 // Helpers
 import { getTimeFormat } from 'helpers/WidgetHelper';
@@ -14,55 +11,60 @@ const defaultChart = {
     {
       "name": "table",
       "transform": [
-        { "type": "identifier", "as": "id" },
-        { "type": "joinaggregate", "as": ["count"] }
+        { "type": "joinaggregate", "ops": ["distinct"], "fields": ["x"], "as": ["count"] }
       ]
     }
   ],
   "scales": [
     {
-      "name": "x",
+      "name": "y",
       "type": "band",
-      "range": "width",
-      "padding": 0.05,
-      "domain": { "data": "table", "field": "id" }
+      "range": "height",
+      "padding": 0.1,
+      "domain": { "data": "table", "field": "x" }
     },
     {
-      "name": "y",
+      "name": "x",
       "type": "linear",
-      "range": "height",
+      "range": "width",
       "nice": true,
       "zero": true,
       "domain": { "data": "table", "field": "y" }
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "range": "category20",
+      "domain": { "data": "table", "field": "color" }
     }
   ],
   "axes": [
     {
-      "orient": "bottom",
-      "scale": "x",
-      "labelOverlap": "parity",
+      "orient": "left",
+      "scale": "y",
       "ticks": false,
+      "grid": false,
       "encode": {
         "labels": {
           "update": {
-            "text": { "signal": "width < 300 || data('table')[0].count > 10 ? truncate(data('table')[datum.value - 1].x, 12) : data('table')[datum.value - 1].x" },
-            "align": { "signal": "width < 300 || data('table')[0].count > 10 ? 'right' : 'center'" },
-            "baseline": { "signal": "width < 300 || data('table')[0].count > 10 ? 'middle' : 'top'" },
-            "angle": { "signal": "width < 300 || data('table')[0].count > 10 ? -90 : 0" }
+            "text": { "signal": "truncate(datum.value, 12)" },
+            "align": { "signal": "'right'" },
+            "baseline": { "signal": "'middle'" },
           }
         }
       }
     },
     {
-      "orient": "left",
-      "scale": "y",
+      "orient": "bottom",
+      "scale": "x",
       "labelOverlap": "parity",
       "format": "s",
+      "grid": true,
       "encode": {
         "labels": {
           "update": {
-            "align": { "value": "right" },
-            "baseline": { "value": "bottom" }
+            "align": { "value": "center" },
+            "baseline": { "value": "middle" }
           }
         }
       }
@@ -70,20 +72,53 @@ const defaultChart = {
   ],
   "marks": [
     {
-      "type": "rect",
-      "from": { "data": "table" },
-      "encode": {
-        "update": {
-          "opacity": { "value": 1 },
-          "x": { "scale": "x", "field": "id" },
-          "width": { "scale": "x", "band": 1 },
-          "y": { "scale": "y", "field": "y" },
-          "y2": { "scale": "y", "value": 0 }
-        },
-        "hover": {
-          "opacity": { "value": 0.8 }
+      "type": "group",
+      "from": {
+        "facet": {
+          "data": "table",
+          "name": "facet",
+          "groupby": "x"
         }
-      }
+      },
+      "encode": {
+        "enter": {
+          "y": { "scale": "y", "field": "x" }
+        }
+      },
+      "signals": [
+        { "name": "height", "update": "bandwidth('y')" }
+      ],
+      "scales": [
+        {
+          "name": "pos",
+          "type": "band",
+          "range": "height",
+          "domain": {
+            "data": "facet",
+            "field": "color",
+            "sort": true
+          }
+        }
+      ],
+      "marks": [
+        {
+          "type": "rect",
+          "from": { "data": "facet" },
+          "encode": {
+            "update": {
+              "opacity": { "value": 1 },
+              "fill": { "scale": "color", "field": "color" },
+              "y": { "scale": "pos", "field": "color" },
+              "height": { "scale": "pos", "band": 1 },
+              "x": { "scale": "x", "field": "y" },
+              "x2": { "scale": "x", "value": 0 }
+            },
+            "hover": {
+              "opacity": { "value": 0.8 }
+            }
+          }
+        }
+      ]
     }
   ],
   "interaction_config": [
@@ -96,6 +131,12 @@ const defaultChart = {
             "property": "y",
             "type": "number",
             "format": ".2s"
+          },
+          {
+            "column": "color",
+            "property": "color",
+            "type": "string",
+            "format": ".2f"
           },
           {
             "column": "x",
@@ -115,7 +156,7 @@ const defaultChart = {
  * @export
  * @param {any} { columns, data, url, embedData, provider, band }
  */
-export default function ({ columns, data, url, embedData, provider, band }) {
+export default function ({ columns, data, url, embedData, provider, band, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
@@ -138,10 +179,12 @@ export default function ({ columns, data, url, embedData, provider, band }) {
   }
 
   // We save the name of the columns for the tooltip
-  const xField = config.interaction_config[0].config.fields[1];
+  const xField = config.interaction_config[0].config.fields[2];
   {
     const yField = config.interaction_config[0].config.fields[0];
+    const colorField = config.interaction_config[0].config.fields[1];
     xField.property = columns.x.alias || columns.x.name;
+    colorField.property = columns.color.alias || columns.color.name;
     yField.property = columns.y.alias || columns.y.name;
   }
 
@@ -162,7 +205,7 @@ export default function ({ columns, data, url, embedData, provider, band }) {
     const format = getTimeFormat(temporalData);
     if (format) {
       xField.format = format;
-      xAxis.encode.labels.update.text = { "signal": `utcFormat(data('table')[datum.value - 1].x, '${format}')` };
+      xAxis.encode.labels.update.text = { "signal": `utcFormat(datum.value, '${format}')` };
     }
 
     // We also set the format for the tooltip
@@ -175,9 +218,25 @@ export default function ({ columns, data, url, embedData, provider, band }) {
       xField.format = 'd';
 
       const xAxis = config.axes.find(a => a.scale === 'x');
-      xAxis.encode.labels.update.text = { "signal": "format(data('table')[datum.value - 1].x, 'd')" };
+      xAxis.encode.labels.update.text = { "signal": "format(datum.value, 'd')" };
     }
   }
+
+  // We add a legend to the chart
+  const colorValuesOrder = [...new Set(data.map(d => d.color))];
+  const getColor = d => colorRange[colorValuesOrder.indexOf(d.color)];
+  const colorRange = (theme || defaultTheme).range.category20;
+  const values = sortBy(uniqBy(data, 'color'), ['color'], ['asc'])
+    .map(d => ({ label: d.color, value: getColor(d), type: columns.color.type }));
+
+  config.legend = [
+    {
+      type: 'color',
+      label: null,
+      shape: 'square',
+      values
+    }
+  ];
 
   return config;
 };
