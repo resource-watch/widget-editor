@@ -1,9 +1,6 @@
-/**
- * THIS CHART IS NOT IMPLEMENTED YET, IT IS A COPY OF
- * THE LINE CHART
- */
-
 import deepClone from 'lodash/cloneDeep';
+import sortBy from 'lodash/sortBy';
+import uniqBy from 'lodash/uniqBy';
 
 // Helpers
 import { getTimeFormat } from 'helpers/WidgetHelper';
@@ -34,7 +31,7 @@ const defaultChart = {
       "transform": [
         {
           "type": "filter",
-          "expr": "hover && hover.datum.x === datum.x"
+          "expr": "hover && hover.datum.x === datum.x && hover.datum.color === datum.color"
 
         }
       ]
@@ -43,7 +40,7 @@ const defaultChart = {
   "scales": [
     {
       "name": "x",
-      "type": "linear",
+      "type": "point",
       "range": "width",
       "nice": true,
       "round": true,
@@ -57,6 +54,12 @@ const defaultChart = {
       "nice": true,
       "zero": true,
       "domain": { "data": "table", "field": "y" }
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "range": "category20",
+      "domain": { "data": "table", "field": "color" }
     }
   ],
   "axes": [
@@ -82,39 +85,66 @@ const defaultChart = {
   ],
   "marks": [
     {
-      "name": "lines",
+      "type": "group",
+      "from": {
+        "facet": {
+          "data": "table",
+          "name": "facet",
+          "groupby": "color"
+        }
+      },
+      "marks": [
+        {
+          "interactive": false,
+          "type": "line",
+          "from": { "data": "facet" },
+          "encode": {
+            "enter": {
+              "x": { "scale": "x", "field": "x" },
+              "y": { "scale": "y", "field": "y" },
+              "stroke": { "scale": "color", "field": "color" },
+              "strokeCap": { "value": "round" },
+              "strokeWidth": { "value": 2 },
+              "strokeJoin": { "value": "round" }
+            }
+          }
+        },
+        {
+          "interactive": false,
+          "type": "symbol",
+          "from": { "data": "dots" },
+          "encode": {
+            "enter": {
+              "x": { "scale": "x", "field": "x" },
+              "y": { "scale": "y", "field": "y" },
+              "fill": { "scale": "color", "field": "color" }
+            },
+            "update": {
+              "opacity": { "value": 1 }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "points",
+      "type": "symbol",
       "interactive": false,
-      "type": "line",
       "from": { "data": "table" },
       "encode": {
         "enter": {
           "x": { "scale": "x", "field": "x" },
           "y": { "scale": "y", "field": "y" },
-          "strokeCap": { "value": "round" },
-          "strokeWidth": { "value": 2 },
-          "strokeJoin": { "value": "round" }
-        }
-      }
-    },
-    {
-      "name": "points",
-      "interactive": false,
-      "type": "symbol",
-      "from": { "data": "dots" },
-      "encode": {
-        "enter": {
-          "x": { "scale": "x", "field": "x" },
-          "y": { "scale": "y", "field": "y" }
         },
         "update": {
-          "opacity": { "value": 1 }
+          "opacity": { "value": 0 }
         }
       }
     },
     {
       "name": "cell",
       "type": "path",
-      "from": { "data": "lines" },
+      "from": { "data": "points" },
       "transform": [
         {
           "type": "voronoi",
@@ -147,9 +177,15 @@ const defaultChart = {
             "format": ".2s"
           },
           {
+            "column": "datum.color",
+            "property": "color",
+            "type": "string",
+            "format": ".2f"
+          },
+          {
             "column": "datum.x",
             "property": "x",
-            "type": "number",
+            "type": "string",
             "format": ".2f"
           }
         ]
@@ -164,7 +200,7 @@ const defaultChart = {
  * @export
  * @param {any} { columns, data, url, embedData }
  */
-export default function ({ columns, data, url, embedData }) {
+export default function ({ columns, data, url, embedData, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
@@ -180,10 +216,12 @@ export default function ({ columns, data, url, embedData }) {
   }
 
   // We save the name of the columns for the tooltip
-  const xField = config.interaction_config[0].config.fields[1];
+  const xField = config.interaction_config[0].config.fields[2];
   {
     const yField = config.interaction_config[0].config.fields[0];
+    const colorField = config.interaction_config[0].config.fields[1];
     xField.property = columns.x.alias || columns.x.name;
+    colorField.property = columns.color.alias || columns.color.name;
     yField.property = columns.y.alias || columns.y.name;
   }
 
@@ -237,6 +275,22 @@ export default function ({ columns, data, url, embedData }) {
     // We fix the domain around the value
     yScale.domain = [data[0].y - step, data[0].y + step];
   }
+
+  // We add a legend to the chart
+  const colorValuesOrder = [...new Set(data.map(d => d.color))];
+  const getColor = d => colorRange[colorValuesOrder.indexOf(d.color)];
+  const colorRange = (theme || defaultTheme).range.category20;
+  const values = sortBy(uniqBy(data, 'color'), ['color'], ['asc'])
+    .map(d => ({ label: d.color, value: getColor(d), type: columns.color.type }));
+
+  config.legend = [
+    {
+      type: 'color',
+      label: null,
+      shape: 'square',
+      values
+    }
+  ];
 
   return config;
 };
