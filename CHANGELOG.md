@@ -11,6 +11,7 @@
 - Fix a bug where the legend of the pie chart would display wrong colors
 - Let the user change the color of the visual elements (based on the theme)
 - Change the behavior of the `theme` prop and add new ones: `defaultTheme` and `onChangeTheme` (see updated README)
+- Fix minor legend style issues
 
 ## v1.3.8 - 17/12/2018
 - Fix a bug where the external title and caption would be overriden when the component would fetch the widget
