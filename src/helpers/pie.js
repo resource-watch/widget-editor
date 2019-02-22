@@ -1,4 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
+import uniqBy from 'lodash/uniqBy';
 import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
@@ -121,8 +122,11 @@ export default function ({ columns, data, url, embedData, theme }) {
 
   // We add a default legend to the chart
   const colorRange = (theme || defaultTheme).range.category;
-  const values = data.slice(0, 6)
-    .map((d, i) => ({ label: i === 5 ? 'Others' : d.x, value: colorRange[i % 6], type: columns.x.type }));
+  const values = uniqBy(
+    data.map((d, i) => ({ ...d, x: i + 1 < 6 ? d.x : 'Others' })),
+    'x'
+  ).slice(0, 6)
+    .map((d, i) => ({ label: d.x, value: colorRange[i % 6], type: columns.x.type }));
 
   config.legend = [
     {
