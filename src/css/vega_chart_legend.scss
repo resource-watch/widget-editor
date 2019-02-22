@@ -108,6 +108,7 @@
         // The width and the height might be overridden by some JS
         width: 10px;
         height: 10px;
+        padding: 0; // Needed for the interactive legend
         border: 1px solid rgba(26, 28, 34, .1);
         // The color might be overridden by some JS
         background-color: $color-secondary;

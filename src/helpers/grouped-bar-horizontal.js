@@ -225,7 +225,7 @@ export default function ({ columns, data, url, embedData, provider, band, theme 
   // We add a legend to the chart
   const colorValuesOrder = [...new Set(data.map(d => d.color))];
   const getColor = d => colorRange[colorValuesOrder.indexOf(d.color)];
-  const colorRange = (theme || defaultTheme).range.category20;
+  const colorRange = theme.range.category20;
   const values = sortBy(uniqBy(data, 'color'), ['color'], ['asc'])
     .map(d => ({ label: d.color, value: getColor(d), type: columns.color.type }));
 

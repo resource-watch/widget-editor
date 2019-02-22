@@ -23,7 +23,8 @@ setConfig({
   env: 'production,preproduction',
   applications: 'rw',
   authUrl: 'https://api.resourcewatch.org/auth',
-  assetsPath: '/images/'
+  assetsPath: '/images/',
+  userToken: undefined
 });
 
 class App extends React.Component {
@@ -48,15 +49,18 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datasetId: 'a86d906d-9862-4783-9e30-cdb68cd808b8',
-      // datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
+      datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
       widgetId: undefined,
+      // Widget with custom theme and new chart:
+      // widgetId: '7c60887a-aee9-4925-83fd-5c7673521443',
       previewWidgetId: undefined,
       previewConfig: undefined,
       widgetTitle: '',
       widgetCaption: '',
-      widgetTheme: JSON.stringify(getVegaTheme(), null, 2),
-      _theme: getVegaTheme(), // Internal
+      defaultWidgetTheme: JSON.stringify(getVegaTheme(), null, 2),
+      _defaultTheme: getVegaTheme(), // Internal
+      widgetTheme: '',
+      _theme: undefined, // Internal
       previewWidgetTheme: JSON.stringify(getVegaTheme(true), null, 2),
       _previewWidgetTheme: getVegaTheme(true) // Internal
     };
@@ -67,6 +71,7 @@ class App extends React.Component {
     this.onChangeWidgetCaption = this.onChangeWidgetCaption.bind(this);
     this.onProvideWidgetConfig = this.onProvideWidgetConfig.bind(this);
     this.onProvideLayer = this.onProvideLayer.bind(this);
+    this.onChangeDefaultTheme = this.onChangeDefaultTheme.bind(this);
     this.onChangeTheme = this.onChangeTheme.bind(this);
     this.onChangePreviewWidgetTheme = this.onChangePreviewWidgetTheme.bind(this);
   }
@@ -123,6 +128,22 @@ class App extends React.Component {
 
   onProvideLayer(func) {
     this.getLayer = func;
+  }
+
+  onChangeDefaultTheme({ target }) {
+    const theme = target.value;
+
+    let unserializedTheme;
+    try {
+      unserializedTheme = JSON.parse(theme);
+    } catch (err) {
+      unserializedTheme = getVegaTheme();
+    }
+
+    this.setState({
+      defaultWidgetTheme: theme,
+      _defaultTheme: unserializedTheme
+    });
   }
 
   onChangeTheme({ target }) {
@@ -201,6 +222,14 @@ class App extends React.Component {
               onChange={({ target }) => this.setState({ widgetCaption: target.value })}
             />
             <br />
+            <label htmlFor="default-theme">Default theme (optional):</label>
+            <textarea
+              placeholder="Default theme of the widget"
+              id="default-theme"
+              value={this.state.defaultWidgetTheme}
+              onChange={this.onChangeDefaultTheme}
+            />
+            <br />
             <label htmlFor="theme">Theme (optional):</label>
             <textarea
               placeholder="Theme of the widget"
@@ -222,6 +251,7 @@ class App extends React.Component {
           embedButtonMode="always"
           titleMode="always"
           // eslint-disable-next-line no-underscore-dangle
+          defaultTheme={this.state._defaultTheme}
           theme={this.state._theme}
           useLayerEditor
           allowBoundsCopyPaste
@@ -229,6 +259,7 @@ class App extends React.Component {
           onEmbed={this.onEmbed}
           onChangeWidgetTitle={this.onChangeWidgetTitle}
           onChangeWidgetCaption={this.onChangeWidgetCaption}
+          onChangeTheme={theme => this.setState({ widgetTheme: JSON.stringify(theme, null, 2), _theme: theme })}
           provideWidgetConfig={this.onProvideWidgetConfig}
           provideLayer={this.onProvideLayer}
         />
@@ -255,7 +286,7 @@ class App extends React.Component {
             />
           </p>
         </div>
-        { this.state.previewWidgetId && this.state.previewConfig && (
+        {this.state.previewWidgetId && this.state.previewConfig && (
           <VegaChart
             width={250}
             height={180}

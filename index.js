@@ -11,7 +11,7 @@ export { default as Icons } from 'components/ui/Icons';
 
 export { default as ChartEditor } from 'components/chart/ChartEditor';
 export { default as VegaChart } from 'components/chart/VegaChart';
-export { default as VegaChartLegend } from 'components/chart/VegaChartLegend';
+export { default as VegaChartLegend } from 'components/chart/legend/VegaChartLegend';
 
 export { default as Checkbox } from 'components/form/Checkbox';
 export { default as CheckboxGroup } from 'components/form/CheckboxGroup';

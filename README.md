@@ -139,13 +139,15 @@ Name | Default value | Mandatory | Version | Description
 `titleMode: string` | `"auto"` | No | 0.0.1+ | If `"auto"`, the title _and_ caption are only editable if a user token is passed to the configuration. If `"always"`, the title _and_ caption are always editable. If `"never"`, they are always fixed.
 `mapConfig: object` | `{ zoom: 3, lat: 0, lng: 0 }` | No | 0.0.4+ | Default state of the map. You can specify its `zoom`, `lat` and `lng`.
 `contracted: boolean` | `false` | No | 1.1.0+ | Initially display the editor with its left panel contracted
-`theme: object` | [Link](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | 1.1.0+ | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/))
+`defaultTheme: object` | [Default theme](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) | No | 1.4.0+ | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/)) by default, when no widget is provided or when it does not embed a theme **(4)**
+`theme: object` | `undefined` | No | 1.4.0+ | Theme to apply to the Vega visualisations ([documentation](https://vega.github.io/vega/docs/config/)). It overrides the any other theme. **(4)**
 `useLayerEditor: boolean`| `false` | No | 1.2.0+ | Let the user create a layer when selecting a map visualization
 `allowBoundsCopyPaste: boolean`| `false` | No | 1.3.4+ | Let the user copy and paste the bounds of the map **(3)**
 `onSave: function` | `undefined` | No | 0.0.1+ | Callback executed when the user clicks the save/update button.
 `onEmbed: function` | `undefined` | No | 0.0.6+ | Callback executed when the user clicks the embed button. The first argument is the type of visualization to embed.
 `onChangeWidgetTitle: function` | `undefined` | No | 0.1.1+ | Callback executed when the title of the widget is changed. The first argument is the new value.
 `onChangeWidgetCaption: function` | `undefined` | No | 0.1.1+ | Callback executed when the caption of the widget is changed. The first argument is the new value.
+`onChangeTheme: function` | `undefined` | No | 1.4.0+ | Callback executed when the user updates the colors of the theme or when a widget with embedded theme is initialized. The first argument is the new theme. **(5)**
 `provideWidgetConfig: function` | `undefined` | No | 0.0.1+ | Callback which is passed a function to get the widget configuration (see below)
 `provideLayer: function` | `undefined` | No | 1.2.0+ | Callback which is passed a function to get the layer created by the user, if any (see below)
 
@@ -154,6 +156,10 @@ Name | Default value | Mandatory | Version | Description
 **(2)** The button is currently only available for the table visualization.
 
 **(3)** The bounds are copied within the `localStorage`, so the feature only work within the same site and as long as the browser's data is not cleared.
+
+**(4)** Read "Understand how the themes work" below to get additional information about how the widget-editor handles the themes. The behavior changed from version 1.4.0.
+
+**(5)** If not provided, the user won't be able to change the theme.
 
 ### Get the widget config
 
@@ -219,6 +225,38 @@ getLayer()
 ```
 
 For more information about the layers, check this [notebook](https://github.com/resource-watch/notebooks/blob/develop/ResourceWatch/Api_definition/layer_definition.ipynb).
+
+### Understand how the themes work
+
+Vega [defines an object](https://vega.github.io/vega/docs/config/) called `config` which stores information about how the different elements of the charts should look like. This is what we call here the theme.
+
+The widget-editor has a [default theme](https://github.com/resource-watch/widget-editor/blob/develop/src/helpers/theme.js) which is applied when you don't provide one **(*)**. If you provide one via the `theme` prop, then this is the theme Vega will use (the widget-editor is a [controlled component](https://reactjs.org/docs/forms.html#controlled-components)).
+
+**(*)** If you open a widget that has an embedded theme, it will be used instead of the widget-editor's default one. See below for more information.
+
+#### How to embed a theme in a widget
+
+When creating new widgets, you might want to save the theme along with the widgets. To do so, save the theme as a `config` object inside `widgetConfig`. You might want to give the theme a name, with a `name` attribute, so your host app can determine which theme is applied. This is particularly useful if you have a theme selector along with the widget-editor.
+
+![Exemple of radio input where the user can select a pre-defined theme](README_IMG_THEME_SELECTOR.png)
+
+#### How to see a widget with its embedded theme
+
+As you've read before, if you provide a theme to the widget-editor, this is the one Vega ends up using. In order to see the theme embedded in a widget, you need to pass `null` or `undefined` in the `theme` prop (or just omit the prop).
+
+Nevertheless, your host app might use the widget-editor to open widgets that embed themes and others that don't. If you never pass a theme, then the widgets without an embedded theme will be displayed using the widget-editor's default theme. As you might want to have another theme for those, you should provide a default theme via the `defaultTheme` prop.
+
+The `defaultTheme` prop provides a custom theme for the widgets that don't have any embedded one. But those which do will be displayed with their embedded theme. In that particular case, the `theme` prop is always set to `null` or `undefined` because otherwise, it would take precedence over the embedded theme of the widgets, your custom default theme and the widget-editor's default one.
+
+Until the widget-editor has fully initialized the widget, your host app has no idea which theme the widget might embed. If you have a theme selector (see "How to embed a theme with a widget" above), you won't be able to mark any theme as active until then. When initialized, the widget-editor will execute the `onChangeTheme` callback right away, if provided and no theme is passed. See below for more details.
+
+#### How to let the user customize the colors of the charts
+
+You might want to let the user customize the colors of the charts. When enabled, the user can swap the order of the colors of the theme so particular elements (such as bars and points) get a specific color. If you want to enable it, please provide a callback to the `onChangeTheme` prop.
+
+When the user changes a color, the callback is called with the new theme as argument. In order to give you a clear indication that that theme was changed, it will have the name "user-custom". This is particularly useful if you use a theme selector (see "How to embed a theme with a widget" above).
+
+Since the widget-editor is a controlled component, you need to save this new theme in your host app (probably in the state of your component) and pass the new theme through the widget-editor's `theme` prop. Until you do so, the widget will still be displayed with its previous theme.
 
 ## How to use the `Modal` component
 If you want to re-use the editor's modal in your app, you need to include the component within a non-positioned container (at the root for example). You can then open it with any content using its [redux' actions](https://github.com/resource-watch/widget-editor/blob/master/src/reducers/modal.js).

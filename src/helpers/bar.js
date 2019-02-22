@@ -108,14 +108,27 @@ const defaultChart = {
  * Return the Vega chart configuration
  *
  * @export
- * @param {any} { columns, data, url, embedData, provider, band }
+ * @param {any} { columns, data, url, embedData, provider, band, theme }
  */
-export default function ({ columns, data, url, embedData, provider, band }) {
+export default function ({ columns, data, url, embedData, provider, band, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
     // We directly set the data
     config.data[0].values = data;
+
+    // We also add a legend to customize the color
+    // of the bars
+    config.legend = [
+      {
+        type: 'color',
+        label: null,
+        shape: 'square',
+        values: [
+          { label: 'Value', value: theme.range.category20[0] }
+        ]
+      }
+    ];
   } else {
     // We set the URL of the dataset
     config.data[0].url = url;

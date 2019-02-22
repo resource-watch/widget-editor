@@ -3,14 +3,6 @@ import deepClone from 'lodash/cloneDeep';
 export const defaultTheme = {
   range: {
     dotSize: [20, 250],
-    category: [
-      '#3BB2D0',
-      '#2C75B0',
-      '#FAB72E',
-      '#EF4848',
-      '#65B60D',
-      '#717171'
-    ],
     category20: [
       '#3BB2D0',
       '#2C75B0',

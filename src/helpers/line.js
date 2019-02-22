@@ -24,9 +24,9 @@ const defaultChart = {
   "data": [
     { "name": "table" },
     {
-      "name":"dots",
-      "source":"table",
-      "transform":[
+      "name": "dots",
+      "source": "table",
+      "transform": [
         {
           "type": "filter",
           "expr": "hover && hover.datum.x === datum.x"
@@ -63,7 +63,7 @@ const defaultChart = {
         "labels": {
           "update": {
             "align": { "value": "center" },
-            "baseline": { "value": "top"}
+            "baseline": { "value": "top" }
           }
         }
       }
@@ -87,7 +87,7 @@ const defaultChart = {
           "y": { "scale": "y", "field": "y" },
           "strokeCap": { "value": "round" },
           "strokeWidth": { "value": 2 },
-          "strokeJoin":{"value":"round"}
+          "strokeJoin": { "value": "round" }
         }
       }
     },
@@ -95,7 +95,7 @@ const defaultChart = {
       "name": "points",
       "interactive": false,
       "type": "symbol",
-      "from": {"data": "dots"},
+      "from": { "data": "dots" },
       "encode": {
         "enter": {
           "x": { "scale": "x", "field": "x" },
@@ -124,7 +124,7 @@ const defaultChart = {
       "encode": {
         "update": {
           "path": { "field": "path" },
-          "fill":{"value":"red"},
+          "fill": { "value": "red" },
           "opacity": { "value": 0 }
         }
       }
@@ -157,14 +157,27 @@ const defaultChart = {
  * Return the Vega chart configuration
  *
  * @export
- * @param {any} { columns, data, url, embedData }
+ * @param {any} { columns, data, url, embedData, theme }
  */
-export default function ({ columns, data, url, embedData }) {
+export default function ({ columns, data, url, embedData, theme }) {
   const config = deepClone(defaultChart);
 
   if (embedData) {
     // We directly set the data
     config.data[0].values = data;
+
+    // We also add a legend to customize the color
+    // of the bars
+    config.legend = [
+      {
+        type: 'color',
+        label: null,
+        shape: 'square',
+        values: [
+          { label: 'Value', value: theme.range.category20[0] }
+        ]
+      }
+    ];
   } else {
     // We set the URL of the dataset
     config.data[0].url = url;
@@ -188,7 +201,7 @@ export default function ({ columns, data, url, embedData }) {
     // We update the scale
     const xScale = config.scales.find(scale => scale.name === 'x');
     xScale.type = 'utc';
-    xScale.domain.sort =  true;
+    xScale.domain.sort = true;
 
     // We update the tooltip
     xField.type = 'date';

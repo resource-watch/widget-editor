@@ -1,5 +1,4 @@
 import deepClone from 'lodash/cloneDeep';
-import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
 const defaultChart = {
@@ -95,7 +94,7 @@ const defaultChart = {
  * Return the Vega chart configuration
  *
  * @export
- * @param {any} { columns, data, url, embedData }
+ * @param {any} { columns, data, url, embedData, theme }
  */
 export default function ({ columns, data, url, embedData, theme }) {
   const config = deepClone(defaultChart);
@@ -103,6 +102,19 @@ export default function ({ columns, data, url, embedData, theme }) {
   if (embedData) {
     // We directly set the data
     config.data[0].values = data;
+
+    // We also add a legend to customize the color
+    // of the bars
+    config.legend = [
+      {
+        type: 'color',
+        label: null,
+        shape: 'circle',
+        values: [
+          { label: 'Value', value: theme.range.category20[0] }
+        ]
+      }
+    ];
   } else {
     // We set the URL of the dataset
     config.data[0].url = url;
@@ -148,7 +160,7 @@ export default function ({ columns, data, url, embedData, theme }) {
 
   if (columns.size.present) {
     const sizeScaleType = 'linear';
-    const sizeScaleRange = (theme || defaultTheme).range.dotSize;
+    const sizeScaleRange = theme.range.dotSize;
 
     // The following formula comes from:
     // https://github.com/vega/vega-scenegraph/blob/master/src/path/symbols.js#L10
@@ -182,12 +194,12 @@ export default function ({ columns, data, url, embedData, theme }) {
           {
             label: Math.max(...sizeDate),
             value: getCircleRadius(sizeScaleRange[1]),
-            color: (theme || defaultTheme).symbol.fill
+            color: theme.symbol.fill
           },
           {
             label: Math.min(...sizeDate),
             value: getCircleRadius(sizeScaleRange[0]),
-            color: (theme || defaultTheme).symbol.fill
+            color: theme.symbol.fill
           }
         ]
       }

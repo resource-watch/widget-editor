@@ -1,3 +1,8 @@
+/**
+ * ANY CHANGE TO THIS FILE SHOULD BE COPIED OVER
+ * InteractiveVegaChartLegend
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import vega from 'vega';
@@ -6,7 +11,7 @@ import debounce from 'lodash/debounce';
 import isEqual from 'lodash/isEqual';
 
 // Components
-import VegaChartLegend from 'components/chart/VegaChartLegend';
+import VegaChartLegend from 'components/chart/legend/VegaChartLegend';
 
 // Utils
 import { fetchRasterData } from 'helpers/WidgetHelper';
@@ -46,8 +51,8 @@ class VegaChart extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return !isEqual(nextProps.data, this.props.data)
-    || !isEqual(nextState.vegaConfig, this.state.vegaConfig)
-    || nextProps.theme !== this.props.theme;
+      || !isEqual(nextState.vegaConfig, this.state.vegaConfig)
+      || nextProps.theme !== this.props.theme;
   }
 
   componentDidUpdate(prevProps) {
@@ -156,7 +161,7 @@ class VegaChart extends React.Component {
 
     // We don't have the tooltip config defined
     if (!tooltipConfig || !tooltipConfig.config || !tooltipConfig.config.fields
-        || !tooltipConfig.config.fields.length) {
+      || !tooltipConfig.config.fields.length) {
       return [];
     }
 
@@ -254,8 +259,8 @@ class VegaChart extends React.Component {
         ref={(el) => { this.chartViewportContainer = el; }}
       >
         <div ref={(c) => { this.chart = c; }} className="chart" />
-        { this.props.showLegend && vegaConfig && vegaConfig.legend
-          && <VegaChartLegend config={vegaConfig.legend} /> }
+        {this.props.showLegend && vegaConfig && vegaConfig.legend
+          && <VegaChartLegend config={vegaConfig.legend} />}
       </div>
     );
   }

@@ -39,7 +39,7 @@ const SET_CONTRACTED = 'WIDGET_EDITOR/SET_CONTRACTED';
 const SET_BASEMAP = 'WIDGET_EDITOR/SET_BASEMAP';
 const SET_LABELS = 'WIDGET_EDITOR/SET_LABELS';
 const SET_BOUNDARIES = 'WIDGET_EDITOR/SET_BOUNDARIES';
-const SET_THEME = 'WIDGET_EDITOR/SET_THEME';
+const SET_EMBEDDED_THEME = 'WIDGET_EDITOR/SET_EMBEDDED_THEME';
 
 /**
  * REDUCER
@@ -78,8 +78,8 @@ const initialState = {
     /** @type {boolean} boundaries */
     boundaries: false
   },
-  /** @type {object} theme */
-  theme: null // Theme of the restored widget as in the API
+  /** @type {object} embeddedTheme */
+  embeddedTheme: null // Theme of the restored widget as in the API
 };
 
 export default function (state = initialState, action) {
@@ -336,9 +336,9 @@ export default function (state = initialState, action) {
       });
     }
 
-    case SET_THEME: {
+    case SET_EMBEDDED_THEME: {
       return Object.assign({}, state, {
-        theme: action.payload
+        embeddedTheme: action.payload
       });
     }
 
@@ -514,6 +514,6 @@ export function setBoundaries(boundaries) {
   return dispatch => dispatch({ type: SET_BOUNDARIES, payload: boundaries });
 }
 
-export function setTheme(theme) {
-  return dispatch => dispatch({ type: SET_THEME, payload: theme });
+export function setEmbeddedTheme(theme) {
+  return dispatch => dispatch({ type: SET_EMBEDDED_THEME, payload: theme });
 }

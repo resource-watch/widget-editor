@@ -39,7 +39,7 @@ import {
   setBasemap,
   setLabels,
   setBoundaries,
-  setTheme,
+  setEmbeddedTheme,
   setXAxisTitle,
   setYAxisTitle
 } from 'reducers/widgetEditor';
@@ -53,6 +53,7 @@ import WidgetService from 'services/WidgetService';
 // Components
 import Spinner from 'components/ui/Spinner';
 import VegaChart from 'components/chart/VegaChart';
+import InteractiveVegaChartLegend from 'components/chart/legend/InteractiveVegaChartLegend';
 import Map from 'components/map/Map';
 import MapControls from 'components/map/MapControls';
 import BasemapControl from 'components/map/controls/BasemapControl';
@@ -76,6 +77,7 @@ import {
   checkEditorRestoredState,
   getWidgetConfig
 } from 'helpers/WidgetHelper';
+import { defaultTheme as DEFAULT_THEME } from 'helpers/theme';
 import { getConfig } from 'helpers/ConfigHelper';
 import LayerManager from 'helpers/LayerManager';
 
@@ -299,7 +301,7 @@ class WidgetEditor extends React.Component {
       && this.props.widgetEditor.visualizationType !== 'map'
       && (hasChangedWidgetEditor || previousState.tableName !== this.state.tableName
         || previousState.initializing !== this.state.initializing
-        || previousProps.theme !== this.props.theme)
+        || previousProps.currentTheme !== this.props.currentTheme)
       && !this.state.initializing) {
       this.fetchChartConfig();
     }
@@ -466,13 +468,30 @@ class WidgetEditor extends React.Component {
     const {
       tableName,
       chartLoading,
-      datasetProvider
+      datasetProvider,
+      chartConfig,
+      chartConfigLoading,
+      chartConfigError
     } = this.state;
 
-    const { widgetEditor, datasetId, selectedVisualizationType, theme,
-      useLayerEditor } = this.props;
-    const { chartType, layer, title, caption,
-      visualizationType, basemapLayers } = widgetEditor;
+    const {
+      widgetEditor,
+      datasetId,
+      selectedVisualizationType,
+      currentTheme,
+      useLayerEditor,
+      band,
+      onChangeTheme
+    } = this.props;
+
+    const {
+      chartType,
+      layer,
+      title,
+      caption,
+      visualizationType,
+      basemapLayers
+    } = widgetEditor;
 
     let chartTitle = <div>{title}</div>;
     if (this.props.titleMode === 'always'
@@ -522,24 +541,24 @@ class WidgetEditor extends React.Component {
               {titleCaption}
             </div>
           );
-        } else if (this.state.chartConfigLoading) {
+        } else if (chartConfigLoading) {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading />
               {titleCaption}
             </div>
           );
-        } else if (this.state.chartConfigError) {
+        } else if (chartConfigError) {
           visualization = (
             <div className="visualization -error">
               {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
-                <span>{this.state.chartConfigError}</span>
+                <span>{chartConfigError}</span>
               </div>
             </div>
           );
-        } else if (!canRenderChart(widgetEditor, datasetProvider) || !this.state.chartConfig) {
+        } else if (!canRenderChart(widgetEditor, datasetProvider) || !chartConfig) {
           visualization = (
             <div className="visualization -chart">
               {titleCaption}
@@ -554,6 +573,7 @@ class WidgetEditor extends React.Component {
             </div>
           );
         } else {
+          const canChangeTheme = chartConfig.legend && onChangeTheme;
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
@@ -561,11 +581,19 @@ class WidgetEditor extends React.Component {
               <div className="row">
                 {chartType !== 'pie' && <AxisTitle type="y" />}
                 <VegaChart
+                  showLegend={!canChangeTheme}
                   reloadOnResize
-                  data={this.state.chartConfig}
-                  theme={theme}
+                  data={chartConfig}
+                  theme={currentTheme}
                   toggleLoading={val => this.setState({ chartLoading: val })}
                 />
+                {canChangeTheme && (
+                  <InteractiveVegaChartLegend
+                    config={chartConfig.legend}
+                    theme={currentTheme}
+                    onChangeTheme={onChangeTheme}
+                  />
+                )}
               </div>
               {chartType !== 'pie' && <AxisTitle type="x" />}
             </div>
@@ -620,24 +648,24 @@ class WidgetEditor extends React.Component {
         break;
 
       case 'raster_chart':
-        if (this.state.chartConfigLoading) {
+        if (chartConfigLoading) {
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading />
               {titleCaption}
             </div>
           );
-        } else if (this.state.chartConfigError) {
+        } else if (chartConfigError) {
           visualization = (
             <div className="visualization -error">
               {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
-                <span>{this.state.chartConfigError}</span>
+                <span>{chartConfigError}</span>
               </div>
             </div>
           );
-        } else if (!this.state.chartConfig || !this.props.band) {
+        } else if (!chartConfig || !band) {
           visualization = (
             <div className="visualization -chart">
               {titleCaption}
@@ -645,6 +673,7 @@ class WidgetEditor extends React.Component {
             </div>
           );
         } else {
+          const canChangeTheme = chartConfig.legend && onChangeTheme;
           visualization = (
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
@@ -652,11 +681,19 @@ class WidgetEditor extends React.Component {
               <div className="row">
                 {chartType !== 'pie' && <AxisTitle type="y" />}
                 <VegaChart
+                  showLegend={!canChangeTheme}
                   reloadOnResize
-                  data={this.state.chartConfig}
-                  theme={theme}
+                  data={chartConfig}
+                  theme={currentTheme}
                   toggleLoading={val => this.setState({ chartLoading: val })}
                 />
+                {canChangeTheme && (
+                  <InteractiveVegaChartLegend
+                    config={chartConfig.legend}
+                    theme={currentTheme}
+                    onChangeTheme={onChangeTheme}
+                  />
+                )}
               </div>
               {chartType !== 'pie' && <AxisTitle type="x" />}
             </div>
@@ -794,13 +831,13 @@ class WidgetEditor extends React.Component {
    */
   getWidgetConfig() {
     const { tableName, datasetType, datasetProvider, datasetInfoLoaded } = this.state;
-    const { widgetEditor, datasetId, theme } = this.props;
+    const { widgetEditor, datasetId, currentTheme } = this.props;
 
     if (!datasetInfoLoaded || !canRenderChart(widgetEditor, datasetProvider)) {
       return new Promise((_, reject) => reject());
     }
 
-    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor, theme);
+    return getWidgetConfig(datasetId, datasetType, datasetProvider, tableName, widgetEditor, currentTheme);
   }
 
   /**
@@ -861,7 +898,7 @@ class WidgetEditor extends React.Component {
       band,
       datasetProvider,
       chartInfo,
-      this.props.theme,
+      this.props.currentTheme,
       true
     )
       .then(chartConfig => new Promise((resolve) => {
@@ -1024,7 +1061,16 @@ class WidgetEditor extends React.Component {
             this.props.setBoundaries(basemapLayers.boundaries);
           }
         }
-        if (widgetConfig.config) this.props.setTheme(widgetConfig.config);
+        if (widgetConfig.config) {
+          this.props.setEmbeddedTheme(widgetConfig.config);
+
+          // We let the host app know about the embedded theme if the user
+          // didn't provide one (because otherwise the theme would
+          // take precedence over the embedded one)
+          if (this.props.onChangeTheme && !this.props.theme) {
+            this.props.onChangeTheme(widgetConfig.config);
+          }
+        }
 
         const xAxis = axes.find(axis => axis.scale === 'x');
         const yAxis = axes.find(axis => axis.scale === 'y');
@@ -1322,13 +1368,11 @@ class WidgetEditor extends React.Component {
   }
 }
 
-const mapStateToProps = ({ widgetEditor }, ownProps) => ({
+const mapStateToProps = ({ widgetEditor }, { theme, defaultTheme }) => ({
   widgetEditor,
   selectedVisualizationType: widgetEditor.visualizationType,
   band: widgetEditor.band,
-  // We use the theme passed through the props or
-  // the one of the restored widget, if any
-  theme: ownProps.theme || widgetEditor.theme
+  currentTheme: theme || widgetEditor.embeddedTheme || defaultTheme
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1366,7 +1410,7 @@ const mapDispatchToProps = dispatch => ({
   setBasemap: (...params) => dispatch(setBasemap(...params)),
   setLabels: (...params) => dispatch(setLabels(...params)),
   setBoundaries: (...params) => dispatch(setBoundaries(...params)),
-  setTheme: (...params) => dispatch(setTheme(...params)),
+  setEmbeddedTheme: (...params) => dispatch(setEmbeddedTheme(...params)),
   setXAxisTitle: (...params) => dispatch(setXAxisTitle(...params)),
   setYAxisTitle: (...params) => dispatch(setYAxisTitle(...params))
 });
@@ -1429,7 +1473,13 @@ WidgetEditor.propTypes = {
    */
   contracted: PropTypes.bool,
   /**
-   * Theme to apply to the Vega visualizations
+   * Theme to apply to the Vega visualisations by default, when no
+   * widget is provided or when it does not embed a theme
+   */
+  defaultTheme: PropTypes.object,
+  /**
+   * Theme to apply to the Vega visualizations. It overrides the any
+   * other theme.
    */
   theme: PropTypes.object,
   /**
@@ -1468,6 +1518,14 @@ WidgetEditor.propTypes = {
    * The callback gets passed the new value
    */
   onChangeWidgetCaption: PropTypes.func,
+  /**
+   * Callback executed when the theme is changed by the user
+   * or when a widget with embedded theme is initialized
+   * The callback gets passed the new theme
+   * If the callback is not present, the user won't be able
+   * to change the theme
+   */
+  onChangeTheme: PropTypes.func,
   // Store
   band: PropTypes.object,
   widgetEditor: PropTypes.object.isRequired,
@@ -1502,7 +1560,7 @@ WidgetEditor.propTypes = {
   setBasemap: PropTypes.func,
   setLabels: PropTypes.func,
   setBoundaries: PropTypes.func,
-  setTheme: PropTypes.func,
+  setEmbeddedTheme: PropTypes.func,
   setXAxisTitle: PropTypes.func,
   setYAxisTitle: PropTypes.func
 };
@@ -1514,7 +1572,10 @@ WidgetEditor.defaultProps = {
   contracted: false,
   useLayerEditor: false,
   allowBoundsCopyPaste: false,
-  availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value)
+  availableVisualizations: VISUALIZATION_TYPES.map(viz => viz.value),
+  theme: undefined,
+  defaultTheme: DEFAULT_THEME,
+  onChangeTheme: undefined
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(WidgetEditor);

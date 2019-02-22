@@ -1,0 +1,32 @@
+$vega-chart-legend-tooltip-width: 150px;
+$vega-chart-legend-tooltip-items-per-row: 5;
+$vega-chart-legend-tooltip-items-margin: 2px;
+$vega-chart-legend-tooltip-items-size: #{$vega-chart-legend-tooltip-width / $vega-chart-legend-tooltip-items-per-row - ($vega-chart-legend-tooltip-items-per-row - 1) * $vega-chart-legend-tooltip-items-margin / $vega-chart-legend-tooltip-items-per-row};
+
+.c-we-vega-chart-legend-tooltip {
+  width: $vega-chart-legend-tooltip-width;
+
+  ul {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0 0 $vega-chart-legend-tooltip-items-margin;
+      padding: 0;
+      flex-basis: $vega-chart-legend-tooltip-items-size;
+      height: $vega-chart-legend-tooltip-items-size;
+      list-style: none;
+
+      button {
+        display: block;
+        height: 100%;
+        width: 100%;
+        background: none;
+        border: 0;
+      }
+    }
+  }
+}

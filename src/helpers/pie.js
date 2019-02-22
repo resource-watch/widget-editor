@@ -1,6 +1,5 @@
 import deepClone from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
-import { defaultTheme } from 'src/helpers/theme';
 
 /* eslint-disable */
 const defaultChart = {
@@ -37,7 +36,7 @@ const defaultChart = {
     {
       "name": "c",
       "type": "ordinal",
-      "range": "category",
+      "range": "category20",
       "domain": { "data": "table", "field": "category" }
     }
   ],
@@ -121,7 +120,7 @@ export default function ({ columns, data, url, embedData, theme }) {
   //  }
 
   // We add a default legend to the chart
-  const colorRange = (theme || defaultTheme).range.category;
+  const colorRange = theme.range.category20;
   const values = uniqBy(
     data.map((d, i) => ({ ...d, x: i + 1 < 6 ? d.x : 'Others' })),
     'x'
