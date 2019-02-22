@@ -34,7 +34,6 @@
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
-    "leaflet": "^1.2.0",
     "node-sass": "^4.7.2",
     "path": "^0.12.7",
     "postcss": "^6.0.14",
