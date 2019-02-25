@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.0 (not released yet)
+## v1.4.0 - 25/02/2019
 - Prevent the editor from serializing too much information with the filters
 - Add advanced options for the numeric filters
 - Add advanced options for the temporal filters
