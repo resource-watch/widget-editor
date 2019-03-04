@@ -24,7 +24,8 @@ class InteractiveVegaChartLegend extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      opened: true
+      opened: true,
+      colorTooltipOpened: false
     };
 
     this.onClick = this.onClick.bind(this);
@@ -62,10 +63,11 @@ class InteractiveVegaChartLegend extends React.Component {
    */
   onKeyDown(e) {
     const code = e.keyCode;
-    const { toggleTooltip } = this.props;
+    const { toggleTooltip } = this.props; // eslint-disable-line no-shadow
+    const { opened } = this.state;
 
     // If the user presses the ESC key, we close the legend
-    if (code === 27) {
+    if (opened && code === 27) {
       e.preventDefault();
       this.setState({ opened: false });
       toggleTooltip(false);
@@ -79,13 +81,15 @@ class InteractiveVegaChartLegend extends React.Component {
    * @param {MouseEvent} event Button click event
    */
   onClickLegendItem(item, event) {
-    const { toggleTooltip, theme, onChangeTheme } = this.props;
+    const { toggleTooltip, theme, onChangeTheme } = this.props; // eslint-disable-line no-shadow
     const rects = event.target.getBoundingClientRect();
 
     const position = {
       x: window.scrollX + rects.x + (rects.width / 2),
       y: window.scrollY + rects.y + (rects.height / 2)
     };
+
+    this.setState({ colorTooltipOpened: true });
 
     toggleTooltip(true, {
       follow: false,
@@ -157,6 +161,7 @@ class InteractiveVegaChartLegend extends React.Component {
           }
 
           // We close the tooltip since the widget will be reloaded
+          this.setState({ colorTooltipOpened: false });
           toggleTooltip(false);
 
           onChangeTheme(newTheme);
@@ -170,11 +175,12 @@ class InteractiveVegaChartLegend extends React.Component {
    * @param {MouseEvent} e Event
    */
   onClick(e) {
-    const { toggleTooltip } = this.props;
+    const { toggleTooltip } = this.props; // eslint-disable-line no-shadow
+    const { colorTooltipOpened } = this.state;
     const el = document.querySelector('.c-we-tooltip');
     const clickOutside = el && el.contains && !el.contains(e.target);
 
-    if (clickOutside) {
+    if (colorTooltipOpened && clickOutside) {
       toggleTooltip(false);
     }
   }
@@ -183,8 +189,11 @@ class InteractiveVegaChartLegend extends React.Component {
    * Event handler executed when the user scrolls in the legend
    */
   onScrollLegend() {
-    const { toggleTooltip } = this.props;
-    toggleTooltip(false);
+    const { toggleTooltip } = this.props; // eslint-disable-line no-shadow
+    const { colorTooltipOpened } = this.state;
+    if (colorTooltipOpened) {
+      toggleTooltip(false);
+    }
   }
 
   /**
@@ -193,8 +202,6 @@ class InteractiveVegaChartLegend extends React.Component {
    * @param {object} config Check InteractiveVegaChartLegend.propTypes.config for the types
    */
   renderColorLegend(config) {
-    const { toggleTooltip } = this.props;
-
     // Kind of a trick, if there's something better, use it
     const uniqueId = config.values.slice(0, 5).map(v => v.label).join('');
 
