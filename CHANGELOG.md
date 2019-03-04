@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.1 (Not released yet)
+- Fix an issue where the aggregation wouldn't work properly with the new charts
+
 ## v1.4.0 - 25/02/2019
 - Prevent the editor from serializing too much information with the filters
 - Add advanced options for the numeric filters

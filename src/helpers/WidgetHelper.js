@@ -332,9 +332,15 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
 
   if (chartInfo.color) {
     const colorColumn = { key: 'color', value: chartInfo.color.name, as: true };
+
     if (chartInfo.color.aggregateFunction && chartInfo.color.aggregateFunction !== 'none') {
       colorColumn.aggregateFunction = chartInfo.color.aggregateFunction;
     }
+
+    if (isBidimensional && chartInfo.y.aggregateFunction && chartInfo.y.aggregateFunction !== 'none') {
+      colorColumn.group = true;
+    }
+
     columns.push(colorColumn);
   }
 
