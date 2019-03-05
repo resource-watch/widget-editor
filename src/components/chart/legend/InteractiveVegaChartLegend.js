@@ -18,6 +18,7 @@ import Icon from 'components/ui/Icon';
 import InteractiveVegaChartLegendTooltip from 'components/chart/legend/InteractiveVegaChartLegendTooltip';
 
 // Helpers
+import { capitalize } from 'helpers/functions';
 import { getSINumber, getTimeFormat } from 'helpers/WidgetHelper';
 
 class InteractiveVegaChartLegend extends React.Component {
@@ -252,10 +253,7 @@ class InteractiveVegaChartLegend extends React.Component {
     // Kind of a trick, if there's something better, use it
     const uniqueId = config.values.slice(0, 5).map(v => v.label).join('');
 
-    const label = config.label
-      ? config.label[0].toUpperCase()
-      + config.label.slice(1, config.label.length)
-      : null;
+    const label = capitalize(config.label);
 
     return (
       <div className="legend -size" key={uniqueId}>

@@ -8,6 +8,7 @@ import Title from 'components/ui/Title';
 import Icon from 'components/ui/Icon';
 
 // Helpers
+import { capitalize } from 'helpers/functions';
 import { getSINumber, getTimeFormat } from 'helpers/WidgetHelper';
 
 class VegaChartLegend extends React.Component {
@@ -41,9 +42,9 @@ class VegaChartLegend extends React.Component {
 
     return (
       <div className="legend -color" key={uniqueId}>
-        { config.label && <Title className="-default">{config.label}</Title> }
+        {config.label && <Title className="-default">{config.label}</Title>}
         <div className="items">
-          { items.map((item, i, values) => (
+          {items.map((item, i, values) => (
             <div className="item" key={item.label}>
               <span
                 className={`shape -${config.shape || 'square'}`}
@@ -68,16 +69,13 @@ class VegaChartLegend extends React.Component {
     // Kind of a trick, if there's something better, use it
     const uniqueId = config.values.slice(0, 5).map(v => v.label).join('');
 
-    const label = config.label
-      ? config.label[0].toUpperCase()
-          + config.label.slice(1, config.label.length)
-      : null;
+    const label = capitalize(config.label);
 
     return (
       <div className="legend -size" key={uniqueId}>
-        { label && <Title className="-default">{label}</Title> }
+        {label && <Title className="-default">{label}</Title>}
         <div className="items">
-          { config.values.map(value => (
+          {config.values.map(value => (
             <div className="item" key={value.label}>
               <div className="shape-container">
                 <span
@@ -178,7 +176,7 @@ class VegaChartLegend extends React.Component {
             />
           </button>
           <div className="content">
-            { this.props.config.map(config => VegaChartLegend.renderLegend(config)) }
+            {this.props.config.map(config => VegaChartLegend.renderLegend(config))}
           </div>
         </div>
       </div>

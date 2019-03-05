@@ -17,6 +17,7 @@ import ScatterChart from 'helpers/scatter';
 
 // Helpers
 import getQueryByFilters from 'helpers/getQueryByFilters';
+import { capitalize } from 'helpers/functions';
 import { getConfig } from 'helpers/ConfigHelper';
 
 // Services
@@ -554,14 +555,13 @@ export async function getChartConfig(
   }
 
   // We compute the name of the x column
-  const xLabel = chartInfo.x.name[0].toUpperCase()
-    + chartInfo.x.name.slice(1, chartInfo.x.name.length);
+  const xLabel = capitalize(chartInfo.x.name);
 
   // We compute the name of the y column
   let yLabel = chartInfo.y && chartInfo.y.name;
   if (yLabel) {
     // We make the first letter uppercase
-    yLabel = yLabel[0].toUpperCase() + yLabel.slice(1, yLabel.length);
+    yLabel = capitalize(yLabel);
 
     // If there's an aggregation, we add it next to the name
     if (chartInfo.y.aggregateFunction) {
@@ -572,8 +572,7 @@ export async function getChartConfig(
   // We compute the name of the color column
   let colorLabel = chartInfo.color && chartInfo.color.name;
   if (colorLabel) {
-    colorLabel = chartInfo.color.name[0].toUpperCase()
-      + chartInfo.color.name.slice(1, chartInfo.color.name.length);
+    colorLabel = capitalize(chartInfo.color.name);
   }
 
   const columns = {
@@ -581,28 +580,19 @@ export async function getChartConfig(
       present: true,
       type: chartInfo.x.type,
       name: xLabel,
-      alias: chartInfo.x.alias
-        ? chartInfo.x.alias[0].toUpperCase()
-        + chartInfo.x.alias.slice(1, chartInfo.x.alias.length)
-        : null
+      alias: capitalize(chartInfo.x.alias)
     },
     y: {
       present: !!chartInfo.y,
       type: chartInfo.y && chartInfo.y.type,
       name: yLabel,
-      alias: chartInfo.y && chartInfo.y.alias
-        ? chartInfo.y.alias[0].toUpperCase()
-        + chartInfo.y.alias.slice(1, chartInfo.y.alias.length)
-        : null
+      alias: capitalize(chartInfo.y && chartInfo.y.alias)
     },
     color: {
       present: !!chartInfo.color,
       type: chartInfo.color && chartInfo.color.type,
       name: colorLabel,
-      alias: chartInfo.color && chartInfo.color.alias
-        ? chartInfo.color.alias[0].toUpperCase()
-        + chartInfo.color.alias.slice(1, chartInfo.color.alias.length)
-        : null
+      alias: capitalize(chartInfo.color && chartInfo.color.alias)
     },
     size: {
       present: !!chartInfo.size,
