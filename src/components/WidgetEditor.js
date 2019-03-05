@@ -716,6 +716,7 @@ class WidgetEditor extends React.Component {
               {titleCaption}
               <TableView
                 datasetId={datasetId}
+                datasetProvider={datasetProvider}
                 tableName={tableName}
               />
             </div>

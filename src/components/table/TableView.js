@@ -40,8 +40,17 @@ class TableView extends React.Component {
   }
 
   getDataForTable(props) {
-    const { tableName, widgetEditor } = props;
-    const { areaIntersection, filters, fields, value, aggregateFunction, category, orderBy, limit } = widgetEditor;
+    const { tableName, datasetProvider, widgetEditor } = props;
+    const {
+      areaIntersection,
+      filters,
+      fields,
+      value,
+      aggregateFunction,
+      category,
+      orderBy,
+      limit
+    } = widgetEditor;
     const aggregateFunctionExists = aggregateFunction && aggregateFunction !== 'none';
 
     const arrColumns = fields.filter(val => val.columnName !== 'cartodb_id' && val.columnType !== 'geometry').map(
@@ -71,7 +80,7 @@ class TableView extends React.Component {
     const geostore = areaIntersection ? `&geostore=${areaIntersection}` : '';
 
     const sortOrder = orderBy ? orderBy.orderType : 'asc';
-    const query = `sql=${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit} ${geostore}`;
+    const query = `sql=${getQueryByFilters(tableName, datasetProvider, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit} ${geostore}`;
 
     this.setState({ loading: true });
     this.datasetService.fetchFilteredData(query).then((response) => {
@@ -93,10 +102,10 @@ class TableView extends React.Component {
     // We check if we have an alias for the column name
     // and update the headers accordingly
     header = header.map((value) => {
-      const field = fields.find(field => field.columnName === value);
+      const field = fields.find(f => f.columnName === value);
       if (field) return field.alias || value;
       return value;
-    })
+    });
 
     return (
       <div className="c-we-table-view c-we-table">
@@ -143,6 +152,7 @@ TableView.propTypes = {
    * Dataset ID
    */
   datasetId: PropTypes.string.isRequired,
+  datasetProvider: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
   tableName: PropTypes.string.isRequired, // eslint-disable-line react/no-unused-prop-types
   // Store
   widgetEditor: PropTypes.object.isRequired // eslint-disable-line react/no-unused-prop-types

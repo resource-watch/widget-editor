@@ -374,7 +374,7 @@ export async function getDataURL(dataset, datasetType, tableName, band, provider
   }
 
   const sortOrder = chartInfo.order ? chartInfo.order.orderType : 'desc';
-  const query = `${getQueryByFilters(tableName, chartInfo.filters, columns, orderByColumn, sortOrder)} LIMIT ${chartInfo.limit}`;
+  const query = `${getQueryByFilters(tableName, provider, chartInfo.filters, columns, orderByColumn, sortOrder)} LIMIT ${chartInfo.limit}`;
 
   const geostore = chartInfo.areaIntersection ? `&geostore=${chartInfo.areaIntersection}` : '';
 

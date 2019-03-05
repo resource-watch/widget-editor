@@ -73,7 +73,8 @@ class EmbedTableModal extends React.Component {
     }
 
     const sortOrder = orderBy ? orderBy.orderType : 'asc';
-    const query = `${getQueryByFilters(tableName, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
+    // FIXME: second argument should be the provider of the dataset
+    const query = `${getQueryByFilters(tableName, null, filters, arrColumns, orderByColumn, sortOrder)} LIMIT ${limit}`;
     const geostore = areaIntersection ? `&geostore=${areaIntersection}` : '';
 
     return `${getConfig().url}/query/${datasetId}?sql=${query}${geostore}`;

@@ -3,6 +3,7 @@
 ## v1.4.1 (Not released yet)
 - Fix an issue where the aggregation wouldn't work properly with the new charts
 - Fix an issue where the user wouldn't be able to change the type of filters
+- Fix an issue where the date filters wouldn't work with "featureservice" datasets
 
 ## v1.4.0 - 25/02/2019
 - Prevent the editor from serializing too much information with the filters
