@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.1 (Not released yet)
+## v1.4.1 - 05/03/2019
 - Fix an issue where the aggregation wouldn't work properly with the new charts
 - Fix an issue where the user wouldn't be able to change the type of filters
 - Fix an issue where the date filters wouldn't work with "featureservice" datasets
