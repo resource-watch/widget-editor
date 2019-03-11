@@ -7,7 +7,7 @@ import isEqual from 'lodash/isEqual';
 import { toastr } from 'react-redux-toastr';
 import AutosizeInput from 'react-input-autosize';
 import classnames from 'classnames';
-import { Legend, LegendListItem, LegendItemTypes, Icons } from 'wri-api-components';
+import { Legend, LegendListItem, LegendItemTypes, Icons } from 'vizzuality-components';
 
 // Redux
 import { connect } from 'react-redux';

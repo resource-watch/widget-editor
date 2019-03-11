@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.2 (Not released yet)
+- Swap dependency `wri-api-components` by `vizzuality-components` and make `vega-lib` an external dependency
+
 ## v1.4.1 - 05/03/2019
 - Fix an issue where the aggregation wouldn't work properly with the new charts
 - Fix an issue where the user wouldn't be able to change the type of filters

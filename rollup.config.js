@@ -11,7 +11,7 @@ const config = {
     file: 'dist/bundle.js',
     format: 'cjs'
   },
-  external: ['prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega'],
+  external: ['prop-types', 'react', 'react-dom', 'react-redux', 'redux-thunk', 'vega', 'vega-lib'],
   plugins: [
     babel({
       runtimeHelpers: true,
@@ -24,7 +24,7 @@ const config = {
     commonjs({
       namedExports: {
         'react-dnd/lib/index.js': ['DragDropContext', 'DropTarget', 'DragSource'],
-        'wri-api-components': ['Legend', 'LegendItemTypes', 'LegendListItem', 'Icons']
+        'vizzuality-components': ['Legend', 'LegendItemTypes', 'LegendListItem', 'Icons']
       }
     }),
     filesize()
