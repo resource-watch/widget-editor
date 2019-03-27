@@ -1073,8 +1073,8 @@ class WidgetEditor extends React.Component {
           }
         }
 
-        const xAxis = axes.find(axis => axis.scale === 'x');
-        const yAxis = axes.find(axis => axis.scale === 'y');
+        const xAxis = axes ? axes.find(axis => axis.scale === 'x') : null;
+        const yAxis = axes ? axes.find(axis => axis.scale === 'y') : null;
         if (chartType !== 'pie' && xAxis && xAxis.title) this.props.setXAxisTitle(xAxis.title);
         if (chartType !== 'pie' && yAxis && yAxis.title) this.props.setYAxisTitle(yAxis.title);
       });
