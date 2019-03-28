@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.3 (not released yet)
+## v1.4.3 - 28/03/2019
 - Fix a bug where the editor may not be able to restore a widget
 
 ## v1.4.2 - 27/03/2019

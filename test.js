@@ -49,8 +49,8 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      datasetId: '5159fe6f-defd-44d2-9e7d-15665e14deeb',
-      widgetId: undefined,
+      datasetId: 'a86d906d-9862-4783-9e30-cdb68cd808b8',
+      widgetId: 'bfa2bece-9b79-4842-9d83-1c3079f6d812',
       // Widget with custom theme and new chart:
       // widgetId: '7c60887a-aee9-4925-83fd-5c7673521443',
       previewWidgetId: undefined,
@@ -251,8 +251,8 @@ class App extends React.Component {
           embedButtonMode="always"
           titleMode="always"
           // eslint-disable-next-line no-underscore-dangle
-          defaultTheme={this.state._defaultTheme}
-          theme={this.state._theme}
+          // defaultTheme={this.state._defaultTheme}
+          // theme={this.state._theme}
           useLayerEditor
           allowBoundsCopyPaste
           onSave={this.onSave}
