@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.3 (not released yet)
+- Fix a bug where the editor may not be able to restore a widget
+
 ## v1.4.2 - 27/03/2019
 - Swap dependency `wri-api-components` by `vizzuality-components` and make `vega-lib` an external dependency
 - Fix a bug where the widgets without any axis couldn't be restored

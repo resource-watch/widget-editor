@@ -1373,7 +1373,7 @@ const mapStateToProps = ({ widgetEditor }, { theme, defaultTheme }) => ({
   widgetEditor,
   selectedVisualizationType: widgetEditor.visualizationType,
   band: widgetEditor.band,
-  currentTheme: theme || widgetEditor.embeddedTheme || defaultTheme
+  currentTheme: theme || widgetEditor.embeddedTheme || defaultTheme || DEFAULT_THEME
 });
 
 const mapDispatchToProps = dispatch => ({
