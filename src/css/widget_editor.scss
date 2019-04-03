@@ -128,8 +128,13 @@
     flex-basis: 100%;
     flex-wrap: wrap;
     overflow-x: hidden;
-    padding: #{$margin-size-extra-small + 25px + 80px} 35px $margin-size-extra-small;
+    padding: #{$margin-size-extra-small + 80px} 15px $margin-size-extra-small;
     padding-right: 0;
+
+    &.-reduced {
+      padding: #{$margin-size-extra-small + 115px} 15px $margin-size-extra-small;
+      padding-right: 0;
+    }
 
     &.-error {
       text-align: center;
@@ -176,10 +181,6 @@
           text-align: center;
         }
       }
-    }
-
-    > .c-we-table {
-      padding-top: 75px; // Space for the title and caption
     }
 
     iframe {

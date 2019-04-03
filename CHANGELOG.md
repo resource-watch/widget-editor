@@ -2,6 +2,7 @@
 
 ## v1.4.4 (not released yet)
 - Rename a CSS class called "row" to avoid collisions with styles from the host app
+- Reduce the paddings around the visualizations
 
 ## v1.4.3 - 28/03/2019
 - Fix a bug where the editor may not be able to restore a widget

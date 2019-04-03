@@ -530,27 +530,31 @@ class WidgetEditor extends React.Component {
       </div>
     );
 
+    const visualizationSize = this.props.titleMode === 'always' || (this.props.titleMode === 'auto' && getConfig().userToken)
+      ? 'reduced'
+      : 'full';
+
     let visualization = null;
     switch (selectedVisualizationType) {
       // Vega chart
       case 'chart':
         if (!tableName) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               <Spinner className="-light" isLoading={this.isLoading()} />
               {titleCaption}
             </div>
           );
         } else if (chartConfigLoading) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               <Spinner className="-light" isLoading />
               {titleCaption}
             </div>
           );
         } else if (chartConfigError) {
           visualization = (
-            <div className="visualization -error">
+            <div className={`visualization -error -${visualizationSize}`}>
               {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
@@ -560,14 +564,14 @@ class WidgetEditor extends React.Component {
           );
         } else if (!canRenderChart(widgetEditor, datasetProvider) || !chartConfig) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               {titleCaption}
               Select a type of chart and columns
             </div>
           );
         } else if (!CHART_TYPES.find(({ value }) => value === chartType)) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               {titleCaption}
               {'This chart can\'t be previewed'}
             </div>
@@ -575,7 +579,7 @@ class WidgetEditor extends React.Component {
         } else {
           const canChangeTheme = chartConfig.legend && onChangeTheme;
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
               <div className="we-row">
@@ -605,7 +609,7 @@ class WidgetEditor extends React.Component {
       case 'map':
         if (layer) {
           visualization = (
-            <div className="visualization">
+            <div className={`visualization -${visualizationSize}`}>
               {titleCaption}
               <Map
                 LayerManager={LayerManager}
@@ -639,7 +643,7 @@ class WidgetEditor extends React.Component {
           );
         } else {
           visualization = (
-            <div className="visualization">
+            <div className={`visualization -${visualizationSize}`}>
               {titleCaption}
               {useLayerEditor ? 'Select or create a layer' : 'Select a layer'}
             </div>
@@ -650,14 +654,14 @@ class WidgetEditor extends React.Component {
       case 'raster_chart':
         if (chartConfigLoading) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               <Spinner className="-light" isLoading />
               {titleCaption}
             </div>
           );
         } else if (chartConfigError) {
           visualization = (
-            <div className="visualization -error">
+            <div className={`visualization -error -${visualizationSize}`}>
               {titleCaption}
               <div>
                 {'Unfortunately, the chart couldn\'t be rendered'}
@@ -667,7 +671,7 @@ class WidgetEditor extends React.Component {
           );
         } else if (!chartConfig || !band) {
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               {titleCaption}
               Select a band
             </div>
@@ -675,7 +679,7 @@ class WidgetEditor extends React.Component {
         } else {
           const canChangeTheme = chartConfig.legend && onChangeTheme;
           visualization = (
-            <div className="visualization -chart">
+            <div className={`visualization -chart -${visualizationSize}`}>
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
               <div className="we-row">
@@ -705,14 +709,14 @@ class WidgetEditor extends React.Component {
       case 'table':
         if (!canRenderChart(widgetEditor, datasetProvider)) {
           visualization = (
-            <div className="visualization">
+            <div className={`visualization -${visualizationSize}`}>
               {titleCaption}
               Select a type of chart and columns
             </div>
           );
         } else {
           visualization = (
-            <div className="visualization">
+            <div className={`visualization -${visualizationSize}`}>
               {titleCaption}
               <TableView
                 datasetId={datasetId}
