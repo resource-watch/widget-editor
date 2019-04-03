@@ -578,7 +578,7 @@ class WidgetEditor extends React.Component {
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
-              <div className="row">
+              <div className="we-row">
                 {chartType !== 'pie' && <AxisTitle type="y" />}
                 <VegaChart
                   showLegend={!canChangeTheme}
@@ -678,7 +678,7 @@ class WidgetEditor extends React.Component {
             <div className="visualization -chart">
               <Spinner className="-light" isLoading={chartLoading} />
               {titleCaption}
-              <div className="row">
+              <div className="we-row">
                 {chartType !== 'pie' && <AxisTitle type="y" />}
                 <VegaChart
                   showLegend={!canChangeTheme}

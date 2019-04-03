@@ -142,7 +142,7 @@
       }
     }
 
-    > .row {
+    > .we-row {
       flex-basis: 100%;
       flex-shrink: 0;
       height: calc(100% - #{30px + $space-1}); // Subtract height of the x axis + margin
