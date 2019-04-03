@@ -1160,7 +1160,8 @@ class WidgetEditor extends React.Component {
   isLoading() {
     return !this.state.layersLoaded
       || !this.state.fieldsLoaded
-      || this.state.fieldsError;
+      || this.state.fieldsError
+      || this.state.initializing;
   }
 
   /**
@@ -1290,6 +1291,7 @@ class WidgetEditor extends React.Component {
               (selectedVisualizationType === 'chart' ||
                 selectedVisualizationType === 'table')
               && !fieldsError && tableName && datasetProvider !== 'nexgddp'
+              && !this.isLoading()
               && (
                 <ChartEditor
                   datasetId={datasetId}
@@ -1311,6 +1313,7 @@ class WidgetEditor extends React.Component {
               (selectedVisualizationType === 'chart' ||
                 selectedVisualizationType === 'table')
               && !fieldsError && tableName && datasetProvider === 'nexgddp'
+              && !this.isLoading()
               && (
                 <NEXGDDPEditor
                   datasetId={datasetId}
@@ -1332,6 +1335,7 @@ class WidgetEditor extends React.Component {
               selectedVisualizationType === 'map'
               && layers && layers.length > 0
               && datasetProvider
+              && !this.isLoading()
               && (
                 <MapEditor
                   datasetId={datasetId}
@@ -1353,6 +1357,7 @@ class WidgetEditor extends React.Component {
               selectedVisualizationType === 'raster_chart'
               && tableName
               && datasetProvider
+              && !this.isLoading()
               && (
                 <RasterChartEditor
                   datasetId={datasetId}

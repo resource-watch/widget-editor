@@ -12,7 +12,9 @@ function LayerSelectionScreen(props) {
   const { widgetEditor, layers, useLayerEditor, onChangeLayer, onChangeScreen } = props;
   const { layer } = widgetEditor;
 
-  if (!props.widgetId && !(layer && layer.id)) {
+  // We want to show a layer by default if a layer
+  // is not already selected or been restored
+  if (!(layer && layer.id)) {
     // If a default layer is present, we'll select
     // it by default
     const defaultLayer = props.layers.find(l => l.default);
@@ -23,7 +25,7 @@ function LayerSelectionScreen(props) {
 
   return (
     <div className="layer-selection-screen">
-      { useLayerEditor && (
+      {useLayerEditor && (
         <div className="breadcrumbs">
           <button
             type="button"

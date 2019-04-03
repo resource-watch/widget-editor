@@ -4,6 +4,7 @@
 - Rename a CSS class called "row" to avoid collisions with styles from the host app
 - Reduce the paddings around the visualizations
 - Remove the vertical scroll in the panel of the editor
+- Fix a bug where a layer wouldn't be selected by default (when selecting the map visualization)
 
 ## v1.4.3 - 28/03/2019
 - Fix a bug where the editor may not be able to restore a widget
