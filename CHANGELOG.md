@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.4.4 (not released yet)
+## v1.4.4 - 05/04/2019
 - Rename a CSS class called "row" to avoid collisions with styles from the host app
 - Reduce the paddings around the visualizations
 - Remove the vertical scroll in the panel of the editor
