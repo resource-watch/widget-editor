@@ -1,5 +1,7 @@
 # Changelog
 
+**⚠️ Some releases may contain breaking changes.** When updating from one version to another, please take the time to read the changelog of the intermediate releases.
+
 ## v1.4.4 - 05/04/2019
 - Rename a CSS class called "row" to avoid collisions with styles from the host app
 - Reduce the paddings around the visualizations
@@ -20,6 +22,8 @@
 - Fix an issue where certain non-latin characters wouldn't be displayed correctly
 
 ## v1.4.0 - 25/02/2019
+**⚠️ This release and the more recent ones contain a breaking change. Please use the migration tool if you want to update (see [README](https://github.com/resource-watch/widget-editor/blob/develop/README.md#updating-the-widget-editor)).**
+
 - Prevent the editor from serializing too much information with the filters
 - Add advanced options for the numeric filters
 - Add advanced options for the temporal filters

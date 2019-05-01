@@ -4,6 +4,8 @@ This repository contains the code of the widget editor used in [Resource Watch](
 
 Initially developped for RW, the editor was then needed for PREP so it has been extracted in this repository. While exposing the React component by default, the package also contains a suite of components, services and styles that it needs and that can be re-used in other apps.
 
+**⚠️ Please take the time to read the "Updating the widget-editor" section below before updating the dependency.**
+
 ## Get started
 
 The widget editor needs a [React](https://reactjs.org) environment with [Redux](https://redux.js.org), as well as needs some peer dependencies to be installed:
@@ -87,6 +89,42 @@ Name | Default value | Mandatory | Description
 `locale: string` | `"en"` | No | Locale used to fetch the data
 
 Later, you can update any of the properties (mandatory or not) if you need to.
+
+## Updating the widget-editor
+
+This library follows the [semver specification](https://semver.org/). This means that only major versions will require you to update your code in order to maintain the functionality.
+
+However, the widget-editor produces widgets that are very dependent on the version you use. Widgets created with an older version of the editor might be broken or have visual inconsistencies when opened with the `WidgetEditor` or `VegaChart` components of a newer version.
+
+When updating the `widget-editor` dependency, please take the time to read the [Changelog](https://github.com/resource-watch/widget-editor/blob/develop/CHANGELOG.md). **Pay special attention to the versions in between the one you're using and the one you want to update to.** If one of the versions includes breaking changes, then you'll need to migrate the widgets.
+
+### Migrating widgets
+
+![Initial screen of the migration tool](README_IMG_MIGRATION_TOOL.png)
+
+The widget-editor includes an easy-to-use CLI to run the migrations for you. Once you've selected the version you want to migrate to, the CLI gives you 3 choices:
+- Get the list of the widgets that need migration
+- Perform a dry-run of the migration
+- Perform the migration
+
+Then, the migration tool will ask you information such as which applications or which environments are targeted. If you want to perform the migration, you'll also have to provide your token (you need admin privileges).
+
+Whatever option you select from the first screen, a complete report of the action will be generated in the folder you execute the command from.
+
+To run the migration tool, from you host app, and with yarn, execute:
+```bash
+$ yarn --cwd node_modules/widget-editor/ run migrate
+```
+
+To run it with npm, execute:
+```bash
+$ npm explore widget-editor -- npm run migrate 
+```
+
+If you want to run it from the editor's repository, simply execute:
+```bash
+$ yarn migrate
+```
 
 ## How to use the `WidgetEditor` component
 
