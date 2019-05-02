@@ -10,11 +10,11 @@ Initially developped for RW, the editor was then needed for PREP so it has been 
 
 The widget editor needs a [React](https://reactjs.org) environment with [Redux](https://redux.js.org), as well as needs some peer dependencies to be installed:
 ```bash
-$ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet vega@^3.1.0
+$ yarn add react react-dom prop-types redux react-redux redux-thunk leaflet esri-leaflet vega@^3.1.0
 $ yarn add widget-editor
 ```
 
-Note that [leaflet](http://leafletjs.com/) is not listed as a peer dependency of this package because you can load it from a CDN. Make sure Leaflet is bundled with your app or globally available as `window.L`.
+Note that [leaflet](http://leafletjs.com/) and [esri-leaflet](https://esri.github.io/esri-leaflet/) are not listed as peer dependencies of this package because you can load them from a CDN. Make sure they are bundled with your app or globally available as `window.L`.
 
 You can [check the release tab](https://github.com/resource-watch/widget-editor/releases) on Github to see what is the most recent version.
 
