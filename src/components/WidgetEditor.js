@@ -1206,7 +1206,8 @@ class WidgetEditor extends React.Component {
       embedButtonMode,
       selectedVisualizationType,
       widgetEditor,
-      useLayerEditor
+      useLayerEditor,
+      titleMode
     } = this.props;
 
     const editorMode = !widgetId ||
@@ -1349,6 +1350,7 @@ class WidgetEditor extends React.Component {
                   layers={layers}
                   mode={editorMode}
                   showSaveButton={showSaveButton}
+                  titleMode={titleMode}
                   onSave={this.onClickSave}
                 />
               )

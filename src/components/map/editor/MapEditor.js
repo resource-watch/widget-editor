@@ -5,6 +5,7 @@ import Autobind from 'autobind-decorator';
 // Redux
 import { connect } from 'react-redux';
 
+import { getConfig } from 'helpers/ConfigHelper';
 import { showLayer, setBounds, setTitle } from 'reducers/widgetEditor';
 
 // Components
@@ -165,10 +166,12 @@ MapEditor.propTypes = {
 };
 
 const mapStateToProps = ({ widgetEditor }) => ({ widgetEditor });
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, { titleMode }) => ({
   showLayer: (layer) => {
     dispatch(showLayer(layer));
-    dispatch(setTitle((layer && layer.name) || ''));
+    if (titleMode === 'always' || (titleMode === 'auto' && getConfig().userToken)) {
+      dispatch(setTitle((layer && layer.name) || ''));
+    }
   },
   setBounds: (...params) => dispatch(setBounds(...params))
 });
