@@ -2,7 +2,9 @@
 
 **⚠️ Some releases may contain breaking changes.** When updating from one version to another, please take the time to read the changelog of the intermediate releases.
 
-## v1.4.5 (not released yet)
+## v1.4.6 (not released yet)
+
+## v1.4.5 - 27/08/2019
 - Remove esri-leaflet from the dependencies (but it's still needed)
 - Make the map view only update the title, if editable
 - Fix an issue where the filters could stop working when the `datasetId` prop is dynamically updated
