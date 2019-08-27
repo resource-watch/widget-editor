@@ -201,7 +201,13 @@ export default function (state = initialState, action) {
         {},
         initialState,
         !action.payload // If not a hard reset...
-          ? { fields: state.fields, bandsInfo: state.bandsInfo }
+          ? {
+            datasetId: state.datasetId,
+            tableName: state.tableName,
+            contracted: state.contracted,
+            fields: state.fields,
+            bandsInfo: state.bandsInfo
+          }
           : {}
       );
     }
