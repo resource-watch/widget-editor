@@ -7,6 +7,36 @@ const defaultTheme = theme.defaultTheme;
 // Please sort the migrations by their version number (DESC)
 module.exports = [
   {
+    version: '0.1.3',
+    description: 'Update the widgetConfig parameters stored to detect map widgets',
+    needsMigration(widget) {
+      const { widgetConfig } = widget.attributes;
+      if (!widgetConfig || !widgetConfig.paramsConfig || widgetConfig.paramsConfig.visualizationType !== 'map') {
+        return false;
+      }
+
+      if (widgetConfig.type === 'map' && widgetConfig.layer_id !== undefined) {
+        return false;
+      }
+
+      return true;
+    },
+    migrate(widget) {
+      const { widgetConfig } = widget.attributes;
+      return {
+        ...widget,
+        attributes: {
+          ...widget.attributes,
+          widgetConfig: {
+            ...widgetConfig,
+            type: 'map',
+            layer_id: widgetConfig.paramsConfig.layer
+          }
+        }
+      };
+    }
+  },
+  {
     version: '1.4.0',
     description: 'Update the color scale of the legend of the pies charts',
     needsMigration(widget) {

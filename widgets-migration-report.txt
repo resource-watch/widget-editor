@@ -1,0 +1,9 @@
+Widgets migration report
+
+Migration to version: 0.1.3
+Applications: rw
+Environments: production
+API's URL: https://api.resourcewatch.org/v1
+Action: report
+
+Widgets to migrate:

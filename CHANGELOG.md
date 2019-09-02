@@ -160,6 +160,8 @@
 - Fix a bug where the height of the chart would grow in the editor after a resize
 
 ## v0.1.3 - 12/02/2018
+**⚠️ This release and the more recent ones contain a breaking change. Please use the migration tool if you want to update (see [README](https://github.com/resource-watch/widget-editor/blob/develop/README.md#updating-the-widget-editor)).*
+
 - Remove unused CSS rules that would interfere with the styles of RW or Prep
 - Auto-pan to the bounding box of a layer, if provided
 - Save and restore the bounding box of the widgets
