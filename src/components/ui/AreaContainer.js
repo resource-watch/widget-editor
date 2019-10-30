@@ -51,7 +51,9 @@ class AreaContainer extends React.Component {
   componentDidMount() {
     let error = false;
 
-    this.fetchUserAreas()
+    this.fetchAreas()
+      .catch(() => { error = true; })
+      .then(() => this.fetchUserAreas())
       .catch(() => { error = true; })
       .then(() => this.setState({ loading: false }))
       .then(() => {
@@ -95,6 +97,24 @@ class AreaContainer extends React.Component {
         resolve(true);
       }
     });
+  }
+
+  /**
+   * Fetch the list of the areas for the area intersection
+   * filter
+  */
+  fetchAreas() {
+    return this.areasService.fetchCountries()
+      .then((data) => {
+        this.setState({
+          areaOptions: [...this.state.areaOptions, ...AREAS,
+            ...data.map(elem => ({
+              label: elem.name || '',
+              id: elem.geostoreId,
+              value: `country-${elem.geostoreId}`
+            }))]
+        });
+      });
   }
 
   /**
