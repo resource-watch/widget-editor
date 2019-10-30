@@ -3,6 +3,7 @@
 **⚠️ Some releases may contain breaking changes.** When updating from one version to another, please take the time to read the changelog of the intermediate releases.
 
 ## v1.4.6 (not released yet)
+- Fix a bug where the list of countries disappeared from the area filter
 
 ## v1.4.5 - 27/08/2019
 - Remove esri-leaflet from the dependencies (but it's still needed)
