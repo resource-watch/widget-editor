@@ -60,7 +60,9 @@ class VegaChart extends React.Component {
       this.renderChart();
     }
 
-    if (prevProps.theme !== this.props.theme) {
+    // If the theme changes, we re-render the chart, unless we haven't rendered it yet
+    // This is important as this.state.vegaConfig is null until rendered
+    if (prevProps.theme !== this.props.theme && this.state.vegaConfig) {
       this.parseVega();
     }
   }

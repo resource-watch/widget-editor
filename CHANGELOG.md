@@ -3,6 +3,7 @@
 **⚠️ Some releases may contain breaking changes.** When updating from one version to another, please take the time to read the changelog of the intermediate releases.
 
 ## v1.4.6 (not released yet)
+- Fix an issue where `VegaChart` might crash when changing the theme shortly after initialization
 
 ## v1.4.5 - 27/08/2019
 - Remove esri-leaflet from the dependencies (but it's still needed)
