@@ -1,4 +1,10 @@
-# widget-editor
+# **DEPRECATED** widget-editor
+
+---
+
+**⚠️ This project has been deprecated. Please have a look at its successor at [Vizzuality/widget-editor](https://github.com/Vizzuality/widget-editor/).**
+
+---
 
 This repository contains the code of the widget editor used in [Resource Watch](https://github.com/resource-watch/resource-watch) and [PREP](https://github.com/resource-watch/prep-app).
 
