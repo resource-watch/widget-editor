@@ -64,7 +64,7 @@
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.0",
     "uglifyjs-webpack-plugin": "^1.1.0",
-    "vega": "^3.2.1",
+    "vega": "^5.17.3",
     "vega-lib": "^4.4.0",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.4",
